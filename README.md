@@ -1,8 +1,8 @@
-###MedCareer Connect
+### MedCareer Connect
 
 #### Complete App
 
-[MedCareer]([https://jobify.live/](https://medcareer.onrender.com/))
+[MedCareer]([https://medcareer.onrender.com/])
 
 #### Create React APP
 
