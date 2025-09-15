@@ -63,7 +63,49 @@ app.use(
 app.use("/api/v1/jobs", jobRouter); // Remove authenticateUser to allow guest access
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", authenticateUser, userRouter);
-app.get("/", (req, res) => res.send("Api is working !"));
+app.get("/", (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Site Maintenance</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+          }
+          .maintenance-container {
+            text-align: center;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+          }
+          h1 {
+            color: #333;
+            margin-bottom: 1rem;
+          }
+          p {
+            color: #666;
+            font-size: 1.1rem;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="maintenance-container">
+          <h1>🛠️ Site Under Maintenance</h1>
+          <p>We're currently updating our systems to serve you better.</p>
+          <p>Please check back soon!</p>
+        </div>
+      </body>
+    </html>
+  `);
+});
 app.get("/api/v1/test", (req, res) => {
   res.json("Test route is working!");
 });
