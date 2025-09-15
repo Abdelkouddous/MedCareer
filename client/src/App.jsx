@@ -15,6 +15,7 @@ import {
   DeleteJob,
   EditJob,
   Admin,
+  JobSeekers,
 } from "./pages";
 
 // imported actions necessary
@@ -51,12 +52,15 @@ const router = createBrowserRouter([
     path: "/",
     errorElement: <Error></Error>,
     element: <HomeLayout></HomeLayout>,
-    // {/* <a href="/about">About</a> */}
     children: [
       // they are relative to the parent path "/"
       {
         index: true,
         element: <Landing></Landing>,
+      },
+      {
+        path: "job-seekers",
+        element: <JobSeekers />,
       },
       {
         path: "register",

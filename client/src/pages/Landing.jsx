@@ -1,16 +1,8 @@
 import { Link } from "react-router-dom";
 import main from "../assets/images/main.svg";
-import logo from "../assets/images/logo.svg";
-import Navbar from "../navbar/Navbar";
+
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  JOB_TYPE,
-  JOB_STATUS,
-  JOB_SORT_BY,
-  MEDICAL_SPECIALIZATION,
-} from "../../../utils/constants";
-import { FaSearch } from "react-icons/fa";
 
 const Landing = () => {
   // Create refs for each section that will have animations
@@ -113,6 +105,20 @@ const Landing = () => {
         <section ref={sectionRefs.hero} className="pt-24 pb-16 px-4">
           <div className="container mx-auto flex flex-col md:flex-row items-center">
             <div className="md:w-1/2 text-center md:text-left mb-10 md:mb-0">
+              <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Link
+                  to="/job-seekers"
+                  className="w-full text-center bg-[var(--primary-500)] text-[var(--white)] px-6 py-3 rounded-md font-semibold hover:bg-[var(--primary-700)] transition-all duration-200"
+                >
+                  Job Seeker
+                </Link>
+                <Link
+                  to="/register?role=employer"
+                  className="w-full text-center border-2 border-[var(--primary-500)] text-[var(--primary-500)] px-6 py-3 rounded-md font-semibold hover:bg-[var(--primary-500)] hover:text-[var(--white)] transition-all duration-200"
+                >
+                  Employer
+                </Link>
+              </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[var(--text-color)] mb-6">
                 Find Your Perfect{" "}
                 <span className="text-[var(--primary-500)]">
