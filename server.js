@@ -50,7 +50,9 @@ app.use(express.json());
 // static files section
 const __dirname = dirname(fileURLToPath(import.meta.url));
 // use path .resolve not path.join
-app.use(express.static(path.resolve(__dirname, "./public")));
+// deprecated
+// app.use(express.static(path.resolve(__dirname, "./public")));
+app.use(express.static(path.resolve(__dirname, "./client/dist")));
 // Make sure uploads directory is accessible
 app.use(
   "/uploads",
@@ -134,7 +136,9 @@ const start = async () => {
 start();
 //
 app.use("*", (req, res) => {
-  res.sendFile(path.resolve(__dirname, "./public", "index.html"));
+  // deprecated
+  // res.sendFile(path.resolve(__dirname, "./public", "index.html"));
+  res.sendFile(path.resolve(__dirname, "./client/dist", "index.html"));
 });
 // Error handling middleware
 app.use("*", (req, res) => {
