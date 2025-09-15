@@ -18,6 +18,8 @@ import {
   JobSeekers,
 } from "./pages";
 
+// for job seekers
+
 // imported actions necessary
 import { action as registerAction } from "./pages/Register";
 import { action as loginAction } from "./pages/Login";

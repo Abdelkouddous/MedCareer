@@ -105,6 +105,17 @@ const Landing = () => {
         <section ref={sectionRefs.hero} className="pt-24 pb-16 px-4">
           <div className="container mx-auto flex flex-col md:flex-row items-center">
             <div className="md:w-1/2 text-center md:text-left mb-10 md:mb-0">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[var(--text-color)] mb-6">
+                Find Your Perfect{" "}
+                <span className="text-[var(--primary-500)]">
+                  Medical Career
+                </span>
+              </h1>
+              <p className="text-[var(--text-secondary-color)] text-lg md:text-xl mb-8">
+                Connecting healthcare professionals with top medical
+                institutions. Discover thousands of opportunities in hospitals,
+                clinics, and private practices.
+              </p>
               <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <Link
                   to="/job-seekers"
@@ -119,18 +130,6 @@ const Landing = () => {
                   Employer
                 </Link>
               </div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[var(--text-color)] mb-6">
-                Find Your Perfect{" "}
-                <span className="text-[var(--primary-500)]">
-                  Medical Career
-                </span>
-              </h1>
-              <p className="text-[var(--text-secondary-color)] text-lg md:text-xl mb-8">
-                Connecting healthcare professionals with top medical
-                institutions. Discover thousands of opportunities in hospitals,
-                clinics, and private practices.
-              </p>
-
               {/* Quick Job Search */}
               {/* <form
                 onSubmit={handleHeroSearchSubmit}

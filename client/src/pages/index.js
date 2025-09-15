@@ -22,7 +22,6 @@ export { default as Stats } from "./Stats";
 // job operations
 export { default as AddJob } from "./jobs-operations/AddJob";
 export { default as AllJobs } from "./jobs-operations/AllJobs";
-export { default as JobSeekers } from "./job-seekers/JobSeekers";
 export { default as DeleteJob } from "./jobs-operations/DeleteJob";
 export { default as EditJob } from "./jobs-operations/EditJob";
 //header and footer
@@ -36,3 +35,5 @@ export { default as LogoutContainer } from "../pages/components/LogoutContainer"
 //
 export { default as AdminCard } from "../pages/components/Admin/AdminCard";
 export { default as RecentActivityItem } from "../pages/components/Admin/RecentActivity";
+// job seekers
+export { default as JobSeekers } from "./job-seekers/JobSeekers";
