@@ -286,7 +286,7 @@ const Landing = () => {
                     Silver
                   </h3>
                   <div className="text-4xl font-bold text-[var(--primary-500)] mb-4">
-                    $199
+                    700 DA
                     <span className="text-lg text-[var(--text-secondary-color)]">
                       /month
                     </span>
@@ -343,7 +343,7 @@ const Landing = () => {
                 <div className="text-center mb-8">
                   <h3 className="text-2xl font-bold mb-4">Gold</h3>
                   <div className="text-4xl font-bold mb-4">
-                    $399<span className="text-lg opacity-75">/month</span>
+                    1500 DA<span className="text-lg opacity-75">/month</span>
                   </div>
                   <p className="opacity-75">For growing medical facilities</p>
                 </div>
@@ -404,7 +404,7 @@ const Landing = () => {
                     Platinum
                   </h3>
                   <div className="text-4xl font-bold text-[var(--primary-500)] mb-4">
-                    $799
+                    2200 DA
                     <span className="text-lg text-[var(--text-secondary-color)]">
                       /month
                     </span>
@@ -494,7 +494,7 @@ const Landing = () => {
                     📍 New York, NY
                   </p>
                   <p className="text-[var(--text-secondary-color)] mb-2">
-                    💰 $80,000 - $120,000
+                    💰 80000,00 DA - 12000,00 DA
                   </p>
                 </div>
                 <Link
@@ -523,7 +523,7 @@ const Landing = () => {
                     📍 Cleveland, OH
                   </p>
                   <p className="text-[var(--text-secondary-color)] mb-2">
-                    💰 $250,000 - $350,000
+                    💰 250000,00 DA - 350000,00 DA
                   </p>
                 </div>
                 <Link
@@ -552,7 +552,7 @@ const Landing = () => {
                     📍 Boston, MA
                   </p>
                   <p className="text-[var(--text-secondary-color)] mb-2">
-                    💰 $60,000 - $80,000
+                    💰 60000,00 DA - 80000,00 DA
                   </p>
                 </div>
                 <Link
