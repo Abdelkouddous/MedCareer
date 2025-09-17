@@ -1,11 +1,6 @@
 import React from "react";
 import {
   FaCalendarCheck,
-  FaHospital,
-  FaUserMd,
-  FaStethoscope,
-  FaXingSquare,
-  FaBug,
   FaTimesCircle,
   FaClock,
   FaUserCheck,
@@ -18,14 +13,11 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  LineChart,
-  Line,
   Area,
   AreaChart,
 } from "recharts";
 import Wrapper from "../assets/wrappers/StatsContainer";
 import customFetch from "../utils/customFetch";
-import { Loader } from "lucide-react";
 
 const StatsItem = ({ count, title, icon, color, bcg, isLoading = false }) => {
   if (isLoading) {

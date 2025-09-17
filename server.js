@@ -19,6 +19,7 @@ cloudinary.config({
 import jobRouter from "./routes/jobRouter.js";
 import authRouter from "./routes/authRouter.js";
 import userRouter from "./routes/userRouter.js";
+import jobSeekerRouter from "./routes/jobSeekerRouter.js";
 
 //middlewares imports
 
@@ -63,6 +64,8 @@ app.use(
 app.use("/api/v1/jobs", jobRouter); // Remove authenticateUser to allow guest access
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", authenticateUser, userRouter);
+// job Seekers API call endpoint
+app.use("/api/v1/jobseekers", jobSeekerRouter);
 app.get("/", (req, res) => {
   res.send(`
     <!DOCTYPE html>
@@ -106,6 +109,7 @@ app.get("/", (req, res) => {
     </html>
   `);
 });
+//
 app.get("/api/v1/test", (req, res) => {
   res.json("Test route is working!");
 });

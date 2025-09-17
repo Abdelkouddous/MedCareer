@@ -36,4 +36,9 @@ export { default as LogoutContainer } from "../pages/components/LogoutContainer"
 export { default as AdminCard } from "../pages/components/Admin/AdminCard";
 export { default as RecentActivityItem } from "../pages/components/Admin/RecentActivity";
 // job seekers
+export { default as RegisterJobSeeker } from "./job-seekers/RegisterJobSeeker";
+export { default as LoginJobSeeker } from "./job-seekers/LoginJobSeeker";
+export { default as JobsJobSeeker } from "./job-seekers/JobsJobSeeker";
+export { default as StatsJobSeeker } from "./job-seekers/StatsJobSeeker";
+export { default as InboxJobSeeker } from "./job-seekers/InboxJobSeeker";
 export { default as JobSeekers } from "./job-seekers/JobSeekers";

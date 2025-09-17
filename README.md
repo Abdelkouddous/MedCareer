@@ -1,181 +1,156 @@
-# MedCareer Connect
+# MedCareer 🏥
 
-A MERN application that connects healthcare professionals with employers. Built with React (Vite), Node/Express, MongoDB, and Tailwind/Styled-Components. The server serves the built client and exposes REST APIs under /api/v1.
+A comprehensive medical career platform built with the MERN stack, designed to connect healthcare professionals with medical job opportunities. This application serves as a specialized job board for the medical industry, featuring role-based authentication, job management, and application tracking.
 
-Live (if deployed): https://medcareer.onrender.com/
+## Try it out !
 
-## Tech Stack
+[![Deploy to Render](https://medcareer.onrender.com/)](https://app.netlify.com/start/deploy?repository=https://github.com/medcareer/medcareer)
 
-- Frontend
-  - React 18, Vite 5, React Router 6
-  - TailwindCSS, Styled-Components
-  - Axios, React Toastify, Recharts, React Icons
-- Backend
-  - Node.js, Express
-  - MongoDB, Mongoose
-  - JWT auth, bcrypt, cookie-parser, morgan
-  - Cloudinary (for media), Multer
+## 🌟 Features
 
-## Project Structure
+### For Job Seekers
 
-- Root (Express API, server, database, scripts, routes, models)
-- client (Vite React app, proxied to the API during development)
+- **User Registration & Authentication** - Secure account creation and login
+- **Profile Management** - Complete profile with CV upload and profile picture
+- **Job Search & Filtering** - Browse medical positions by specialization, location, and job type
+- **Application Tracking** - Track application status and history
+- **Notifications** - Stay updated on application progress
 
-## Environment Variables
+### For Employers
 
-Create a .env file in the project root with:
+- **Job Posting** - Create and manage medical job listings
+- **Application Management** - Review and manage candidate applications
+- **Dashboard Analytics** - Track job posting performance and statistics
 
-- PORT=5100 (optional)
-- MONGO_URL=YOUR_MONGODB_CONNECTION_STRING
-- NODE_ENV=development
-- JWT_SECRET=your_jwt_secret
-- JWT_EXPIRE=30d
-- JWT_COOKIE_EXPIRE=30
-- CLOUDINARY_NAME=your_cloudinary_cloud_name
-- CLOUDINARY_API_KEY=your_cloudinary_api_key
-- CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+### Medical Specializations Supported
 
-Notes:
+- General Practitioner
+- Cardiologist
+- Dermatologist
+- Gastroenterologist
+- Neurologist
+- Oncologist
+- Psychiatrist
+- Rheumatologist
+- Urologist
+- Endocrinologist
+- Ophthalmologist
+- Orthopedic Specialist
+- Pediatrician
+- Pulmonologist
+- Surgery Specialist
+- Vascular Specialist
+- Dentist
+- Pharmacist
+- Pathologist
+- And more...
 
-- The client’s Axios instance targets /api/v1 (proxied to http://localhost:5100/api during development).
-- Vite dev server proxy is configured in client/vite.config.js.
+## 🛠️ Tech Stack
 
-## Installation
+### Backend
 
-- Install root and client dependencies in one step:
+- **Node.js** - Runtime environment
+- **Express.js** - Web application framework
+- **MongoDB** - NoSQL database
+- **Mongoose** - MongoDB object modeling
+- **JWT** - Authentication tokens
+- **Bcrypt** - Password hashing
+- **Cloudinary** - Image and file storage
+- **Multer** - File upload handling
+- **Express Validator** - Input validation
 
-```bash
-npm run setup-project
-```
+### Frontend
 
-## Running in Development
+- **React 18** - UI library
+- **Vite** - Build tool and development server
+- **React Router DOM** - Client-side routing
+- **Material-UI (MUI)** - Component library
+- **Tailwind CSS** - Utility-first CSS framework
+- **Axios** - HTTP client
+- **React Query** - Data fetching and caching
+- **React Toastify** - Notifications
+- **Recharts** - Data visualization
+- **Styled Components** - CSS-in-JS styling
+- **Framer Motion** - Animation library
 
-- Start both server and client concurrently:
+### Development Tools
 
-```bash
-npm run dev
-```
+- **Concurrently** - Run multiple commands
+- **Nodemon** - Development server auto-restart
+- **ESLint** - Code linting
+- **PostCSS** - CSS processing
+- **Autoprefixer** - CSS vendor prefixes
 
-- Or run just the client:
+## 🚀 Getting Started
 
-```bash
-npm run client
-```
+### Prerequisites
 
-- Or run just the server:
+- Node.js (v14 or higher)
+- MongoDB
+- npm or yarn
 
-```bash
-npm run server
-```
+### Installation
 
-The client runs on http://localhost:5173 and proxies API requests to http://localhost:5100/api.
+1. **Clone the repository**
 
-## Build and Run (Production)
+   ```bash
+   git clone https://github.com/Abdelkouddous/MedCareer.git
+   cd MedCareer
+   ```
 
-- Install deps and build the client app:
+2. **Install dependencies for both server and client**
+
+   ```bash
+   npm run setup-project
+   ```
+
+3. **Environment Variables**
+   Create a `.env` file in the root directory:
+
+   ```env
+   NODE_ENV=development
+   PORT=5100
+   MONGO_URL=your_mongodb_connection_string
+   JWT_SECRET=your_jwt_secret
+   JWT_EXPIRES_IN=1d
+   CLOUDINARY_NAME=your_cloudinary_name
+   CLOUDINARY_API_KEY=your_cloudinary_api_key
+   CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+   ```
+
+4. **Start the development servers**
+
+   ```bash
+   npm run dev
+   ```
+
+   This will start:
+
+   - Backend server on `http://localhost:5100`
+   - Frontend development server on `http://localhost:5173`
+
+### Production Build
 
 ```bash
 npm run setup-production-app
+npm start
 ```
 
-- Build client only (from client folder):
+## 📁 Project Structure
 
-```bash
-npm run build
+```
+MedCareer/
+├── client/              # Frontend code
+├── server/              # Backend code
+├── .env                 # Environment variables
+├── .gitignore           # Git ignore file
+├── README.md            # Project documentation
+├── package.json         # Project metadata
+├── tailwind.config.js   # Tailwind CSS configuration
+├── vite.config.js       # Vite configuration
+└── ...
 ```
 
-- The Express server statically serves client/dist and exposes APIs under /api/v1.
+## 📝 License
 
-## Database Seeding (Optional)
-
-Scripts exist for loading mock users and jobs:
-
-- Seed users:
-
-```bash
-node injectUsers.js
-```
-
-- Seed jobs:
-
-```bash
-node injectJobs.js
-```
-
-Notes:
-
-- injectJobs.js associates jobs to an existing user found by email "medcareer@gg.co". Make sure this user exists (register it first or adjust the script/email accordingly).
-- Ensure MONGO_URL is set before running seed scripts.
-
-## API Overview (Selected)
-
-Base URL during development (via Vite proxy): http://localhost:5173/api/v1
-Base URL on server: http://localhost:5100/api/v1
-
-- Auth (/api/v1/auth)
-  - POST /register
-  - POST /login
-  - GET /logout
-  - GET /guest
-- Jobs (/api/v1/jobs)
-  - GET / (list jobs, supports filters via query params)
-  - GET /:id (get job by id)
-  - POST / (create job, authenticated)
-  - PATCH /:id (update job, authenticated)
-  - DELETE /:id (delete job, authenticated)
-  - GET /all-jobs (returns jobs + count for current filters)
-  - GET /show-stats (stats for authenticated user)
-- Users (/api/v1/users)
-  - Protected routes (e.g. /users/current-user via Dashboard loader)
-
-Additionally:
-
-- GET /api/v1/test (simple health/test endpoint)
-- GET /api/v1/all-users (dev/global endpoint for listing users)
-
-## Frontend Routes
-
-- /
-  - / Landing
-  - /register Register
-  - /login Login
-  - /job-seekers Job Seekers (template page)
-- /dashboard (protected)
-  - /stats
-  - /all-jobs
-  - /add-job
-  - /edit-job/:id
-  - /delete-job/:id
-  - /profile
-  - /admin
-
-## Conventions
-
-- Axios client configured at client/src/utils/customFetch.js with baseURL "/api/v1".
-- Vite proxy (client/vite.config.js) rewrites "/api" to "http://localhost:5100/api", so client code uses relative "/api/v1/...".
-- Express serves client/dist and uploads folder under /uploads.
-
-## Available Scripts
-
-Root package.json:
-
-- setup-project Install root + client deps
-- setup-production-app Install deps and build client
-- dev Run server + client concurrently
-- server Run API via nodemon
-- client Run Vite dev server
-
-Client package.json:
-
-- dev Start Vite dev server
-- build Build production bundle
-- preview Preview built client
-
-## License
-
-ISC
-
-## Credits
-
-- Jobify template by codingAddict
-- Aymen HML
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
