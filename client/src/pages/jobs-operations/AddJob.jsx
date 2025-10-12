@@ -1,4 +1,4 @@
-import { Form, useOutletContext } from "react-router-dom";
+import { Form, redirect, useOutletContext } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
   JOB_STATUS,
@@ -55,10 +55,23 @@ export const action = async ({ request }) => {
     const response = await customFetch.post("/jobs", data);
     if (response.status === 201) {
       toast.success("Job added successfully");
+      return redirect("/dashboard/all-jobs");
     }
     return response;
   } catch (error) {
-    toast.error(error?.response?.data?.msg);
+    const status = error?.response?.status;
+    const msg = error?.response?.data?.message || error?.response?.data?.msg;
+    if (status === 403) {
+      toast.error(
+        msg || "Your account is pending approval. Please wait for admin confirmation."
+      );
+    } else if (status === 402) {
+      toast.error(
+        msg || "Free trial quota reached. Please upgrade to post more job offers."
+      );
+    } else {
+      toast.error(msg || "Something went wrong");
+    }
     return error;
   }
 };

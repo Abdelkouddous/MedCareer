@@ -13,10 +13,14 @@
 export { default as DashboardLayout } from "./DashboardLayout";
 export { default as Landing } from "./Landing";
 export { default as HomeLayout } from "./HomeLayout";
-export { default as Login } from "./Login";
+export { default as Login } from "./employer/Login";
 export { default as Error } from "./Error";
-export { default as Profile } from "./Profile";
-export { default as Register } from "./Register";
+export { default as Profile } from "./employer/Profile";
+export { default as Register } from "./employer/Register";
+export { default as Employers } from "./employer/Employers";
+export { default as SalaryGuide } from "./SalaryGuide";
+export { default as ResumeTips } from "./ResumeTips";
+export { default as CareerResources } from "./CareerResources";
 export { default as Admin } from "./Admin";
 export { default as Stats } from "./Stats";
 // job operations

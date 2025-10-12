@@ -254,3 +254,92 @@ export const authorizePermissions = (...rest) => {
     next();
   };
 };
+
+// Admin: Approve or block employers
+export const updateEmployerStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    
+    // Validate status
+    const validStatuses = ["approved", "pending", "blocked"];
+    if (!validStatuses.includes(status)) {
+      return res.status(StatusCodes.BAD_REQUEST).json({ 
+        message: "Invalid status. Must be approved, pending, or blocked" 
+      });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true }
+    ).select("-password");
+
+    if (!user) {
+      return res.status(StatusCodes.NOT_FOUND).json({ message: "Employer not found" });
+    }
+
+    res.status(StatusCodes.OK).json({
+      msg: `Employer status updated to ${status}`,
+      user
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error" });
+  }
+};
+
+// Admin: Update employer quotas
+export const updateEmployerQuota = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { jobOffersQuota, plan, quotaExpiresAt } = req.body;
+
+    if (jobOffersQuota && jobOffersQuota < 0) {
+      return res.status(StatusCodes.BAD_REQUEST).json({ 
+        message: "Quota cannot be negative" 
+      });
+    }
+
+    const updateData = {};
+    if (jobOffersQuota !== undefined) updateData.jobOffersQuota = jobOffersQuota;
+    if (plan) updateData.plan = plan;
+    if (quotaExpiresAt) updateData.quotaExpiresAt = quotaExpiresAt;
+
+    const user = await User.findByIdAndUpdate(
+      id,
+      updateData,
+      { new: true }
+    ).select("-password");
+
+    if (!user) {
+      return res.status(StatusCodes.NOT_FOUND).json({ message: "Employer not found" });
+    }
+
+    res.status(StatusCodes.OK).json({
+      msg: "Employer quota updated",
+      user
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error" });
+  }
+};
+
+// List pending employers for admin review
+export const getPendingEmployers = async (req, res) => {
+  try {
+    const pendingUsers = await User.find({
+      role: "user",
+      status: "pending"
+    }).select("-password");
+
+    res.status(StatusCodes.OK).json({
+      users: pendingUsers,
+      count: pendingUsers.length
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error" });
+  }
+};

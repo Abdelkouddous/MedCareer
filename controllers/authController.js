@@ -9,6 +9,13 @@ export const register = async (req, res, next) => {
   const isFirstAccount = (await User.countDocuments({})) === 0;
   const role = isFirstAccount ? "admin" : "user";
   req.body.role = role;
+  // Initialize employer accounts as pending with trial quotas
+  if (role === "user") {
+    req.body.status = "pending";
+    req.body.plan = "trial";
+    req.body.jobOffersQuota = 3;
+    req.body.lifetimeJobOffersCreated = 0;
+  }
 
   /******  963f48b7-65da-4ecb-a302-c748a799047a  *******/
   try {
@@ -26,12 +33,11 @@ export const register = async (req, res, next) => {
       user: {
         name: user.name,
         userId: user._id,
-        // email: user.email,
-        // lastName: user.lastName,
-        // location: user.location,
-        // password: user.password,
+        status: user.status,
+        plan: user.plan,
+        jobOffersQuota: user.jobOffersQuota,
+        lifetimeJobOffersCreated: user.lifetimeJobOffersCreated,
       },
-      // token,
     });
   } catch (error) {
     next(error);

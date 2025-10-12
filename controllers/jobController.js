@@ -12,8 +12,15 @@ export const getAllJobs = async (req, res) => {
   console.log(req.user?.userId);
 
   try {
-    const { search, sort, jobType, jobStatus, specialization, notes } =
-      req.query;
+    const {
+      search,
+      sort,
+      jobType,
+      jobStatus,
+      specialization,
+      notes,
+      jobLocation,
+    } = req.query;
 
     const query = {};
     const userId = req.user?.userId;
@@ -40,18 +47,26 @@ export const getAllJobs = async (req, res) => {
     if (specialization && specialization !== "all")
       query.specialization = specialization;
     if (notes && notes !== "all") query.notes = notes;
+    if (jobLocation && jobLocation !== "all") query.jobLocation = jobLocation;
     console.log("QQ", query);
 
     // Map sort values (support both 'sort' and 'sortOptions' query keys)
     const sortOptions = {
       newest: "-createdAt",
       oldest: "createdAt",
+      company: "company",
+      position: "position",
     };
-    const sortKey = sortOptions[sort];
+    const sortKey = sortOptions[sort] || "-createdAt";
     console.log(sortKey);
 
     // Execute query with sorting
     let queryExec = Job.find(query).sort(sortKey);
+
+    // Case-insensitive alphabetical sort when sorting by text fields
+    if (sortKey === "company" || sortKey === "position") {
+      queryExec = queryExec.collation({ locale: "en", strength: 2 });
+    }
 
     // // Ensure case-insensitive alphabetical sort when sorting by position
     // if (sortKey.includes("position")) {
@@ -106,20 +121,39 @@ export const createJob = async (req, res) => {
         .json({ message: "Please provide all required fields" });
     }
 
-    // Create job in the database
-    const job = await Job.create({
-      position,
-      company,
-      jobLocation,
-      jobType,
-      jobStatus,
-      specialization,
-      applicationDate,
-      notes,
-      createdBy: req.user.userId, // Assuming `req.user` contains the authenticated user
-    });
+    // Create job and update employer counters in a transaction
+    const session = await mongoose.startSession();
+    let job;
+    await session.withTransaction(async () => {
+      job = await Job.create(
+        [
+          {
+            position,
+            company,
+            jobLocation,
+            jobType,
+            jobStatus,
+            specialization,
+            applicationDate,
+            notes,
+            createdBy: req.user.userId,
+          },
+        ],
+        { session }
+      );
 
-    res.status(StatusCodes.CREATED).json({ job });
+      // Increment lifetime counter atomically for employer
+      await User.updateOne(
+        { _id: req.user.userId },
+        { $inc: { lifetimeJobOffersCreated: 1 } },
+        { session }
+      );
+    });
+    await session.endSession();
+
+    // Job.create with array returns array in transaction mode
+    const createdJob = Array.isArray(job) ? job[0] : job;
+    res.status(StatusCodes.CREATED).json({ job: createdJob });
   } catch (error) {
     console.error(error);
     res

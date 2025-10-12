@@ -4,8 +4,6 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import {
   HomeLayout,
   Landing,
-  Register,
-  Login,
   DashboardLayout,
   Error,
   AddJob,
@@ -16,6 +14,12 @@ import {
   EditJob,
   Admin,
   JobSeekers,
+  Employers,
+  SalaryGuide,
+  ResumeTips,
+  CareerResources,
+  Login,
+  Register,
 } from "./pages";
 
 // for job seekers
@@ -27,14 +31,13 @@ import InboxJobSeeker from "./pages/job-seekers/InboxJobSeeker";
 import ProfileJobSeeker from "./pages/job-seekers/ProfileJobSeeker";
 import ProtectedJobSeekerRoute from "./pages/components/ProtectedJobSeekerRoute";
 // imported actions necessary
-import { action as registerAction } from "./pages/Register";
-import { action as loginAction } from "./pages/Login";
+// removed actions for default auth routes; job seeker pages handle submit locally
 // for job operations
 import { action as addJobAction } from "./pages/jobs-operations/AddJob";
 import { action as editJobAction } from "./pages/jobs-operations/EditJob";
 import { action as deleteJobAction } from "./pages/jobs-operations/DeleteJob";
 // for user operations
-import { action as updateProfileAction } from "./pages/Profile";
+import { action as updateProfileAction } from "./pages/employer/Profile";
 // imported loaders necessary
 import { loader as dashboardLoader } from "./pages/DashboardLayout";
 // for job operations
@@ -64,18 +67,16 @@ const router = createBrowserRouter([
         element: <Landing></Landing>,
       },
       {
+        path: "jobs",
+        element: <JobsJobSeeker />,
+      },
+      {
         path: "register",
-        element: <Register></Register>,
-        action: registerAction,
+        element: <Register />,
       },
       {
         path: "login",
-        element: (
-          <div>
-            <Login></Login>
-          </div>
-        ),
-        action: loginAction,
+        element: <Login />,
       },
       {
         path: "landing",
@@ -84,6 +85,22 @@ const router = createBrowserRouter([
             <Landing></Landing>
           </div>
         ),
+      },
+      {
+        path: "employers",
+        element: <Employers />,
+      },
+      {
+        path: "salary-guide",
+        element: <SalaryGuide />,
+      },
+      {
+        path: "resume-tips",
+        element: <ResumeTips />,
+      },
+      {
+        path: "career-resources",
+        element: <CareerResources />,
       },
     ],
   },
@@ -135,6 +152,16 @@ const router = createBrowserRouter([
         loader: adminLoader,
       },
     ],
+  },
+
+  // Public job seeker auth routes
+  {
+    path: "job-seekers/login",
+    element: <LoginJobSeeker />,
+  },
+  {
+    path: "job-seekers/register",
+    element: <RegisterJobSeeker />,
   },
 
   // Job Seekers routes (authenticated area)

@@ -58,7 +58,7 @@ function RegisterJobSeeker() {
       newErrors.password = "Password must be at least 6 characters";
     }
 
-    if (form.phoneNumber && !/^\+?[\d\s\-\(\)]+$/.test(form.phoneNumber)) {
+    if (form.phoneNumber && !/^\+?[\d\s\-()]+$/.test(form.phoneNumber)) {
       newErrors.phoneNumber = "Please enter a valid phone number";
     }
 
@@ -375,7 +375,7 @@ function RegisterJobSeeker() {
           <p style={{ color: "var(--text-secondary-color)" }}>
             Already have an account?{" "}
             <Link
-              to="/login-jobseeker"
+              to="/job-seekers/login"
               className="font-semibold hover:underline"
               style={{
                 color: "var(--primary-500)",

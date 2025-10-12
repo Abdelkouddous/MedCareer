@@ -3,13 +3,7 @@ import { Outlet, redirect, useLoaderData, useNavigate } from "react-router";
 import Wrapper from "../assets/wrappers/Dashboard";
 import { BigSideBar, LogoutContainer, SmallSideBar } from ".";
 import { checkDefaultTheme } from "../App";
-import {
-  FaUserCircle,
-  FaCaretDown,
-  FaAlignLeft,
-  FaSun,
-  FaMoon,
-} from "react-icons/fa";
+import { FaAlignLeft, FaSun, FaMoon } from "react-icons/fa";
 import { toast } from "react-toastify";
 import customFetch from "../utils/customFetch";
 

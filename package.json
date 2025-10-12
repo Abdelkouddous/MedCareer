@@ -1,7 +1,7 @@
 {
-  "name": "00-mern-stack-tut",
+  "name": "MedCreer",
   "version": "1.0.0",
-  "description": "[Jobify](https://jobify.live/)",
+  "description": "[MedCareer](https://medcareer.onrender.com/)",
   "main": "index.js",
   "type": "module",
   "scripts": {

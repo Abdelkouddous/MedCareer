@@ -7,10 +7,10 @@ import {
   useActionData,
   useNavigate,
 } from "react-router-dom";
-import Wrapper from "../assets/wrappers/RegisterAndLoginPage";
+import Wrapper from "../../assets/wrappers/RegisterAndLoginPage";
 
 import { toast } from "react-toastify";
-import customFetch from "../utils/customFetch";
+import customFetch from "../../utils/customFetch";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
 export const action = async ({ request }) => {

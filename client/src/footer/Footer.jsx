@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
@@ -106,7 +105,7 @@ const Footer = () => {
             <ul className="space-y-2">
               <li>
                 <Link
-                  to="/post-job"
+                  to="/employers#post-job"
                   className="text-[var(--text-secondary-color)] hover:text-[var(--primary-500)] transition-colors"
                 >
                   Post a Job
@@ -114,7 +113,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  to="/talent-search"
+                  to="/employers#talent-search"
                   className="text-[var(--text-secondary-color)] hover:text-[var(--primary-500)] transition-colors"
                 >
                   Search Talent
@@ -122,7 +121,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  to="/recruitment-solutions"
+                  to="/employers#recruitment-solutions"
                   className="text-[var(--text-secondary-color)] hover:text-[var(--primary-500)] transition-colors"
                 >
                   Recruitment Solutions
@@ -130,7 +129,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  to="/pricing"
+                  to="/employers#pricing"
                   className="text-[var(--text-secondary-color)] hover:text-[var(--primary-500)] transition-colors"
                 >
                   Pricing

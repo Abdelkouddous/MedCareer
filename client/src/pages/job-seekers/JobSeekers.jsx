@@ -38,7 +38,7 @@ const JobSeekers = () => {
         sessionStorage.clear();
 
         toast.success("Logged out successfully");
-        navigate("/login-jobseeker", { replace: true });
+        navigate("/login", { replace: true });
       } else {
         throw new Error("Logout failed");
       }
@@ -50,7 +50,7 @@ const JobSeekers = () => {
       sessionStorage.clear();
 
       toast.success("Logged out successfully");
-      navigate("/login-jobseeker", { replace: true });
+      navigate("/login", { replace: true });
     }
   };
 

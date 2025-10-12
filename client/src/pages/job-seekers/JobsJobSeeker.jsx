@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import customFetch from "../../utils/customFetch";
 import { toast } from "react-toastify";
 import {
@@ -19,8 +20,8 @@ function JobsJobSeeker() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredJobs, setFilteredJobs] = useState([]);
   const [savedJobs, setSavedJobs] = useState(new Set());
+  const [isGuest, setIsGuest] = useState(false);
   const [filters, setFilters] = useState({
     jobType: "",
     specialization: "",
@@ -28,13 +29,24 @@ function JobsJobSeeker() {
   });
   const [showFilters, setShowFilters] = useState(false);
   const [sortBy, setSortBy] = useState("newest");
+  const [page, setPage] = useState(1);
+  const jobsPerPage = 10;
+
+  const locationHook = useLocation();
+  const navigate = useNavigate();
 
   const fetchJobs = async () => {
     try {
       setLoading(true);
-      const res = await customFetch.get("/jobs");
+      const params = {};
+      if (searchTerm) params.search = searchTerm;
+      if (filters.jobType) params.jobType = filters.jobType;
+      if (filters.specialization) params.specialization = filters.specialization;
+      if (filters.location) params.jobLocation = filters.location;
+      if (sortBy) params.sort = sortBy;
+
+      const res = await customFetch.get("/jobs", { params });
       setJobs(res.data.jobs || []);
-      setFilteredJobs(res.data.jobs || []);
     } catch (error) {
       toast.error(error?.response?.data?.message || "Failed to load jobs");
     } finally {
@@ -46,7 +58,8 @@ function JobsJobSeeker() {
     try {
       const token = localStorage.getItem("jobseeker_token");
       if (!token) {
-        toast.info("Please login as Job Seeker first");
+        toast.info("Please create an account or log in to apply");
+        navigate("/job-seekers/register");
         return;
       }
       await customFetch.post(`/jobseekers/apply/${jobId}`, null, {
@@ -70,51 +83,29 @@ function JobsJobSeeker() {
     setSavedJobs(newSavedJobs);
   };
 
-  const applyFilters = () => {
-    let filtered = jobs.filter((job) => {
-      const matchesSearch =
-        job.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        job.specialization.toLowerCase().includes(searchTerm.toLowerCase());
+  // Initialize state from URL params on first render or when URL changes
+  useEffect(() => {
+    const params = new URLSearchParams(locationHook.search);
+    const initialSearch = params.get("search") || "";
+    const initialLocation = params.get("jobLocation") || "";
+    const initialSpec = params.get("specialization") || "";
+    const initialJobType = params.get("jobType") || "";
+    const initialSort = params.get("sort") || "newest";
 
-      const matchesJobType =
-        !filters.jobType || job.jobType === filters.jobType;
-      const matchesSpecialization =
-        !filters.specialization ||
-        job.specialization === filters.specialization;
-      const matchesLocation =
-        !filters.location ||
-        (job.jobLocation &&
-          job.jobLocation
-            .toLowerCase()
-            .includes(filters.location.toLowerCase()));
-
-      return (
-        matchesSearch &&
-        matchesJobType &&
-        matchesSpecialization &&
-        matchesLocation
-      );
+    setSearchTerm(initialSearch);
+    setFilters({
+      jobType: initialJobType,
+      specialization: initialSpec,
+      location: initialLocation,
     });
+    setSortBy(initialSort);
+  }, [locationHook.search]);
 
-    // Apply sorting
-    filtered.sort((a, b) => {
-      switch (sortBy) {
-        case "newest":
-          return new Date(b.createdAt) - new Date(a.createdAt);
-        case "oldest":
-          return new Date(a.createdAt) - new Date(b.createdAt);
-        case "company":
-          return a.company.localeCompare(b.company);
-        case "position":
-          return a.position.localeCompare(b.position);
-        default:
-          return 0;
-      }
-    });
-
-    setFilteredJobs(filtered);
-  };
+  // Detect guest by absence of jobseeker token
+  useEffect(() => {
+    const token = localStorage.getItem("jobseeker_token");
+    setIsGuest(!token);
+  }, []);
 
   const clearFilters = () => {
     setFilters({ jobType: "", specialization: "", location: "" });
@@ -122,19 +113,58 @@ function JobsJobSeeker() {
     setSortBy("newest");
   };
 
+  // Sync URL with current filters for shareable/searchable state
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (searchTerm) params.set("search", searchTerm);
+    if (filters.location) params.set("jobLocation", filters.location);
+    if (filters.jobType) params.set("jobType", filters.jobType);
+    if (filters.specialization) params.set("specialization", filters.specialization);
+    if (sortBy && sortBy !== "newest") params.set("sort", sortBy);
+
+    const targetPath = locationHook.pathname.startsWith("/job-seekers")
+      ? "/job-seekers/jobs"
+      : "/jobs";
+    navigate(
+      {
+        pathname: targetPath,
+        search: params.toString() ? `?${params.toString()}` : "",
+      },
+      { replace: true }
+    );
+  }, [searchTerm, filters, sortBy, locationHook.pathname, navigate]);
+
+  // Fetch jobs from server whenever filters/sort/search change
   useEffect(() => {
     fetchJobs();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchTerm, filters, sortBy]);
 
+  // Reset to first page whenever filters/sort/search change
   useEffect(() => {
-    applyFilters();
-  }, [searchTerm, jobs, filters, sortBy]);
+    setPage(1);
+  }, [searchTerm, filters, sortBy]);
 
   // Get unique values for filter options
   const uniqueJobTypes = [...new Set(jobs.map((job) => job.jobType))];
   const uniqueSpecializations = [
     ...new Set(jobs.map((job) => job.specialization)),
   ];
+
+  // Pagination calculations
+  const totalJobs = jobs.length;
+  const numOfPages = Math.ceil(totalJobs / jobsPerPage) || 1;
+  const indexOfLastJob = page * jobsPerPage;
+  const indexOfFirstJob = indexOfLastJob - jobsPerPage;
+  const currentJobs = jobs.slice(indexOfFirstJob, indexOfLastJob);
+
+  const changePage = (newPage) => {
+    if (newPage < 1) newPage = 1;
+    if (newPage > numOfPages) newPage = numOfPages;
+    setPage(newPage);
+    // Scroll to top of list on page change for better UX
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   if (loading) {
     return (
@@ -146,6 +176,30 @@ function JobsJobSeeker() {
 
   return (
     <div className="container mx-auto p-4">
+      {/* Guest CTA Banner */}
+      {isGuest && (
+        <div className="mb-4 p-4 bg-[var(--primary-100)] border border-[var(--primary-200)] rounded-lg text-[var(--primary-700)]">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <p>
+              You can browse jobs without an account. Create an account or log in to apply.
+            </p>
+            <div className="flex gap-2">
+              <button
+                className="btn-hipster"
+                onClick={() => navigate("/job-seekers/register")}
+              >
+                Create Account
+              </button>
+              <button
+                className="btn"
+                onClick={() => navigate("/job-seekers/login")}
+              >
+                Log In
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Header */}
       <div className="mb-6">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
@@ -280,7 +334,7 @@ function JobsJobSeeker() {
 
       {/* Jobs Grid */}
       <div className="grid gap-6">
-        {filteredJobs.length === 0 ? (
+        {jobs.length === 0 ? (
           <div className="text-center py-12">
             <Work className="mx-auto mb-4 text-6xl text-[var(--grey-400)]" />
             <h3 className="text-xl font-semibold text-[var(--text-secondary-color)] mb-2">
@@ -298,7 +352,7 @@ function JobsJobSeeker() {
             )}
           </div>
         ) : (
-          filteredJobs.map((job) => (
+          currentJobs.map((job) => (
             <div
               key={job._id}
               className="bg-[var(--background-secondary-color)] p-6 rounded-lg border border-[var(--grey-200)] hover:shadow-lg transition-all duration-300 hover:border-[var(--primary-200)]"
@@ -399,19 +453,51 @@ function JobsJobSeeker() {
         )}
       </div>
 
+      {/* Pagination Controls */}
+      {totalJobs > jobsPerPage && (
+        <div className="flex justify-center items-center gap-2 mt-8">
+          <button
+            className="btn"
+            onClick={() => changePage(page - 1)}
+            disabled={page === 1}
+          >
+            Prev
+          </button>
+          {/* Page numbers */}
+          {Array.from({ length: numOfPages }, (_, i) => i + 1).map((p) => (
+            <button
+              key={p}
+              className={`btn ${p === page ? "btn-hipster" : ""}`}
+              onClick={() => changePage(p)}
+            >
+              {p}
+            </button>
+          ))}
+          <button
+            className="btn"
+            onClick={() => changePage(page + 1)}
+            disabled={page === numOfPages}
+          >
+            Next
+          </button>
+        </div>
+      )}
+
       {/* Results Summary */}
-      {filteredJobs.length > 0 && (
+      {totalJobs > 0 && (
         <div className="mt-8 p-4 bg-[var(--background-secondary-color)] rounded-lg border border-[var(--grey-200)] text-center">
           <p className="text-[var(--text-secondary-color)]">
-            Showing{" "}
-            <span className="font-semibold text-[var(--text-color)]">
-              {filteredJobs.length}
-            </span>{" "}
-            of{" "}
-            <span className="font-semibold text-[var(--text-color)]">
-              {jobs.length}
-            </span>{" "}
-            available jobs
+            Showing
+            <span className="font-semibold text-[var(--text-color)] ml-1">
+              {totalJobs === 0
+                ? 0
+                : `${indexOfFirstJob + 1}-${Math.min(indexOfLastJob, totalJobs)}`}
+            </span>
+            <span className="ml-1">of</span>
+            <span className="font-semibold text-[var(--text-color)] ml-1">
+              {totalJobs}
+            </span>
+            jobs
             {savedJobs.size > 0 && (
               <span className="ml-4">
                 •{" "}

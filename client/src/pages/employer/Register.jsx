@@ -6,10 +6,10 @@ import {
   Link,
   useNavigation,
 } from "react-router-dom";
-import Wrapper from "../assets/wrappers/RegisterAndLoginPage";
-import Logo from "./components/Logo";
-import FormRow from "./components/FormRow";
-import customFetch from "../utils/customFetch";
+import Wrapper from "../../assets/wrappers/RegisterAndLoginPage";
+import Logo from "../components/Logo";
+import FormRow from "../components/FormRow";
+import customFetch from "../../utils/customFetch";
 import { toast } from "react-toastify";
 
 export const action = async ({ request }) => {

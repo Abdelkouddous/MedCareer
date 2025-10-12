@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import customFetch from "../../utils/customFetch";
+import PropTypes from "prop-types";
 
 const ProtectedJobSeekerRoute = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -20,7 +21,7 @@ const ProtectedJobSeekerRoute = ({ children }) => {
         }
 
         // Verify token with server using customFetch with proper headers
-        const response = await customFetch.get("/jobseekers/me", {
+        await customFetch.get("/jobseekers/me", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -58,11 +59,15 @@ const ProtectedJobSeekerRoute = ({ children }) => {
 
   if (!isAuthenticated) {
     return (
-      <Navigate to="/login-jobseeker" state={{ from: location }} replace />
+      <Navigate to="/job-seekers/login" state={{ from: location }} replace />
     );
   }
 
   return children;
+};
+
+ProtectedJobSeekerRoute.propTypes = {
+  children: PropTypes.node,
 };
 
 export default ProtectedJobSeekerRoute;

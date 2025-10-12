@@ -1,5 +1,8 @@
 // inside authMiddleware.js
 import { verifyJWT } from "../utils/tokenUtils.js";
+import User from "../models/UserModel.js";
+import { StatusCodes } from "http-status-codes";
+import { Unauthenticated } from "../errors/customErrors.js";
 
 // Job seeker authentication middleware
 export const authenticateJobSeeker = async (req, res, next) => {
@@ -87,5 +90,64 @@ export const allowGuestForViewing = (req, res, next) => {
     // If token verification fails, set as guest
     req.user = { userId: "guest", role: "guest" };
     next();
+  }
+};
+
+// Ensure employer (user role) is approved before posting jobs
+export const ensureEmployerApproved = async (req, res, next) => {
+  try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res.status(StatusCodes.UNAUTHORIZED).json({ message: "Authentication required" });
+    }
+    const user = await User.findById(userId).select("status role");
+    if (!user) {
+      return res.status(StatusCodes.NOT_FOUND).json({ message: "User not found" });
+    }
+    if (user.role !== "admin" && user.status !== "approved") {
+      return res
+        .status(StatusCodes.FORBIDDEN)
+        .json({ message: "Employer account not approved. Please wait for admin confirmation." });
+    }
+    next();
+  } catch (err) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error" });
+  }
+};
+
+// Enforce employer quota: block when lifetime creations reached quota
+export const enforceEmployerQuota = async (req, res, next) => {
+  try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res.status(StatusCodes.UNAUTHORIZED).json({ message: "Authentication required" });
+    }
+    const user = await User.findById(userId).select(
+      "role lifetimeJobOffersCreated jobOffersQuota status"
+    );
+    if (!user) {
+      return res.status(StatusCodes.NOT_FOUND).json({ message: "User not found" });
+    }
+    // Admin bypass
+    if (user.role === "admin") return next();
+
+    if (user.status !== "approved") {
+      return res
+        .status(StatusCodes.FORBIDDEN)
+        .json({ message: "Employer account not approved. Please wait for admin confirmation." });
+    }
+
+    if (user.lifetimeJobOffersCreated >= user.jobOffersQuota) {
+      return res.status(StatusCodes.PAYMENT_REQUIRED).json({
+        message: "Free trial quota reached. Please upgrade to post more job offers.",
+        quota: {
+          lifetimeJobOffersCreated: user.lifetimeJobOffersCreated,
+          jobOffersQuota: user.jobOffersQuota,
+        },
+      });
+    }
+    next();
+  } catch (err) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error" });
   }
 };

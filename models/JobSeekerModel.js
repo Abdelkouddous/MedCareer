@@ -41,6 +41,10 @@ const JobSeekerSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
+  isPremium : {
+    type : Boolean,
+    default : false 
+  },
   profilePicture: {
     type: String, // URL to stored image
   },

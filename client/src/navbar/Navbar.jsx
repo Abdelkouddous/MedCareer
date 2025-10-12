@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { Link } from "react-router-dom";
 import { FaBars, FaTimes } from "react-icons/fa"; // Make sure to install react-icons
 
@@ -46,13 +46,13 @@ const Navbar = () => {
           {/* CTA Buttons - Desktop */}
           <div className="hidden md:flex items-center space-x-4">
             <Link
-              to="/login"
+              to="/job-seekers/login"
               className="text-[var(--primary-500)] hover:text-[var(--primary-700)] transition-colors duration-200"
             >
               Login
             </Link>
             <Link
-              to="/register"
+              to="/job-seekers/register"
               className="bg-[var(--primary-500)] text-[var(--white)] px-6 py-2 rounded-md font-semibold hover:bg-[var(--primary-700)] transition-all duration-200"
             >
               Sign Up

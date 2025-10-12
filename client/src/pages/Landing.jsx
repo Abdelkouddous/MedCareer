@@ -1,8 +1,18 @@
 import { Link } from "react-router-dom";
 import main from "../assets/images/main.svg";
 
-import { useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+// removed useNavigate import as navigation is no longer used inline
+
+import {
+  FaSearch,
+  FaMapMarkerAlt,
+  FaStethoscope,
+  FaBriefcase,
+} from "react-icons/fa";
+import { MEDICAL_SPECIALIZATION } from "../../../utils/constants";
+import customFetch from "../utils/customFetch";
+import { toast } from "react-toastify";
 
 const Landing = () => {
   // Create refs for each section that will have animations
@@ -19,6 +29,45 @@ const Landing = () => {
     newsletter: useRef(null),
     cta: useRef(null),
   };
+
+  // State for search functionality and latest jobs
+  const [searchData, setSearchData] = useState({
+    keywords: "",
+    location: "",
+    specialization: "",
+  });
+  const [latestJobs, setLatestJobs] = useState([]);
+  const [loadingJobs, setLoadingJobs] = useState(true);
+  const autoSearchTimerRef = useRef(null);
+
+  // Fetch latest jobs (supports optional inline filtering via query string)
+  const fetchLatestJobs = async (query = "") => {
+    try {
+      setLoadingJobs(true);
+      const base = "/jobs";
+      const params = new URLSearchParams();
+      params.set("limit", "10");
+      params.set("sort", "newest");
+      if (query) {
+        const extra = new URLSearchParams(query);
+        extra.forEach((value, key) => {
+          params.set(key, value);
+        });
+      }
+      const url = `${base}?${params.toString()}`;
+      const response = await customFetch.get(url);
+      setLatestJobs(response.data.jobs || []);
+    } catch (error) {
+      console.error("Failed to fetch latest jobs:", error);
+      toast.error("Failed to load latest jobs");
+    } finally {
+      setLoadingJobs(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchLatestJobs();
+  }, []);
 
   useEffect(() => {
     // Add CSS for animations
@@ -75,501 +124,437 @@ const Landing = () => {
     };
   }, []);
 
-  const navigate = useNavigate();
+  // navigation hook removed (no navigation from landing inline search)
 
-  const handleHeroSearchSubmit = (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
+  // Build query params string for inline search (no navigation)
+  const buildQueryParams = () => {
     const params = new URLSearchParams();
+    const keywords = searchData.keywords.trim();
+    const location = searchData.location.trim();
+    const specialization = searchData.specialization;
 
-    const search = (formData.get("search") || "").trim();
-    const jobType = formData.get("jobType");
-    const jobStatus = formData.get("jobStatus");
-    const specialization = formData.get("specialization");
-    const sort = formData.get("sort");
-
-    if (search) params.set("search", search);
-    if (jobType && jobType !== "all") params.set("jobType", jobType);
-    if (jobStatus && jobStatus !== "all") params.set("jobStatus", jobStatus);
-    if (specialization && specialization !== "all")
+    if (keywords) params.set("search", keywords);
+    if (location) params.set("jobLocation", location);
+    if (specialization && specialization !== "all") {
       params.set("specialization", specialization);
-    if (sort) params.set("sort", sort);
+    }
 
-    navigate(`/dashboard/all-jobs?${params.toString()}`);
+    return params.toString();
   };
+
+  // Handle search form submission (fetch inline results instead of navigating)
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    const query = buildQueryParams();
+    fetchLatestJobs(query);
+  };
+
+  // Handle search input changes
+  const handleSearchChange = (field, value) => {
+    setSearchData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  // Debounced inline fetch on input changes for faster UX
+  useEffect(() => {
+    // Debounce to avoid excessive navigations while typing/selecting
+    if (autoSearchTimerRef.current) {
+      clearTimeout(autoSearchTimerRef.current);
+    }
+    autoSearchTimerRef.current = setTimeout(() => {
+      const query = buildQueryParams();
+      fetchLatestJobs(query);
+    }, 500);
+
+    return () => {
+      if (autoSearchTimerRef.current) {
+        clearTimeout(autoSearchTimerRef.current);
+      }
+    };
+  }, [searchData]);
 
   return (
     <>
       <div className="min-h-screen bg-[var(--background-color)]">
-        {/* Hero Section */}
-        <section ref={sectionRefs.hero} className="pt-24 pb-16 px-4">
-          <div className="container mx-auto flex flex-col md:flex-row items-center">
-            <div className="md:w-1/2 text-center md:text-left mb-10 md:mb-0">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[var(--text-color)] mb-6">
-                Find Your Perfect{" "}
-                <span className="text-[var(--primary-500)]">
-                  Medical Career
-                </span>
+        {/* Hero Section with Full-Width Background and Search */}
+        <section
+          ref={sectionRefs.hero}
+          className="relative pt-24 pb-16 min-h-[60vh]"
+        >
+          {/* Background image */}
+          <div className="absolute inset-0">
+            <img
+              src={main}
+              alt="Healthcare professionals background"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-black/40" />
+          </div>
+          {/* Content overlay */}
+          <div className="relative z-10 px-4">
+            <div className="max-w-6xl mx-auto text-center">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
+                Find your future healthcare job in{" "}
+                <span className="text-[var(--primary-500)]">Algeria</span>
               </h1>
-              <p className="text-[var(--text-secondary-color)] text-lg md:text-xl mb-8">
-                Connecting healthcare professionals with top medical
-                institutions. Discover thousands of opportunities in hospitals,
-                clinics, and private practices.
+              <p className="text-white/90 text-lg md:text-xl mb-8">
+                Among more than {latestJobs.length || 0} open positions
               </p>
-              <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <Link
-                  to="/job-seekers"
-                  className="w-full text-center bg-[var(--primary-500)] text-[var(--white)] px-6 py-3 rounded-md font-semibold hover:bg-[var(--primary-700)] transition-all duration-200"
-                >
-                  Job Seeker
-                </Link>
-                <Link
-                  to="/register?role=employer"
-                  className="w-full text-center border-2 border-[var(--primary-500)] text-[var(--primary-500)] px-6 py-3 rounded-md font-semibold hover:bg-[var(--primary-500)] hover:text-[var(--white)] transition-all duration-200"
-                >
-                  Employer
-                </Link>
-              </div>
-              {/* Quick Job Search */}
-              {/* <form
-                onSubmit={handleHeroSearchSubmit}
-                className="bg-[var(--background-secondary-color)] p-4 rounded-lg grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6"
-              >
-                <input
-                  type="text"
-                  name="search"
-                  placeholder="Job title or company"
-                  className="form-input"
-                />
-                <div className="flex items-center justify-center">
-                  <button
-                    type="submit"
-                    className="btn sm:col-span-2 lg:col-span-4 flex items-center"
+            </div>
+
+            {/* Full-width Search Bar */}
+            <form
+              onSubmit={handleSearchSubmit}
+              className="w-screen relative left-1/2 -translate-x-1/2 bg-white/95 rounded-none shadow-lg p-4 mb-8 border border-gray-200 backdrop-blur"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                {/* Keywords Search */}
+                <div className="relative">
+                  <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Keywords, skills, profession..."
+                    value={searchData.keywords}
+                    onChange={(e) =>
+                      handleSearchChange("keywords", e.target.value)
+                    }
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                {/* Location Search */}
+                <div className="relative">
+                  <FaMapMarkerAlt className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Region, Province"
+                    value={searchData.location}
+                    onChange={(e) =>
+                      handleSearchChange("location", e.target.value)
+                    }
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                {/* Specialization Select */}
+                <div className="relative">
+                  <FaStethoscope className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <select
+                    value={searchData.specialization}
+                    onChange={(e) =>
+                      handleSearchChange("specialization", e.target.value)
+                    }
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
                   >
-                    <span>
-                      {" "}
-                      <FaSearch className="mr-2" />
-                      Search Jobs
-                    </span>
-                  </button>
+                    <option value="">All specialties</option>
+                    {Object.values(MEDICAL_SPECIALIZATION).map((spec) => (
+                      <option key={spec} value={spec}>
+                        {spec}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-              </form> */}
-
-              <div className="flex flex-col sm:flex-row justify-center md:justify-start gap-4">
-                <Link
-                  to="/login"
-                  className="bg-[var(--primary-500)] text-[var(--white)] px-8 py-3 rounded-md font-bold text-lg hover:bg-[var(--primary-700)] transition-all duration-200"
-                >
-                  Explore the App
-                </Link>
               </div>
-            </div>
-            <div className="md:w-1/2">
-              <img
-                src={main}
-                alt="Healthcare professionals"
-                className="w-full h-auto"
-              />
-            </div>
-          </div>
-        </section>
 
-        {/* Features Section */}
-        <section
-          ref={sectionRefs.features}
-          className="py-16 px-4 bg-[var(--background-secondary-color)]"
-        >
-          <div className="container mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-color)] text-center mb-12">
-              Why Choose{" "}
-              <span className="text-[var(--primary-500)]">
-                MedCareer Connect
-              </span>
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {features.map((feature, index) => (
-                <div
-                  key={index}
-                  className="p-6 rounded-lg bg-[var(--background-color)] hover:transform hover:-translate-y-2 transition-all duration-300"
-                >
-                  <div className="text-[var(--primary-500)] mb-4">
-                    {feature.icon}
-                  </div>
-                  <h3 className="text-xl font-bold text-[var(--text-color)] mb-3">
-                    {feature.title}
-                  </h3>
-                  <p className="text-[var(--text-secondary-color)]">
-                    {feature.description}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Job Categories */}
-        <section ref={sectionRefs.jobCategories} className="py-16 px-4">
-          <div className="container mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-color)] text-center mb-12">
-              Popular{" "}
-              <span className="text-[var(--primary-500)]">Categories</span>
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {jobCategories.map((category, index) => (
-                <Link
-                  key={index}
-                  to={`/jobs/category/${category.slug}`}
-                  className="p-6 rounded-lg bg-[var(--background-secondary-color)] hover:bg-[var(--primary-500)] group transition-all duration-300"
-                >
-                  <div className="text-[var(--primary-500)] group-hover:text-white mb-3">
-                    {category.icon}
-                  </div>
-                  <h3 className="text-[var(--text-color)] group-hover:text-white font-bold mb-2">
-                    {category.title}
-                  </h3>
-                  <p className="text-[var(--text-secondary-color)] group-hover:text-white/90">
-                    {category.count} jobs
-                  </p>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* CTA Section */}
-        <section
-          ref={sectionRefs.cta}
-          className="py-16 px-4 bg-[var(--background-secondary-color)]"
-        >
-          <div className="container mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-color)] mb-6">
-              Ready to Advance Your Medical Career?
-            </h2>
-            <p className="text-[var(--text-secondary-color)] text-lg mb-8 max-w-2xl mx-auto">
-              Join thousands of healthcare professionals who have found their
-              dream jobs. Create your profile today and get matched with top
-              medical employers.
-            </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link
-                to="/register"
-                className="bg-[var(--primary-500)] text-[var(--white)] px-8 py-3 rounded-md font-bold text-lg hover:bg-[var(--primary-700)] transition-all duration-200"
+              {/* Search Button */}
+              <button
+                type="submit"
+                className="w-full p-4 bg-[var(--primary-500)] text-[var(--white)] transition-colors duration-200 flex items-center justify-center gap-2"
               >
-                Create Account
+                <FaSearch />
+                Search
+              </button>
+            </form>
+
+            {/* Quick actions */}
+            <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Link
+                to="/job-seekers"
+                className="w-full text-center bg-[var(--primary-500)] text-[var(--white)] px-6 py-3 rounded-md font-semibold hover:bg-[var(--primary-700)] transition-all duration-200"
+              >
+                Job Seeker
               </Link>
               <Link
-                to="/contact"
-                className="border-2 border-[var(--primary-500)] text-[var(--primary-500)] px-8 py-3 rounded-md font-bold text-lg hover:bg-[var(--primary-500)] hover:text-[var(--white)] transition-all duration-200"
+                to="/register?role=employer"
+                className="w-full text-center border-2 border-[var(--primary-500)] text-[var(--primary-500)] px-6 py-3 rounded-md font-semibold hover:bg-[var(--primary-500)] hover:text-[var(--white)] transition-all duration-200 bg-white/90"
               >
-                Contact Us
+                Employer
               </Link>
             </div>
           </div>
         </section>
 
-        {/* Pricing Section */}
-        <section ref={sectionRefs.pricing} className="py-16 px-4">
+        {/* Featured Medical Jobs Section */}
+        <section ref={sectionRefs.featuredJobs} className="py-16 px-4 bg-[var(--background-secondary-color)] fade-in-section">
           <div className="container mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-color)] text-center mb-4">
-              Choose Your{" "}
-              <span className="text-[var(--primary-500)]">Membership</span>
-            </h2>
-            <p className="text-[var(--text-secondary-color)] text-center mb-12 max-w-2xl mx-auto">
-              Select the perfect plan for your recruitment needs. All plans
-              include access to our verified healthcare professional database.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* Silver Plan */}
-              <div className="p-6 rounded-lg bg-[var(--background-secondary-color)] hover:transform hover:-translate-y-2 transition-all duration-300">
-                <div className="text-center mb-8">
-                  <h3 className="text-2xl font-bold text-[var(--text-color)] mb-4">
-                    Silver
-                  </h3>
-                  <div className="text-4xl font-bold text-[var(--primary-500)] mb-4">
-                    700 DA
-                    <span className="text-lg text-[var(--text-secondary-color)]">
-                      /month
-                    </span>
-                  </div>
-                  <p className="text-[var(--text-secondary-color)]">
-                    Perfect for small practices
-                  </p>
-                </div>
-                <ul className="space-y-4 mb-8">
-                  <li className="flex items-center">
-                    <svg
-                      className="w-5 h-5 text-[var(--primary-500)] mr-2"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
-                    </svg>
-                    Post up to 10 jobs monthly
-                  </li>
-                  <li className="flex items-center">
-                    <svg
-                      className="w-5 h-5 text-[var(--primary-500)] mr-2"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
-                    </svg>
-                    Basic candidate search
-                  </li>
-                  <li className="flex items-center">
-                    <svg
-                      className="w-5 h-5 text-[var(--primary-500)] mr-2"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
-                    </svg>
-                    Email support
-                  </li>
-                </ul>
-                <Link
-                  to="/register?plan=silver"
-                  className="block text-center bg-[var(--primary-500)] text-[var(--white)] px-6 py-3 rounded-md font-semibold hover:bg-[var(--primary-700)] transition-all duration-200"
-                >
-                  Get Started
-                </Link>
-              </div>
+            <div className="text-center mb-10">
+              <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-color)]">
+                Featured <span className="text-[var(--primary-500)]">Medical Jobs</span>
+              </h2>
+            </div>
 
-              {/* Gold Plan */}
-              <div className="p-6 rounded-lg bg-[var(--primary-500)] text-white transform scale-105">
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[var(--primary-700)] text-white px-4 py-1 rounded-full text-sm font-semibold">
-                  Most Popular
-                </div>
-                <div className="text-center mb-8">
-                  <h3 className="text-2xl font-bold mb-4">Gold</h3>
-                  <div className="text-4xl font-bold mb-4">
-                    1500 DA<span className="text-lg opacity-75">/month</span>
-                  </div>
-                  <p className="opacity-75">For growing medical facilities</p>
-                </div>
-                <ul className="space-y-4 mb-8">
-                  <li className="flex items-center">
-                    <svg
-                      className="w-5 h-5 mr-2"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
-                    </svg>
-                    Unlimited job posts
-                  </li>
-                  <li className="flex items-center">
-                    <svg
-                      className="w-5 h-5 mr-2"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
-                    </svg>
-                    Advanced candidate search
-                  </li>
-                  <li className="flex items-center">
-                    <svg
-                      className="w-5 h-5 mr-2"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
-                    </svg>
-                    Priority support
-                  </li>
-                  <li className="flex items-center">
-                    <svg
-                      className="w-5 h-5 mr-2"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
-                    </svg>
-                    Featured job listings
-                  </li>
-                </ul>
-                <Link
-                  to="/register?plan=gold"
-                  className="block text-center bg-white text-[var(--primary-500)] px-6 py-3 rounded-md font-semibold hover:bg-gray-100 transition-all duration-200"
-                >
-                  Get Started
-                </Link>
+            {loadingJobs ? (
+              <div className="flex items-center justify-center min-h-32">
+                <div className="loading"></div>
               </div>
-
-              {/* Platinum Plan */}
-              <div className="p-6 rounded-lg bg-[var(--background-secondary-color)] hover:transform hover:-translate-y-2 transition-all duration-300">
-                <div className="text-center mb-8">
-                  <h3 className="text-2xl font-bold text-[var(--text-color)] mb-4">
-                    Platinum
-                  </h3>
-                  <div className="text-4xl font-bold text-[var(--primary-500)] mb-4">
-                    2200 DA
-                    <span className="text-lg text-[var(--text-secondary-color)]">
-                      /month
-                    </span>
+            ) : latestJobs.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-[var(--text-secondary-color)]">No featured jobs available at the moment.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {latestJobs.slice(0, 3).map((job) => (
+                  <div key={job._id} className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-start justify-between mb-3">
+                      <h3 className="text-xl font-semibold text-[var(--text-color)]">{job.position}</h3>
+                      <span
+                        className={`text-xs font-semibold px-3 py-1 rounded-full ${
+                          job.jobType === "full-time"
+                            ? "bg-[var(--primary-100)] text-[var(--primary-700)]"
+                            : "bg-[var(--background-secondary-color)] text-[var(--text-color)]"
+                        }`}
+                      >
+                        {job.jobType?.replace(/-/g, " ")?.replace(/\b\w/g, (c) => c.toUpperCase())}
+                      </span>
+                    </div>
+                    <div className="text-[var(--primary-700)] font-medium mb-2">{job.company}</div>
+                    <div className="space-y-2 text-[var(--text-secondary-color)] mb-4">
+                      <div className="flex items-center gap-2">
+                        <FaMapMarkerAlt /> <span>{job.jobLocation}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <FaStethoscope /> <span>{job.specialization}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <FaBriefcase /> <span className="capitalize">{job.jobType}</span>
+                      </div>
+                    </div>
+                    <Link to="/job-seekers/jobs" className="text-[var(--primary-500)] font-semibold hover:text-[var(--primary-700)]">
+                      View Details ➜
+                    </Link>
                   </div>
-                  <p className="text-[var(--text-secondary-color)]">
-                    Enterprise solution
-                  </p>
-                </div>
-                <ul className="space-y-4 mb-8">
-                  <li className="flex items-center">
-                    <svg
-                      className="w-5 h-5 text-[var(--primary-500)] mr-2"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
-                    </svg>
-                    Everything in Gold
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* Latest Jobs Section - Moved to top after hero */}
+        <section className="py-16 px-4 bg-white">
+          <div className="container mx-auto">
+            {loadingJobs ? (
+              <div className="flex items-center justify-center min-h-64">
+                <div className="loading"></div>
+              </div>
+            ) : latestJobs.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-[var(--text-secondary-color)] text-lg">
+                  No job opportunities available at the moment.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {latestJobs.slice(0, 10).map((job) => (
+                  <div
+                    key={job._id}
+                    className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow duration-300 flex flex-col md:flex-row md:items-center md:justify-between"
+                  >
+                    <div className="flex-1">
+                      <div className="flex items-start justify-between mb-2">
+                        <h3 className="text-lg font-semibold text-[var(--text-color)] hover:text-[var(--primary-500)] cursor-pointer">
+                          {job.position}
+                        </h3>
+                        <span className="text-sm text-[var(--text-secondary-color)] ml-4">
+                          {job.company}
+                        </span>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-4 text-sm text-[var(--text-secondary-color)] mb-2">
+                        <div className="flex items-center">
+                          <FaMapMarkerAlt className="mr-1" />
+                          <span>{job.jobLocation}</span>
+                        </div>
+                        <div className="flex items-center">
+                          <FaStethoscope className="mr-1" />
+                          <span>{job.specialization}</span>
+                        </div>
+                        <div className="flex items-center">
+                          <FaBriefcase className="mr-1" />
+                          <span className="capitalize">{job.jobType}</span>
+                        </div>
+                      </div>
+
+                      <div className="text-xs text-[var(--text-secondary-color)]">
+                        Posted on {new Date(job.createdAt).toLocaleDateString()}
+                      </div>
+                    </div>
+
+                    <div className="mt-4 md:mt-0 md:ml-6">
+                      <Link
+                        to="/job-seekers/jobs"
+                        className="inline-block bg-[var(--primary-500)] text-white px-6 py-2 rounded-md text-sm font-medium hover:bg-[var(--primary-700)] transition-colors duration-200"
+                      >
+                        Apply Now
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* About Us Section */}
+        <section className="py-16 px-4 bg-[var(--background-secondary-color)]">
+          <div className="container mx-auto">
+            <div className="max-w-4xl mx-auto text-center">
+              <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-color)] mb-8">
+                Who are we? 🧐
+              </h2>
+              <p className="text-[var(--text-secondary-color)] text-lg leading-relaxed mb-6">
+                Tired of recruiters who think Java is a detergent brand? That
+                HTML (sic) is a programming language? Trust your healthcare
+                career to the &apos;MedCareer&apos; community that speaks the
+                same language(s) as you.
+              </p>
+              <button className="text-[var(--primary-500)] font-semibold hover:text-[var(--primary-700)] transition-colors duration-200">
+                Show more
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* Mission Section */}
+        <section className="py-16 px-4 bg-white">
+          <div className="container mx-auto">
+            <div className="max-w-4xl mx-auto text-center">
+              <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-color)] mb-8">
+                Our mission 🚀
+              </h2>
+              <p className="text-[var(--text-secondary-color)] text-lg leading-relaxed mb-6">
+                Enable healthcare professionals (doctors, nurses, pharmacists,
+                etc.) to find the job that matches their medical specializations
+                and preferred methodologies.
+              </p>
+              <p className="text-[var(--text-secondary-color)] text-lg leading-relaxed mb-6">
+                We help startups, healthcare service companies and any
+                organization requiring medical professionals or healthcare
+                services to strengthen their teams with the best-suited
+                profiles.
+              </p>
+              <button className="text-[var(--primary-500)] font-semibold hover:text-[var(--primary-700)] transition-colors duration-200">
+                Show more
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* Featured Company Section */}
+        <section className="py-16 px-4 bg-[var(--background-secondary-color)]">
+          <div className="container mx-auto">
+            <div className="max-w-4xl mx-auto">
+              <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-color)] text-center mb-12">
+                Featured Company
+              </h2>
+              <div className="bg-white rounded-lg shadow-md p-8">
+                <h3 className="text-2xl font-bold text-[var(--text-color)] mb-4">
+                  MedTech Solutions
+                </h3>
+                <p className="text-[var(--text-secondary-color)] leading-relaxed">
+                  MedTech Solutions is a healthcare technology platform that
+                  aims to connect patients with medical professionals and help
+                  them:
+                </p>
+                <ul className="mt-4 space-y-2 text-[var(--text-secondary-color)]">
+                  <li>
+                    • Find the right specialist doctor according to specialties
                   </li>
-                  <li className="flex items-center">
-                    <svg
-                      className="w-5 h-5 text-[var(--primary-500)] mr-2"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
-                    </svg>
-                    Dedicated account manager
-                  </li>
-                  <li className="flex items-center">
-                    <svg
-                      className="w-5 h-5 text-[var(--primary-500)] mr-2"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
-                    </svg>
-                    Custom branding
-                  </li>
-                  <li className="flex items-center">
-                    <svg
-                      className="w-5 h-5 text-[var(--primary-500)] mr-2"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
-                    </svg>
-                    API access
-                  </li>
+                  <li>• Build reliable medical strategies</li>
+                  <li>• Analyze medical documents</li>
+                  <li>• Find relevant connections in the MEDICAL BIG DATA</li>
                 </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Job of the Day Section */}
+        <section className="py-16 px-4 bg-white">
+          <div className="container mx-auto">
+            <div className="max-w-4xl mx-auto">
+              <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-color)] text-center mb-12">
+                Profession of the day
+              </h2>
+              <div className="bg-[var(--background-secondary-color)] rounded-lg p-8">
+                <h3 className="text-2xl font-bold text-[var(--text-color)] mb-4">
+                  Nurse Practitioner: Advanced Practice Nursing
+                </h3>
+                <p className="text-[var(--text-secondary-color)] leading-relaxed mb-4">
+                  Nurse Practitioner (NP) is a specialized profession in
+                  advanced nursing practice processes.
+                </p>
+                <p className="text-[var(--text-secondary-color)] leading-relaxed mb-6">
+                  The NP has the responsibility to ensure, once the patient is
+                  assessed and treatment is provided, that care is compliant
+                  with requirements and meets quality criteria in terms of both
+                  functionality and safety standards.
+                </p>
                 <Link
-                  to="/register?plan=platinum"
-                  className="block text-center bg-[var(--primary-500)] text-[var(--white)] px-6 py-3 rounded-md font-semibold hover:bg-[var(--primary-700)] transition-all duration-200"
+                  to="/job-seekers/jobs"
+                  className="text-[var(--primary-500)] font-semibold hover:text-[var(--primary-700)] transition-colors duration-200"
                 >
-                  Contact Sales
+                  [Read more...]
                 </Link>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Featured Jobs Section */}
-        <section ref={sectionRefs.featuredJobs} className="py-16 px-4">
+        {/* Quick Registration Section */}
+        <section className="py-16 px-4 bg-[var(--primary-500)]">
           <div className="container mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-color)] text-center mb-12">
-              Featured{" "}
-              <span className="text-[var(--primary-500)]">Medical Jobs</span>
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* Sample featured jobs */}
-              <div className="bg-[var(--background-secondary-color)] rounded-lg p-6 hover:shadow-lg transition-all duration-300">
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className="text-xl font-bold text-[var(--text-color)] mb-2">
-                      Senior Nurse Practitioner
-                    </h3>
-                    <p className="text-[var(--primary-500)] font-semibold">
-                      Mayo Clinic
-                    </p>
+            <div className="max-w-4xl mx-auto text-center">
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+                I don&apos;t have time, sign me up!
+              </h2>
+              <p className="text-white/90 text-lg mb-8">
+                Upload your CV and let our recruitment team fill out your
+                profile and subscribe you to alerts for the medical specialties
+                you master.
+              </p>
+              <div className="bg-white rounded-lg p-8 max-w-md mx-auto">
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                  <div className="text-gray-400 mb-4">
+                    <svg
+                      className="w-12 h-12 mx-auto"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                      />
+                    </svg>
                   </div>
-                  <span className="bg-[var(--primary-100)] text-[var(--primary-500)] px-3 py-1 rounded-full text-sm font-semibold">
-                    Full-time
-                  </span>
-                </div>
-                <div className="mb-4">
-                  <p className="text-[var(--text-secondary-color)] mb-2">
-                    📍 New York, NY
-                  </p>
-                  <p className="text-[var(--text-secondary-color)] mb-2">
-                    💰 80000,00 DA - 12000,00 DA
-                  </p>
-                </div>
-                <Link
-                  to="/jobs/1"
-                  className="text-[var(--primary-500)] font-semibold hover:text-[var(--primary-700)] transition-colors duration-200"
-                >
-                  View Details ➞
-                </Link>
-              </div>
-              <div className="bg-[var(--background-secondary-color)] rounded-lg p-6 hover:shadow-lg transition-all duration-300">
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className="text-xl font-bold text-[var(--text-color)] mb-2">
-                      Cardiologist
-                    </h3>
-                    <p className="text-[var(--primary-500)] font-semibold">
-                      Cleveland Clinic
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx"
+                    className="hidden"
+                    id="cv-upload"
+                  />
+                  <label htmlFor="cv-upload" className="cursor-pointer">
+                    <p className="text-gray-600 mb-2">
+                      Drag and drop a file or click here
                     </p>
-                  </div>
-                  <span className="bg-[var(--primary-100)] text-[var(--primary-500)] px-3 py-1 rounded-full text-sm font-semibold">
-                    Full-time
-                  </span>
+                    <p className="text-sm text-gray-400">(.pdf, .doc, .docx)</p>
+                  </label>
                 </div>
-                <div className="mb-4">
-                  <p className="text-[var(--text-secondary-color)] mb-2">
-                    📍 Cleveland, OH
-                  </p>
-                  <p className="text-[var(--text-secondary-color)] mb-2">
-                    💰 250000,00 DA - 350000,00 DA
-                  </p>
-                </div>
-                <Link
-                  to="/jobs/2"
-                  className="text-[var(--primary-500)] font-semibold hover:text-[var(--primary-700)] transition-colors duration-200"
-                >
-                  View Details ➞
-                </Link>
               </div>
-              <div className="bg-[var(--background-secondary-color)] rounded-lg p-6 hover:shadow-lg transition-all duration-300">
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className="text-xl font-bold text-[var(--text-color)] mb-2">
-                      Pharmacist
-                    </h3>
-                    <p className="text-[var(--primary-500)] font-semibold">
-                      CVS Health
-                    </p>
-                  </div>
-                  <span className="bg-[var(--primary-100)] text-[var(--primary-500)] px-3 py-1 rounded-full text-sm font-semibold">
-                    Part-time
-                  </span>
-                </div>
-                <div className="mb-4">
-                  <p className="text-[var(--text-secondary-color)] mb-2">
-                    📍 Boston, MA
-                  </p>
-                  <p className="text-[var(--text-secondary-color)] mb-2">
-                    💰 60000,00 DA - 80000,00 DA
-                  </p>
-                </div>
-                <Link
-                  to="/jobs/3"
-                  className="text-[var(--primary-500)] font-semibold hover:text-[var(--primary-700)] transition-colors duration-200"
-                >
-                  View Details ➞
-                </Link>
-              </div>
-            </div>
-            <div className="text-center mt-8">
-              <Link
-                to="/jobs"
-                className="inline-block border-2 border-[var(--primary-500)] text-[var(--primary-500)] px-8 py-3 rounded-md font-bold text-lg hover:bg-[var(--primary-500)] hover:text-[var(--white)] transition-all duration-200"
-              >
-                View All Jobs
-              </Link>
             </div>
           </div>
         </section>
@@ -643,8 +628,9 @@ const Landing = () => {
                   </div>
                 </div>
                 <p className="text-[var(--text-secondary-color)] italic">
-                  "Found my dream position at a leading hospital through
-                  MedCareer Connect. The process was smooth and professional."
+                  &quot;Found my dream position at a leading hospital through
+                  MedCareer Connect. The process was smooth and
+                  professional.&quot;
                 </p>
               </div>
               <div className="bg-[var(--background-secondary-color)] p-6 rounded-lg">
@@ -660,8 +646,9 @@ const Landing = () => {
                   </div>
                 </div>
                 <p className="text-[var(--text-secondary-color)] italic">
-                  "The platform made it easy to find and apply to relevant
-                  nursing positions. I'm now working at an amazing facility."
+                  &quot;The platform made it easy to find and apply to relevant
+                  nursing positions. I&apos;m now working at an amazing
+                  facility.&quot;
                 </p>
               </div>
               <div className="bg-[var(--background-secondary-color)] p-6 rounded-lg">
@@ -675,8 +662,9 @@ const Landing = () => {
                   </div>
                 </div>
                 <p className="text-[var(--text-secondary-color)] italic">
-                  "Excellent platform for medical professionals. Found great
-                  opportunities and the support team was very helpful."
+                  &quot;Excellent platform for medical professionals. Found
+                  great opportunities and the support team was very
+                  helpful.&quot;
                 </p>
               </div>
             </div>
@@ -821,82 +809,5 @@ const Landing = () => {
     </>
   );
 };
-
-const features = [
-  {
-    icon: (
-      <svg className="w-12 h-12" fill="currentColor" viewBox="0 0 20 20">
-        <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
-      </svg>
-    ),
-    title: "Verified Employers",
-    description:
-      "All healthcare employers are thoroughly vetted to ensure legitimate opportunities.",
-  },
-  {
-    icon: (
-      <svg className="w-12 h-12" fill="currentColor" viewBox="0 0 20 20">
-        <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
-      </svg>
-    ),
-    title: "Expert Matching",
-    description:
-      "Our advanced matching system connects you with the most relevant medical positions.",
-  },
-  {
-    icon: (
-      <svg className="w-12 h-12" fill="currentColor" viewBox="0 0 20 20">
-        <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z" />
-        <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z" />
-      </svg>
-    ),
-    title: "Fast Placement",
-    description:
-      "Streamlined application process to help you secure your next medical position quickly.",
-  },
-];
-
-const jobCategories = [
-  {
-    title: "Nursing",
-    slug: "nursing",
-    count: 1245,
-    icon: (
-      <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-        <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z" />
-      </svg>
-    ),
-  },
-  {
-    title: "Physicians",
-    slug: "physicians",
-    count: 853,
-    icon: (
-      <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-        <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0z" />
-      </svg>
-    ),
-  },
-  {
-    title: "Dentistry",
-    slug: "dentistry",
-    count: 426,
-    icon: (
-      <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-        <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z" />
-      </svg>
-    ),
-  },
-  {
-    title: "Pharmacy",
-    slug: "pharmacy",
-    count: 317,
-    icon: (
-      <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-        <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z" />
-      </svg>
-    ),
-  },
-];
 
 export default Landing;

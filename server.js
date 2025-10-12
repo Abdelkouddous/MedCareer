@@ -27,6 +27,7 @@ import errorHandlerMiddleware from "./middleware/errorHandlerMiddleware.js";
 import {
   authenticateUser,
   allowGuestForViewing,
+  authenticateJobSeeker,
 } from "./middleware/authMiddleware.js";
 import cookieParser from "cookie-parser";
 import { logout } from "./controllers/authController.js";
@@ -64,8 +65,10 @@ app.use(
 app.use("/api/v1/jobs", jobRouter); // Remove authenticateUser to allow guest access
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", authenticateUser, userRouter);
+
 // job Seekers API call endpoint
-app.use("/api/v1/jobseekers", jobSeekerRouter);
+app.use("/api/v1/jobseekers", authenticateJobSeeker, jobSeekerRouter);
+// API 
 app.get("/", (req, res) => {
   res.send(`
     <!DOCTYPE html>

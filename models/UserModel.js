@@ -62,9 +62,19 @@ const UserSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["pending", "approved", "declined"],
+    enum: ["pending", "approved", "declined", "blocked"],
     default: "approved",
   },
+  // Employer posting controls
+  trialJobsLimit: { type: Number, default: 3 },
+  lifetimeJobOffersCreated: { type: Number, default: 0 },
+  jobOffersQuota: { type: Number, default: 3 },
+  plan: {
+    type: String,
+    enum: ["trial", "basic", "pro", "enterprise"],
+    default: "trial",
+  },
+  quotaExpiresAt: { type: Date },
 });
 
 UserSchema.methods.toJSON = function () {
