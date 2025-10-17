@@ -140,8 +140,8 @@ npm start
 
 ```
 MedCareer/
+├── /                    # Backend code
 ├── client/              # Frontend code
-├── server/              # Backend code
 ├── .env                 # Environment variables
 ├── .gitignore           # Git ignore file
 ├── README.md            # Project documentation

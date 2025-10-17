@@ -1,0 +1,99 @@
+config:
+  target: "http://localhost:5100"
+  phases:
+    - duration: 60
+      arrivalRate: 5
+      name: "Warm up"
+    - duration: 120
+      arrivalRate: 10
+      name: "Ramp up load"
+    - duration: 300
+      arrivalRate: 20
+      name: "Sustained load"
+    - duration: 60
+      arrivalRate: 5
+      name: "Cool down"
+
+scenarios:
+  - name: "Job Search Flow"
+    weight: 40
+    flow:
+      - get:
+          url: "/api/v1/jobs"
+      - get:
+          url: "/api/v1/jobs"
+          qs:
+            search: "cardiologist"
+      - get:
+          url: "/api/v1/jobs"
+          qs:
+            jobType: "full-time"
+
+  - name: "Authentication Flow"
+    weight: 30
+    flow:
+      - post:
+          url: "/api/v1/auth/login"
+          json:
+            email: "test@example.com"
+            password: "password123"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      - get:
+          url: "/api/v1/users/profile"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+
+  - name: "Job Management Flow"
+    weight: 20
+    flow:
+      - post:
+          url: "/api/v1/auth/login"
+          json:
+            email: "employer@example.com"
+            password: "password123"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      - post:
+          url: "/api/v1/jobs"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            position: "Test Position"
+            company: "Test Company"
+            jobLocation: "Test Location"
+            jobType: "full-time"
+            description: "Test Description"
+            requirements: "Test Requirements"
+            salary: "100000-150000 DZD"
+      - get:
+          url: "/api/v1/jobs"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+
+  - name: "Job Application Flow"
+    weight: 10
+    flow:
+      - post:
+          url: "/api/v1/jobseekers/login"
+          json:
+            email: "jobseeker@example.com"
+            password: "password123"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      - get:
+          url: "/api/v1/jobs"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+      - post:
+          url: "/api/v1/jobseekers/applications"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            jobId: "test-job-id"
+            coverLetter: "Test cover letter"
+            resume: "test-resume.pdf"
+

@@ -121,39 +121,20 @@ export const createJob = async (req, res) => {
         .json({ message: "Please provide all required fields" });
     }
 
-    // Create job and update employer counters in a transaction
-    const session = await mongoose.startSession();
-    let job;
-    await session.withTransaction(async () => {
-      job = await Job.create(
-        [
-          {
-            position,
-            company,
-            jobLocation,
-            jobType,
-            jobStatus,
-            specialization,
-            applicationDate,
-            notes,
-            createdBy: req.user.userId,
-          },
-        ],
-        { session }
-      );
-
-      // Increment lifetime counter atomically for employer
-      await User.updateOne(
-        { _id: req.user.userId },
-        { $inc: { lifetimeJobOffersCreated: 1 } },
-        { session }
-      );
+    // Create job in the database
+    const job = await Job.create({
+      position,
+      company,
+      jobLocation,
+      jobType,
+      jobStatus,
+      specialization,
+      applicationDate,
+      notes,
+      createdBy: req.user.userId, // Assuming `req.user` contains the authenticated user
     });
-    await session.endSession();
 
-    // Job.create with array returns array in transaction mode
-    const createdJob = Array.isArray(job) ? job[0] : job;
-    res.status(StatusCodes.CREATED).json({ job: createdJob });
+    res.status(StatusCodes.CREATED).json({ job });
   } catch (error) {
     console.error(error);
     res

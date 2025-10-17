@@ -4,6 +4,7 @@ import User from "../models/UserModel.js";
 import Job from "../models/JobModel.js";
 import cloudinary from "cloudinary";
 import { promises as fs } from "fs";
+import JobSeekerModel from "../models/JobSeekerModel.js";
 
 export const getCurrentUser = async (req, res) => {
   const userId = req.user.userId;
@@ -260,12 +261,12 @@ export const updateEmployerStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
-    
+
     // Validate status
     const validStatuses = ["approved", "pending", "blocked"];
     if (!validStatuses.includes(status)) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ 
-        message: "Invalid status. Must be approved, pending, or blocked" 
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: "Invalid status. Must be approved, pending, or blocked",
       });
     }
 
@@ -276,16 +277,20 @@ export const updateEmployerStatus = async (req, res) => {
     ).select("-password");
 
     if (!user) {
-      return res.status(StatusCodes.NOT_FOUND).json({ message: "Employer not found" });
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "Employer not found" });
     }
 
     res.status(StatusCodes.OK).json({
       msg: `Employer status updated to ${status}`,
-      user
+      user,
     });
   } catch (error) {
     console.error(error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error" });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: "Server error" });
   }
 };
 
@@ -296,33 +301,36 @@ export const updateEmployerQuota = async (req, res) => {
     const { jobOffersQuota, plan, quotaExpiresAt } = req.body;
 
     if (jobOffersQuota && jobOffersQuota < 0) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ 
-        message: "Quota cannot be negative" 
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: "Quota cannot be negative",
       });
     }
 
     const updateData = {};
-    if (jobOffersQuota !== undefined) updateData.jobOffersQuota = jobOffersQuota;
+    if (jobOffersQuota !== undefined)
+      updateData.jobOffersQuota = jobOffersQuota;
     if (plan) updateData.plan = plan;
     if (quotaExpiresAt) updateData.quotaExpiresAt = quotaExpiresAt;
 
-    const user = await User.findByIdAndUpdate(
-      id,
-      updateData,
-      { new: true }
-    ).select("-password");
+    const user = await User.findByIdAndUpdate(id, updateData, {
+      new: true,
+    }).select("-password");
 
     if (!user) {
-      return res.status(StatusCodes.NOT_FOUND).json({ message: "Employer not found" });
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "Employer not found" });
     }
 
     res.status(StatusCodes.OK).json({
       msg: "Employer quota updated",
-      user
+      user,
     });
   } catch (error) {
     console.error(error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error" });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: "Server error" });
   }
 };
 
@@ -331,15 +339,38 @@ export const getPendingEmployers = async (req, res) => {
   try {
     const pendingUsers = await User.find({
       role: "user",
-      status: "pending"
+      status: "pending",
     }).select("-password");
 
     res.status(StatusCodes.OK).json({
       users: pendingUsers,
-      count: pendingUsers.length
+      count: pendingUsers.length,
     });
   } catch (error) {
     console.error(error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error" });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: "Server error" });
+  }
+};
+
+// getting all job seekers
+export const getAllJobSeekers = async (req, res) => {
+  try {
+    // Find all users without any authentication requirement
+    const jobSeekers = await JobSeekerModel.find({});
+
+    if (!jobSeekers || jobSeekers.length === 0) {
+      return res
+        .status(StatusCodes.OK)
+        .json({ jobSeekers: [], message: "No job seekers found" });
+    }
+
+    res.status(StatusCodes.OK).json({ jobSeekers, count: jobSeekers.length });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: "Server error" });
   }
 };

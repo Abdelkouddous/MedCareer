@@ -2,6 +2,8 @@ import { useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { Work, Person, BarChart, Email, Logout } from "@mui/icons-material";
 import { toast } from "react-toastify";
+import customFetch from "../../utils/customFetch";
+import Wrapper from "../../assets/wrappers/Dashboard";
 
 const JobSeekers = () => {
   const [showSidebar, setShowSidebar] = useState(false);
@@ -20,42 +22,25 @@ const JobSeekers = () => {
 
   const handleLogout = async () => {
     try {
-      // Call the logout endpoint to clear server-side session
-      const response = await fetch("/api/v1/jobseekers/logout", {
-        method: "POST",
-        credentials: "include", // Include cookies
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      // Call the logout endpoint to clear server-side session (cookies)
+      const response = await customFetch.post("/jobseekers/logout");
 
-      if (response.ok) {
-        // Clear client-side storage
-        localStorage.removeItem("jobseeker_token");
-        localStorage.removeItem("jobseeker_user");
-
-        // Clear any other job seeker related data
-        sessionStorage.clear();
-
+      if (response.status === 200) {
+        // No localStorage usage; rely on server to clear cookies
         toast.success("Logged out successfully");
-        navigate("/login", { replace: true });
+        navigate("/job-seekers/login", { replace: true });
       } else {
         throw new Error("Logout failed");
       }
     } catch (error) {
       console.error("Logout error:", error);
-      // Even if server logout fails, clear client-side data
-      localStorage.removeItem("jobseeker_token");
-      localStorage.removeItem("jobseeker_user");
-      sessionStorage.clear();
-
-      toast.success("Logged out successfully");
-      navigate("/login", { replace: true });
+      toast.error("Logout failed. Please try again.");
     }
   };
 
   return (
-    <div className="flex min-h-screen">
+    <Wrapper>
+      <div className="flex min-h-screen">
       {/* Sidebar */}
       <aside
         className={`${
@@ -164,7 +149,8 @@ const JobSeekers = () => {
           onClick={toggleSidebar}
         />
       )}
-    </div>
+      </div>
+    </Wrapper>
   );
 };
 

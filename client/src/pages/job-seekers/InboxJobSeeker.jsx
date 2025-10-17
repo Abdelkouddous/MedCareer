@@ -9,6 +9,7 @@ import {
   Warning,
   Error as ErrorIcon,
 } from "@mui/icons-material";
+import { PageWrapper } from "../../assets/wrappers/AllJobsWrapper";
 
 function InboxJobSeeker() {
   const [items, setItems] = useState([]);
@@ -17,10 +18,7 @@ function InboxJobSeeker() {
 
   const load = async () => {
     try {
-      const token = localStorage.getItem("jobseeker_token");
-      const res = await customFetch.get("/jobseekers/notifications", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await customFetch.get("/jobseekers/notifications");
       setItems(res.data.notifications || []);
     } catch {
       toast.error("Failed to load notifications");
@@ -31,10 +29,7 @@ function InboxJobSeeker() {
 
   const markRead = async (id) => {
     try {
-      const token = localStorage.getItem("jobseeker_token");
-      await customFetch.patch(`/jobseekers/notifications/${id}/read`, null, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await customFetch.patch(`/jobseekers/notifications/${id}/read`, null);
       setItems((list) =>
         list.map((n) => (n._id === id ? { ...n, read: true } : n))
       );
@@ -46,16 +41,13 @@ function InboxJobSeeker() {
 
   const markAllRead = async () => {
     try {
-      const token = localStorage.getItem("jobseeker_token");
       const unreadIds = items
         .filter((item) => !item.read)
         .map((item) => item._id);
 
       await Promise.all(
         unreadIds.map((id) =>
-          customFetch.patch(`/jobseekers/notifications/${id}/read`, null, {
-            headers: { Authorization: `Bearer ${token}` },
-          })
+          customFetch.patch(`/jobseekers/notifications/${id}/read`, null)
         )
       );
 
@@ -117,7 +109,7 @@ function InboxJobSeeker() {
   }
 
   return (
-    <div className="container mx-auto">
+    <PageWrapper>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold text-[var(--text-color)] mb-2">
@@ -246,7 +238,7 @@ function InboxJobSeeker() {
           Showing {filteredItems.length} of {items.length} notifications
         </div>
       )}
-    </div>
+    </PageWrapper>
   );
 }
 

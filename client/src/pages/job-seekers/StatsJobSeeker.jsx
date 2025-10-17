@@ -9,6 +9,7 @@ import {
   Cancel,
   BarChart,
 } from "@mui/icons-material";
+import Wrapper from "../../assets/wrappers/StatsContainer";
 
 const barColor = (score) => {
   const r = Math.round((100 - score) * 2.55);
@@ -22,13 +23,10 @@ function StatsJobSeeker() {
 
   const fetchStats = async () => {
     try {
-      const token = localStorage.getItem("jobseeker_token");
-      const res = await customFetch.get("/jobseekers/stats", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await customFetch.get("/jobseekers/stats");
       setStats(res.data);
-    } catch (e) {
-      toast.error("Failed to load stats");
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to load stats");
     } finally {
       setLoading(false);
     }
@@ -91,7 +89,7 @@ function StatsJobSeeker() {
   ];
 
   return (
-    <div className="container mx-auto">
+    <Wrapper>
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-[var(--text-color)] mb-2">
           Application Statistics
@@ -244,7 +242,7 @@ function StatsJobSeeker() {
           </div>
         </div>
       )}
-    </div>
+    </Wrapper>
   );
 }
 

@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import customFetch from "../../utils/customFetch";
 import { toast } from "react-toastify";
 import { FiEye, FiEyeOff, FiMail, FiLock, FiUser } from "react-icons/fi";
+import Wrapper from "../../assets/wrappers/RegisterAndLoginPage";
 
 function LoginJobSeeker() {
   const navigate = useNavigate();
@@ -48,28 +49,31 @@ function LoginJobSeeker() {
     try {
       setLoading(true);
       const res = await customFetch.post("/jobseekers/login", form);
-      const { token } = res.data || {};
-      if (token) localStorage.setItem("jobseeker_token", token);
-      toast.success("Welcome back! Login successful");
-      navigate("/job-seekers/jobs");
+      console.log(res.data);
+      // Successful login only if confirmed
+      if (res.status === 200) {
+        // Rely on HTTP-only cookies set by the backend; no localStorage
+        toast.success("Welcome back! Login successful");
+        navigate("/job-seekers/dashboard");
+      }
     } catch (err) {
-      toast.error(
+      const msg =
         err?.response?.data?.message ||
-          "Login failed. Please check your credentials."
-      );
+        "Login failed. Please check your credentials.";
+      toast.error(msg);
+
+      // If not confirmed, redirect to ConfirmAccount with userId
+      if (err?.response?.status === 403 && err?.response?.data?.userId) {
+        const userId = err.response.data.userId;
+        navigate(`/job-seekers/confirm-account?token=${userId}`);
+      }
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center py-12 px-4"
-      style={{
-        background: `linear-gradient(135deg, var(--primary-50) 0%, var(--primary-100) 100%)`,
-        fontFamily: "system-ui, -apple-system, sans-serif",
-      }}
-    >
+    <Wrapper>
       <div className="form">
         {/* Header */}
         <div className="text-center mb-8">
@@ -208,7 +212,7 @@ function LoginJobSeeker() {
         {/* Footer */}
         <div className="text-center mt-6">
           <p style={{ color: "var(--text-secondary-color)" }}>
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link
               to="/job-seekers/register"
               className="font-semibold hover:underline"
@@ -236,7 +240,7 @@ function LoginJobSeeker() {
           </Link>
         </div>
       </div>
-    </div>
+    </Wrapper>
   );
 }
 

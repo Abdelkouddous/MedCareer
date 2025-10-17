@@ -1,13 +1,47 @@
-import  { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { FaBars, FaTimes } from "react-icons/fa"; // Make sure to install react-icons
+import { FaBars, FaTimes, FaMoon, FaSun } from "react-icons/fa"; // Make sure to install react-icons
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const getInitialTheme = () => {
+    try {
+      const saved = localStorage.getItem("darkTheme");
+      if (saved !== null) return saved === "true";
+    } catch (error) {
+      // localStorage might be unavailable (e.g., privacy mode or SSR). Fallback to system preference.
+      if (typeof window !== "undefined" && window.matchMedia) {
+        return window.matchMedia("(prefers-color-scheme: dark)").matches;
+      }
+    }
+    if (typeof window !== "undefined" && window.matchMedia) {
+      return window.matchMedia("(prefers-color-scheme: dark)").matches;
+    }
+    return false;
+  };
+  const [isDarkTheme, setIsDarkTheme] = useState(getInitialTheme());
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+  const toggleDarkTheme = () => {
+    setIsDarkTheme((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem("darkTheme", String(next));
+      } catch (error) {
+        // If persisting preference fails, continue without saving and optionally warn.
+        // eslint-disable-next-line no-console
+        console.warn("Failed to persist theme preference", error);
+      }
+      return next;
+    });
+  };
+
+  useEffect(() => {
+    document.body.classList.toggle("dark-theme", isDarkTheme);
+  }, [isDarkTheme]);
 
   return (
     <header className="bg-[var(--background-secondary-color)] shadow-lg sticky w-full top-0 z-50">
@@ -43,7 +77,7 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* CTA Buttons - Desktop */}
+          {/* CTA Buttons & Theme Toggle - Desktop */}
           <div className="hidden md:flex items-center space-x-4">
             <Link
               to="/job-seekers/login"
@@ -57,6 +91,20 @@ const Navbar = () => {
             >
               Sign Up
             </Link>
+            <button
+              className="w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+              onClick={toggleDarkTheme}
+              aria-label={
+                isDarkTheme ? "Switch to light mode" : "Switch to dark mode"
+              }
+              title={isDarkTheme ? "Light mode" : "Dark mode"}
+            >
+              {isDarkTheme ? (
+                <FaSun className="text-[var(--text-color)]" />
+              ) : (
+                <FaMoon className="text-[var(--text-color)]" />
+              )}
+            </button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -108,6 +156,23 @@ const Navbar = () => {
             >
               Contact
             </Link>
+            {/* Theme Toggle - Mobile */}
+            <div className="flex items-center justify-between">
+              <button
+                className="w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+                onClick={toggleDarkTheme}
+                aria-label={
+                  isDarkTheme ? "Switch to light mode" : "Switch to dark mode"
+                }
+                title={isDarkTheme ? "Light mode" : "Dark mode"}
+              >
+                {isDarkTheme ? (
+                  <FaSun className="text-[var(--text-color)]" />
+                ) : (
+                  <FaMoon className="text-[var(--text-color)]" />
+                )}
+              </button>
+            </div>
             <div className="pt-4 border-t border-gray-200">
               <Link
                 to="/login"

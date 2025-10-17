@@ -12,27 +12,12 @@ const ProtectedJobSeekerRoute = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const token = localStorage.getItem("jobseeker_token");
-
-        if (!token) {
-          setIsAuthenticated(false);
-          setIsLoading(false);
-          return;
-        }
-
-        // Verify token with server using customFetch with proper headers
-        await customFetch.get("/jobseekers/me", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        // customFetch (axios) automatically resolves successful responses
+        // Check for authentication using cookies instead of token in localStorage
+        await customFetch.get("/jobseekers/me");
         setIsAuthenticated(true);
       } catch (error) {
         console.error("Auth check failed:", error);
-        localStorage.removeItem("jobseeker_token");
-        localStorage.removeItem("jobseeker_user");
+        // localStorage.removeItem("jobseeker_user");
         setIsAuthenticated(false);
 
         // Show error message only for non-401 errors to avoid spam

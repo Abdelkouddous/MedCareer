@@ -34,7 +34,7 @@ import { logout } from "./controllers/authController.js";
 // dirname public
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
-import { getAllUsers } from "./controllers/userController.js";
+import { getAllUsers, getAllJobSeekers } from "./controllers/userController.js";
 import { getAllJobsCount } from "./controllers/jobController.js";
 
 const app = express();
@@ -67,8 +67,9 @@ app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", authenticateUser, userRouter);
 
 // job Seekers API call endpoint
-app.use("/api/v1/jobseekers", authenticateJobSeeker, jobSeekerRouter);
-// API 
+// Public routes are handled separately in the router
+app.use("/api/v1/jobseekers", jobSeekerRouter);
+// API
 app.get("/", (req, res) => {
   res.send(`
     <!DOCTYPE html>
@@ -120,6 +121,7 @@ app.get("/api/v1/test", (req, res) => {
 app.get("/api/v1/auth/logout", authenticateUser, logout);
 // added global apis to check users and jobs
 app.use("/api/v1/all-users", getAllUsers);
+app.use("/api/v1/all-seekers", getAllJobSeekers);
 app.get("/api/v1/all-jobs", allowGuestForViewing, getAllJobsCount);
 //
 

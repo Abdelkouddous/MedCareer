@@ -12,6 +12,7 @@ import {
   Description,
 } from "@mui/icons-material";
 import customFetch from "../../utils/customFetch";
+import { PageWrapper } from "../../assets/wrappers/AllJobsWrapper";
 
 const ProfileJobSeeker = () => {
   const [profile, setProfile] = useState({
@@ -32,17 +33,8 @@ const ProfileJobSeeker = () => {
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem("jobseeker_token");
-      if (!token) {
-        toast.error("Please login first");
-        return;
-      }
-
-      const response = await customFetch.get("/jobseekers/me", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      console.log(response.data.jobSeeker);
-
+      // Rely on cookie-based auth; no localStorage token
+      const response = await customFetch.get("/jobseekers/me");
       setProfile(response.data.jobSeeker);
       setEditForm(response.data.jobSeeker);
     } catch (error) {
@@ -66,16 +58,10 @@ const ProfileJobSeeker = () => {
   const handleSave = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem("jobseeker_token");
-
       const response = await customFetch.patch(
         "/jobseekers/profile",
-        editForm,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        editForm
       );
-
       setProfile(response.data.jobSeeker);
       setEditing(false);
       toast.success("Profile updated successfully!");
@@ -93,13 +79,11 @@ const ProfileJobSeeker = () => {
       const formData = new FormData();
       formData.append(type, file);
 
-      const token = localStorage.getItem("jobseeker_token");
       const response = await customFetch.post(
         `/jobseekers/upload-${type}`,
         formData,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
           },
         }
@@ -148,16 +132,15 @@ const ProfileJobSeeker = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--background-color)] py-8">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-[var(--text-color)] mb-2">
-            My Profile
-          </h1>
-          <p className="text-[var(--text-secondary-color)]">
-            Manage your personal information and documents
-          </p>
-        </div>
+    <PageWrapper>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-[var(--text-color)] mb-2">
+          My Profile
+        </h1>
+        <p className="text-[var(--text-secondary-color)]">
+          Manage your personal information and documents
+        </p>
+      </div>
 
         <div className="grid gap-6 lg:grid-cols-3">
           {/* Profile Picture & Basic Info */}
@@ -421,8 +404,7 @@ const ProfileJobSeeker = () => {
             </div>
           </div>
         </div>
-      </div>
-    </div>
+    </PageWrapper>
   );
 };
 

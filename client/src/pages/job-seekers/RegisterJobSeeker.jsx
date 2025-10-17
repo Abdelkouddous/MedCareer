@@ -12,6 +12,7 @@ import {
   FiPhone,
   FiUserPlus,
 } from "react-icons/fi";
+import Wrapper from "../../assets/wrappers/RegisterAndLoginPage";
 
 function RegisterJobSeeker() {
   const navigate = useNavigate();
@@ -75,11 +76,22 @@ function RegisterJobSeeker() {
 
     try {
       setLoading(true);
-      const res = await customFetch.post("/jobseekers", form);
-      const { token } = res.data || {};
-      if (token) localStorage.setItem("jobseeker_token", token);
-      toast.success("Account created successfully! Welcome aboard!");
-      navigate("/job-seekers/jobs");
+      // In your Register.jsx after successful registration
+      const response = await customFetch.post("/jobseekers/register", form);
+
+      // Redirect to confirm page (public route)
+      let url = `/job-seekers/confirm-account?token=${response.data.userId}`;
+
+      // 👇 Auto-fill OTP in dev
+      if (import.meta.env.NODE_ENV === "development" && response.data.devOtp) {
+        url += `&otp=${response.data.devOtp}`;
+        toast.success(`Dev OTP: ${response.data.devOtp}`);
+      } else {
+        toast.success("Account created successfully! Please confirm your email!");
+      }
+
+      navigate(url);
+      // navigate("/job-seekers/login");
     } catch (err) {
       toast.error(
         err?.response?.data?.message || "Registration failed. Please try again."
@@ -90,13 +102,7 @@ function RegisterJobSeeker() {
   };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center py-12 px-4"
-      style={{
-        background: `linear-gradient(135deg, var(--primary-50) 0%, var(--primary-100) 100%)`,
-        fontFamily: "system-ui, -apple-system, sans-serif",
-      }}
-    >
+    <Wrapper>
       <div className="form" style={{ maxWidth: "600px", width: "100%" }}>
         {/* Header */}
         <div className="text-center mb-8">
@@ -401,7 +407,7 @@ function RegisterJobSeeker() {
           </Link>
         </div>
       </div>
-    </div>
+    </Wrapper>
   );
 }
 

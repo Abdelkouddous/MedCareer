@@ -75,6 +75,19 @@ const UserSchema = new mongoose.Schema({
     default: "trial",
   },
   quotaExpiresAt: { type: Date },
+  // OTP verification for employers/admins
+  isConfirmed: {
+    type: Boolean,
+    default: false,
+  },
+  confirmOTP: {
+    type: String,
+    select: false,
+  },
+  otpExpires: {
+    type: Date,
+    select: false,
+  },
 });
 
 UserSchema.methods.toJSON = function () {

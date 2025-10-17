@@ -15,6 +15,7 @@ import {
   AttachMoney,
   TrendingUp,
 } from "@mui/icons-material";
+import { PageWrapper } from "../../assets/wrappers/AllJobsWrapper";
 
 function JobsJobSeeker() {
   const [jobs, setJobs] = useState([]);
@@ -41,7 +42,8 @@ function JobsJobSeeker() {
       const params = {};
       if (searchTerm) params.search = searchTerm;
       if (filters.jobType) params.jobType = filters.jobType;
-      if (filters.specialization) params.specialization = filters.specialization;
+      if (filters.specialization)
+        params.specialization = filters.specialization;
       if (filters.location) params.jobLocation = filters.location;
       if (sortBy) params.sort = sortBy;
 
@@ -56,18 +58,18 @@ function JobsJobSeeker() {
 
   const apply = async (jobId) => {
     try {
-      const token = localStorage.getItem("jobseeker_token");
-      if (!token) {
-        toast.info("Please create an account or log in to apply");
-        navigate("/job-seekers/register");
-        return;
-      }
-      await customFetch.post(`/jobseekers/apply/${jobId}`, null, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      // Check cookie-based auth
+      await customFetch.get("/jobseekers/me");
+      // Authenticated; apply without manual headers
+      await customFetch.post(`/jobseekers/apply/${jobId}`);
       toast.success("Application sent successfully!");
     } catch (e) {
-      toast.error(e?.response?.data?.message || "Failed to apply");
+      if (e?.response?.status === 401) {
+        toast.info("Please create an account or log in to apply");
+        navigate("/job-seekers/register");
+      } else {
+        toast.error(e?.response?.data?.message || "Failed to apply");
+      }
     }
   };
 
@@ -101,10 +103,17 @@ function JobsJobSeeker() {
     setSortBy(initialSort);
   }, [locationHook.search]);
 
-  // Detect guest by absence of jobseeker token
+  // Detect guest by attempting cookie-authenticated call
   useEffect(() => {
-    const token = localStorage.getItem("jobseeker_token");
-    setIsGuest(!token);
+    const checkGuest = async () => {
+      try {
+        await customFetch.get("/jobseekers/me");
+        setIsGuest(false);
+      } catch {
+        setIsGuest(true);
+      }
+    };
+    checkGuest();
   }, []);
 
   const clearFilters = () => {
@@ -119,7 +128,8 @@ function JobsJobSeeker() {
     if (searchTerm) params.set("search", searchTerm);
     if (filters.location) params.set("jobLocation", filters.location);
     if (filters.jobType) params.set("jobType", filters.jobType);
-    if (filters.specialization) params.set("specialization", filters.specialization);
+    if (filters.specialization)
+      params.set("specialization", filters.specialization);
     if (sortBy && sortBy !== "newest") params.set("sort", sortBy);
 
     const targetPath = locationHook.pathname.startsWith("/job-seekers")
@@ -175,13 +185,14 @@ function JobsJobSeeker() {
   }
 
   return (
-    <div className="container mx-auto p-4">
+    <PageWrapper>
       {/* Guest CTA Banner */}
       {isGuest && (
         <div className="mb-4 p-4 bg-[var(--primary-100)] border border-[var(--primary-200)] rounded-lg text-[var(--primary-700)]">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
             <p>
-              You can browse jobs without an account. Create an account or log in to apply.
+              You can browse jobs without an account. Create an account or log
+              in to apply.
             </p>
             <div className="flex gap-2">
               <button
@@ -491,7 +502,10 @@ function JobsJobSeeker() {
             <span className="font-semibold text-[var(--text-color)] ml-1">
               {totalJobs === 0
                 ? 0
-                : `${indexOfFirstJob + 1}-${Math.min(indexOfLastJob, totalJobs)}`}
+                : `${indexOfFirstJob + 1}-${Math.min(
+                    indexOfLastJob,
+                    totalJobs
+                  )}`}
             </span>
             <span className="ml-1">of</span>
             <span className="font-semibold text-[var(--text-color)] ml-1">
@@ -510,7 +524,7 @@ function JobsJobSeeker() {
           </p>
         </div>
       )}
-    </div>
+    </PageWrapper>
   );
 }
 

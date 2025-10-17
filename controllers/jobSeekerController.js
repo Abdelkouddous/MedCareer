@@ -1,21 +1,13 @@
 // jobSeekerController.js
 import { StatusCodes } from "http-status-codes";
 import JobSeeker from "../models/JobSeekerModel.js";
+
 import { hashPassword, comparePassword } from "../utils/passwordUtils.js";
 import { createJWT } from "../utils/tokenUtils.js";
 import mongoose from "mongoose";
 
 // Get all job seekers
-export const getAllJobSeekers = async (req, res) => {
-  try {
-    const jobSeekers = await JobSeeker.find().select("-password");
-    res.status(StatusCodes.OK).json(jobSeekers);
-  } catch (error) {
-    res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ message: error.message });
-  }
-};
+// You can call it in frontend by using getAllJobSeekers.length to count all job seekers
 
 // Get job seeker by ID
 export const getJobSeekerById = async (req, res) => {
@@ -55,24 +47,132 @@ export const createJobSeeker = async (req, res) => {
     }
 
     const hashedPassword = await hashPassword(password);
+    // Generate OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
 
     const jobSeeker = await JobSeeker.create({
       email,
       password: hashedPassword,
+      isConfirmed: false, // NOT confirmed yet
+      confirmOTP: otp, // temporary field
+      otpExpires,
       ...otherFields,
     });
+    // 👉 Send OTP via email (use Nodemailer, etc.)
+    console.log(`[DEV] OTP for ${email}: ${otp}`); // For testing only
+    const responseData = {
+      message: "OTP sent to your email",
+      userId: jobSeeker._id,
+    };
 
-    const token = createJWT({ jobSeekerId: jobSeeker._id, role: "jobseeker" });
+    // 👇 ONLY in development: expose OTP for testing
+    if (process.env.NODE_ENV === "development") {
+      responseData.devOtp = otp; // Never do this in production!
+    }
 
+    res.status(201).json(responseData);
     const sanitized = jobSeeker.toObject();
     delete sanitized.password;
 
-    res.status(StatusCodes.CREATED).json({ jobSeeker: sanitized, token });
+    // No token is provided at registration, user must login
+    // res.status(StatusCodes.CREATED).json({
+    //   jobSeeker: sanitized,
+    //   message:
+    //     "Registration successful. Please confirm your email with the OTP sent to your email.",
+    // });
   } catch (error) {
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ message: error.message });
   }
+};
+
+// Confirm email
+// POST /api/jobseekers/confirm-email
+export const confirmEmail = async (req, res) => {
+  const { userId, otp } = req.body; // Expect userId and otp from frontend
+
+  if (!userId || !otp) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "User ID and OTP are required" });
+  }
+
+  const jobSeeker = await JobSeeker.findById(userId).select(
+    "+confirmOTP +otpExpires"
+  );
+
+  if (!jobSeeker) {
+    return res
+      .status(StatusCodes.NOT_FOUND)
+      .json({ message: "User not found" });
+  }
+
+  if (jobSeeker.isConfirmed) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Account already confirmed" });
+  }
+
+  // Check OTP and expiry
+  if (jobSeeker.confirmOTP !== otp || jobSeeker.otpExpires < Date.now()) {
+    return res.status(400).json({ message: "Invalid or expired OTP" });
+  }
+
+  // ✅ Valid OTP → confirm user
+  jobSeeker.isConfirmed = true;
+  jobSeeker.confirmOTP = undefined;
+  jobSeeker.otpExpires = undefined;
+  await jobSeeker.save();
+  // Generate JWT token for user
+  const token = createJWT({ userId: jobSeeker._id });
+  res.status(StatusCodes.OK).json({ message: "Email confirmed successfully" });
+};
+
+// Resend OTP
+// POST /api/jobseekers/resend-otp
+export const resendOtp = async (req, res) => {
+  const { userId } = req.body;
+
+  if (!userId) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "User ID is required" });
+  }
+
+  const jobSeeker = await JobSeeker.findById(userId).select(
+    "+confirmOTP +otpExpires"
+  );
+
+  if (!jobSeeker) {
+    return res
+      .status(StatusCodes.NOT_FOUND)
+      .json({ message: "User not found" });
+  }
+
+  if (jobSeeker.isConfirmed) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Account already confirmed" });
+  }
+
+  // Generate and save new OTP
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  const otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+  jobSeeker.confirmOTP = otp;
+  jobSeeker.otpExpires = otpExpires;
+  await jobSeeker.save();
+
+  // Send OTP via email (placeholder: log in dev)
+  console.log(`[DEV] Resent OTP for ${jobSeeker.email}: ${otp}`);
+
+  const responseData = { message: "OTP resent successfully" };
+  if (process.env.NODE_ENV === "development") {
+    responseData.devOtp = otp; // Only for development/testing
+  }
+
+  res.status(StatusCodes.OK).json(responseData);
 };
 
 // Update job seeker
@@ -143,6 +243,14 @@ export const loginJobSeeker = async (req, res) => {
         .json({ message: "Invalid credentials" });
     }
 
+    // Require email confirmation before allowing login
+    if (!jobSeeker.isConfirmed) {
+      return res.status(StatusCodes.FORBIDDEN).json({
+        message: "Please confirm your email to continue",
+        userId: jobSeeker._id,
+      });
+    }
+
     const isMatch = await comparePassword(password, jobSeeker.password);
     if (!isMatch) {
       return res
@@ -150,7 +258,14 @@ export const loginJobSeeker = async (req, res) => {
         .json({ message: "Invalid credentials" });
     }
 
-    const token = createJWT({ jobSeekerId: jobSeeker._id, role: "jobseeker" });
+    const token = createJWT({ jobSeekerId: jobSeeker._id });
+
+    // Set the token in an HTTP-only cookie
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      expires: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24 hours
+    });
 
     const sanitized = jobSeeker.toObject();
     delete sanitized.password;

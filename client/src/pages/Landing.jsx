@@ -1,5 +1,8 @@
 import { Link } from "react-router-dom";
-import main from "../assets/images/main.svg";
+import missionImg from "../assets/images/main-alternative.svg";
+import featuredLogo from "../assets/images/00-dis--logo.svg";
+import professionImg from "../assets/images/avatar-2.jpg";
+import heroBg from "../assets/images/image.png";
 
 import { useEffect, useRef, useState } from "react";
 // removed useNavigate import as navigation is no longer used inline
@@ -9,10 +12,17 @@ import {
   FaMapMarkerAlt,
   FaStethoscope,
   FaBriefcase,
+  FaHospitalSymbol,
+  FaHospital,
+  FaFire,
 } from "react-icons/fa";
 import { MEDICAL_SPECIALIZATION } from "../../../utils/constants";
 import customFetch from "../utils/customFetch";
 import { toast } from "react-toastify";
+import Wrapper from "../assets/wrappers/Dashboard";
+import CountUpNumber from "./components/CountUpNumber";
+import Job from "./components/Job";
+import JobInLanding from "./components/JobInLanding";
 
 const Landing = () => {
   // Create refs for each section that will have animations
@@ -37,9 +47,25 @@ const Landing = () => {
     specialization: "",
   });
   const [latestJobs, setLatestJobs] = useState([]);
+  const [allJobs, setAllJobs] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
+  const [allCandidates, setAllCandidates] = useState([]);
+
   const [loadingJobs, setLoadingJobs] = useState(true);
   const autoSearchTimerRef = useRef(null);
 
+  const fetchAllJobs = async () => {
+    try {
+      setLoadingJobs(true);
+      const response = await customFetch.get("/jobs");
+      setAllJobs(response.data.jobs || []);
+    } catch (error) {
+      console.error("Failed to fetch latest jobs:", error);
+      toast.error("Failed to load latest jobs");
+    } finally {
+      setLoadingJobs(false);
+    }
+  };
   // Fetch latest jobs (supports optional inline filtering via query string)
   const fetchLatestJobs = async (query = "") => {
     try {
@@ -65,8 +91,40 @@ const Landing = () => {
     }
   };
 
+  // fetch all users
+  const fetchAllUsers = async () => {
+    try {
+      setLoadingJobs(true);
+      const response = await customFetch.get("/all-users");
+      setAllUsers(response.data.users || []);
+    } catch (error) {
+      console.error("Failed to fetch latest employers:", error);
+      toast.error("Failed to load latest employers");
+    } finally {
+      setLoadingJobs(false);
+    }
+  };
+
+  // fetch all candidates
+  const fetchAllCandidates = async () => {
+    try {
+      setLoadingJobs(true);
+      // Use public global endpoint that returns { jobSeekers, count }
+      const response = await customFetch.get("/all-seekers");
+      setAllCandidates(response.data.jobSeekers || []);
+    } catch (error) {
+      console.error("Failed to fetch latest candidates:", error);
+      toast.error("Failed to load latest candidates");
+    } finally {
+      setLoadingJobs(false);
+    }
+  };
+
   useEffect(() => {
     fetchLatestJobs();
+    fetchAllJobs();
+    fetchAllUsers();
+    fetchAllCandidates();
   }, []);
 
   useEffect(() => {
@@ -75,8 +133,8 @@ const Landing = () => {
     style.textContent = `
       .fade-in-section {
         opacity: 0;
-        transform: translateY(20px);
-        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        transform: translateY(50px);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
       }
       .fade-in-section.is-visible {
         opacity: 1;
@@ -181,35 +239,54 @@ const Landing = () => {
         {/* Hero Section with Full-Width Background and Search */}
         <section
           ref={sectionRefs.hero}
-          className="relative pt-24 pb-16 min-h-[60vh]"
+          className="relative pt-16 pb-16 min-h-[60vh]"
         >
-          {/* Background image */}
-          <div className="absolute inset-0">
+          {/* Background image + gradient filter */}
+          <div className="absolute inset-0 bg-[url('/image.png')] bg-cover bg-center bg-no-repeat">
+            {/* Gradient overlay acts as a color filter on top of the image */}
+            <div className="absolute inset-0 bg-gradient-to-l from-[var(--hero-gradient-from)] to-[var(--hero-gradient-to)] opacity-70" />
             <img
-              src={main}
+              src={heroBg}
               alt="Healthcare professionals background"
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-black/40" />
+          </div>
+          {/* Total jobs posted  */}
+          <div className="relative z-10 px-4 text-xl md:text-2xl mb-2 flex items-center text-[var(--text-primary-500)] ">
+            <FaFire></FaFire>
+            <span className="mr-1 text-[var(--primary-500)]">
+              {" "}
+              <CountUpNumber end={allJobs.length || 0} />{" "}
+            </span>{" "}
+            jobs posted
           </div>
           {/* Content overlay */}
           <div className="relative z-10 px-4">
-            <div className="max-w-6xl mx-auto text-center">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
-                Find your future healthcare job in{" "}
-                <span className="text-[var(--primary-500)]">Algeria</span>
-              </h1>
-              <p className="text-white/90 text-lg md:text-xl mb-8">
-                Among more than {latestJobs.length || 0} open positions
-              </p>
+            {/* Content */}
+            <div className="max-w-6xl mx-auto">
+              <h3 className="text-4xl md:text-5xl lg:text-6xl font-bold  mb-6">
+                The <span className="text-[var(--primary-500)]">Largest</span>{" "}
+                healthcare job portal in
+                <span className="text-[var(--primary-500)]"> Algeria</span>
+              </h3>
+            </div>
+            {/* Employer CTA: Post a Job (shown before search functionality) */}
+            <div className="flex justify-center mb-6">
+              <Link
+                to="/register?role=employer"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-[var(--cta-gradient-from)] to-[var(--cta-gradient-to)]  px-6 py-3 rounded-md font-semibold shadow-md hover:shadow-lg hover:opacity-98 transition-all duration-200"
+              >
+                <FaBriefcase />
+                Post a job
+              </Link>
             </div>
 
             {/* Full-width Search Bar */}
             <form
               onSubmit={handleSearchSubmit}
-              className="w-screen relative left-1/2 -translate-x-1/2 bg-white/95 rounded-none shadow-lg p-4 mb-8 border border-gray-200 backdrop-blur"
+              className=" m-2 relative left-1/2 -translate-x-1/2 bg-white/95 rounded-none shadow-lg p-4 mb-8 border border-gray-200 backdrop-blur"
             >
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3 m-2">
                 {/* Keywords Search */}
                 <div className="relative">
                   <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -220,7 +297,7 @@ const Landing = () => {
                     onChange={(e) =>
                       handleSearchChange("keywords", e.target.value)
                     }
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)] focus:border-transparent"
                   />
                 </div>
 
@@ -234,7 +311,7 @@ const Landing = () => {
                     onChange={(e) =>
                       handleSearchChange("location", e.target.value)
                     }
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)] focus:border-transparent"
                   />
                 </div>
 
@@ -246,7 +323,7 @@ const Landing = () => {
                     onChange={(e) =>
                       handleSearchChange("specialization", e.target.value)
                     }
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+                    className="w-full text-[var(--primary-900)] pl-10 pr-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)] focus:border-transparent appearance-none "
                   >
                     <option value="">All specialties</option>
                     {Object.values(MEDICAL_SPECIALIZATION).map((spec) => (
@@ -257,41 +334,69 @@ const Landing = () => {
                   </select>
                 </div>
               </div>
+              <div className="w-full inline-flex items-center gap-2 bg-gradient-to-r from-[var(--primary-300)] to-[var(--primary-700)] text-[var(--white)] px-6 py-3 rounded-md font-semibold shadow-md hover:shadow-lg hover:opacity-95 transition-all duration-200 relative  justify-center bg-[var(--primary-500)] p-4  border-r-4">
+                <p>See among {latestJobs.length || 0} open positions</p>
+              </div>
 
               {/* Search Button */}
-              <button
+              {/* <button
                 type="submit"
                 className="w-full p-4 bg-[var(--primary-500)] text-[var(--white)] transition-colors duration-200 flex items-center justify-center gap-2"
               >
                 <FaSearch />
                 Search
-              </button>
+              </button> */}
             </form>
-
-            {/* Quick actions */}
-            <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Link
-                to="/job-seekers"
-                className="w-full text-center bg-[var(--primary-500)] text-[var(--white)] px-6 py-3 rounded-md font-semibold hover:bg-[var(--primary-700)] transition-all duration-200"
-              >
-                Job Seeker
-              </Link>
-              <Link
-                to="/register?role=employer"
-                className="w-full text-center border-2 border-[var(--primary-500)] text-[var(--primary-500)] px-6 py-3 rounded-md font-semibold hover:bg-[var(--primary-500)] hover:text-[var(--white)] transition-all duration-200 bg-white/90"
-              >
-                Employer
-              </Link>
+          </div>
+        </section>
+        {/* Statistics Section */}
+        <section
+          ref={sectionRefs.statistics}
+          className="py-16 px-4 bg-[var(--background-secondary-color)]"
+        >
+          <div className="container mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+              <div className="text-center">
+                <div className="text-4xl font-bold text-[var(--primary-500)] mb-2">
+                  <CountUpNumber end={allJobs.length || 0} />
+                </div>
+                <p className="text-[var(--text-secondary-color)]">
+                  Active Jobs
+                </p>
+              </div>
+              <div className="text-center">
+                <div className="text-4xl font-bold text-[var(--primary-500)] mb-2">
+                  <CountUpNumber end={allUsers.length || 0} />
+                </div>
+                <p className="text-[var(--text-secondary-color)]">Companies</p>
+              </div>
+              <div className="text-center">
+                <div className="text-4xl font-bold text-[var(--primary-500)] mb-2">
+                  <CountUpNumber end={allCandidates.length || 0} />
+                </div>
+                <p className="text-[var(--text-secondary-color)]">Candidates</p>
+              </div>
+              <div className="text-center">
+                <div className="text-4xl font-bold text-[var(--primary-500)] mb-2">
+                  <CountUpNumber end={95} suffix="%" />
+                </div>
+                <p className="text-[var(--text-secondary-color)]">
+                  Success Rate
+                </p>
+              </div>
             </div>
           </div>
         </section>
-
         {/* Featured Medical Jobs Section */}
-        <section ref={sectionRefs.featuredJobs} className="py-16 px-4 bg-[var(--background-secondary-color)] fade-in-section">
+        <section
+          ref={sectionRefs.featuredJobs}
+          className="py-16 px-4 bg-[var(--background-secondary-color)] fade-in-section"
+        >
           <div className="container mx-auto">
             <div className="text-center mb-10">
               <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-color)]">
-                Featured <span className="text-[var(--primary-500)]">Medical Jobs</span>
+                Featured{" "}
+                <span className="text-[var(--primary-500)]">Medical Jobs</span>
               </h2>
             </div>
 
@@ -301,77 +406,57 @@ const Landing = () => {
               </div>
             ) : latestJobs.length === 0 ? (
               <div className="text-center py-8">
-                <p className="text-[var(--text-secondary-color)]">No featured jobs available at the moment.</p>
+                <p className="text-[var(--text-secondary-color)]">
+                  No featured jobs available at the moment.
+                </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {latestJobs.slice(0, 3).map((job) => (
-                  <div key={job._id} className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex items-start justify-between mb-3">
-                      <h3 className="text-xl font-semibold text-[var(--text-color)]">{job.position}</h3>
-                      <span
-                        className={`text-xs font-semibold px-3 py-1 rounded-full ${
-                          job.jobType === "full-time"
-                            ? "bg-[var(--primary-100)] text-[var(--primary-700)]"
-                            : "bg-[var(--background-secondary-color)] text-[var(--text-color)]"
-                        }`}
-                      >
-                        {job.jobType?.replace(/-/g, " ")?.replace(/\b\w/g, (c) => c.toUpperCase())}
-                      </span>
-                    </div>
-                    <div className="text-[var(--primary-700)] font-medium mb-2">{job.company}</div>
-                    <div className="space-y-2 text-[var(--text-secondary-color)] mb-4">
-                      <div className="flex items-center gap-2">
-                        <FaMapMarkerAlt /> <span>{job.jobLocation}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <FaStethoscope /> <span>{job.specialization}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <FaBriefcase /> <span className="capitalize">{job.jobType}</span>
-                      </div>
-                    </div>
-                    <Link to="/job-seekers/jobs" className="text-[var(--primary-500)] font-semibold hover:text-[var(--primary-700)]">
-                      View Details ➜
-                    </Link>
-                  </div>
+              <Wrapper className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {latestJobs.slice(0, 5).map((job) => (
+                  <JobInLanding key={job._id} {...job} to="/job-seekers/jobs" />
                 ))}
-              </div>
+              </Wrapper>
             )}
           </div>
         </section>
 
         {/* Latest Jobs Section - Moved to top after hero */}
-        <section className="py-16 px-4 bg-white">
-          <div className="container mx-auto">
+        <section className="py-16 px-4 ">
+          <h2 className="text-3xl md:text-4xl font-bold mb-10 text-center">
+            Latest{" "}
+            <span className="text-[var(--primary-500)]">Medical Jobs</span>
+          </h2>
+          <div className="container mx-auto ">
             {loadingJobs ? (
               <div className="flex items-center justify-center min-h-64">
                 <div className="loading"></div>
               </div>
             ) : latestJobs.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-[var(--text-secondary-color)] text-lg">
+                <p className="text-[var(--text-primary-color)] text-lg">
                   No job opportunities available at the moment.
                 </p>
               </div>
             ) : (
-              <div className="space-y-4">
-                {latestJobs.slice(0, 10).map((job) => (
+              <div className="space-y-8 ">
+                {latestJobs.slice(0, 5).map((job) => (
                   <div
                     key={job._id}
-                    className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow duration-300 flex flex-col md:flex-row md:items-center md:justify-between"
+                    className=" bg-gradient-to-tr from-[var(--cta-gradient-from)] to-[var(--cta-gradient-to)] rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col md:flex-row md:items-center md:justify-between"
                   >
                     <div className="flex-1">
-                      <div className="flex items-start justify-between mb-2">
-                        <h3 className="text-lg font-semibold text-[var(--text-color)] hover:text-[var(--primary-500)] cursor-pointer">
-                          {job.position}
-                        </h3>
-                        <span className="text-sm text-[var(--text-secondary-color)] ml-4">
-                          {job.company}
-                        </span>
+                      <div className="flex items-start justify-between mb-1">
+                        <div className="flex flex-wrap items-center gap-2 text-lg text-[var(--text-primary-50)] mb-1">
+                          <FaBriefcase />
+                          <span> {job.position}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center mb-1 gap-2 text-[var(--text-primary-50)]">
+                        <FaHospital />
+                        <span className="text-base  ">{job.company}</span>
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-4 text-sm text-[var(--text-secondary-color)] mb-2">
+                      <div className="flex flex-wrap items-center gap-4 text-sm text-[var(--text-primary-700)] mb-2">
                         <div className="flex items-center">
                           <FaMapMarkerAlt className="mr-1" />
                           <span>{job.jobLocation}</span>
@@ -386,7 +471,7 @@ const Landing = () => {
                         </div>
                       </div>
 
-                      <div className="text-xs text-[var(--text-secondary-color)]">
+                      <div className="text-xs text-[var(--text-primary-300)]">
                         Posted on {new Date(job.createdAt).toLocaleDateString()}
                       </div>
                     </div>
@@ -427,26 +512,35 @@ const Landing = () => {
         </section>
 
         {/* Mission Section */}
-        <section className="py-16 px-4 bg-white">
+        <section className="py-16 px-4 bg-gradient-to-r from-[var(--cta-gradient-from)] to-[var(--cta-gradient-to)]">
           <div className="container mx-auto">
-            <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-color)] mb-8">
-                Our mission 🚀
-              </h2>
-              <p className="text-[var(--text-secondary-color)] text-lg leading-relaxed mb-6">
-                Enable healthcare professionals (doctors, nurses, pharmacists,
-                etc.) to find the job that matches their medical specializations
-                and preferred methodologies.
-              </p>
-              <p className="text-[var(--text-secondary-color)] text-lg leading-relaxed mb-6">
-                We help startups, healthcare service companies and any
-                organization requiring medical professionals or healthcare
-                services to strengthen their teams with the best-suited
-                profiles.
-              </p>
-              <button className="text-[var(--primary-500)] font-semibold hover:text-[var(--primary-700)] transition-colors duration-200">
-                Show more
-              </button>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center max-w-6xl mx-auto">
+              <div className="order-2 md:order-1 text-center md:text-left">
+                <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-color)] mb-6">
+                  Our mission 🚀
+                </h2>
+                <p className="text-[var(--text-secondary-color)] text-lg leading-relaxed mb-4">
+                  Enable healthcare professionals (doctors, nurses, pharmacists,
+                  etc.) to find the job that matches their medical
+                  specializations and preferred methodologies.
+                </p>
+                <p className="text-[var(--text-secondary-color)] text-lg leading-relaxed mb-6">
+                  We help startups, healthcare service companies and any
+                  organization requiring medical professionals or healthcare
+                  services to strengthen their teams with the best-suited
+                  profiles.
+                </p>
+                <button className="text-[var(--primary-500)] font-semibold hover:text-[var(--primary-700)] transition-colors duration-200">
+                  Show more
+                </button>
+              </div>
+              <div className="order-1 md:order-2">
+                <img
+                  src={missionImg}
+                  alt="MedCareer mission illustration"
+                  className="w-full h-full object-contain drop-shadow-md"
+                />
+              </div>
             </div>
           </div>
         </section>
@@ -454,66 +548,88 @@ const Landing = () => {
         {/* Featured Company Section */}
         <section className="py-16 px-4 bg-[var(--background-secondary-color)]">
           <div className="container mx-auto">
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-6xl mx-auto">
               <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-color)] text-center mb-12">
                 Featured Company
               </h2>
-              <div className="bg-white rounded-lg shadow-md p-8">
-                <h3 className="text-2xl font-bold text-[var(--text-color)] mb-4">
-                  MedTech Solutions
-                </h3>
-                <p className="text-[var(--text-secondary-color)] leading-relaxed">
-                  MedTech Solutions is a healthcare technology platform that
-                  aims to connect patients with medical professionals and help
-                  them:
-                </p>
-                <ul className="mt-4 space-y-2 text-[var(--text-secondary-color)]">
-                  <li>
-                    • Find the right specialist doctor according to specialties
-                  </li>
-                  <li>• Build reliable medical strategies</li>
-                  <li>• Analyze medical documents</li>
-                  <li>• Find relevant connections in the MEDICAL BIG DATA</li>
-                </ul>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center bg-[var(--card-gradient-to)] rounded-lg shadow-md p-8">
+                <div className="md:col-span-2">
+                  <h3 className="text-2xl font-bold text-[var(--text-color)] mb-4">
+                    MedTech Solutions
+                  </h3>
+                  <p className="text-[var(--text-secondary-color)] leading-relaxed">
+                    MedTech Solutions is a healthcare technology platform that
+                    aims to connect patients with medical professionals and help
+                    them:
+                  </p>
+                  <ul className="mt-4 space-y-2 text-[var(--text-secondary-color)]">
+                    <li>
+                      • Find the right specialist doctor according to
+                      specialties
+                    </li>
+                    <li>• Build reliable medical strategies</li>
+                    <li>• Analyze medical documents</li>
+                    <li>• Find relevant connections in the MEDICAL BIG DATA</li>
+                  </ul>
+                </div>
+                <div className="md:col-span-1 text-center">
+                  <img
+                    src={featuredLogo}
+                    alt="Featured company logo"
+                    className="w-40 h-40 mx-auto object-contain"
+                  />
+                  <p className="mt-4 text-sm text-[var(--text-secondary-color)]">
+                    Trusted partner for digital health innovation
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Job of the Day Section */}
-        <section className="py-16 px-4 bg-white">
+        {/* Profession of the Day Section */}
+        <section className="py-16 px-4 bg-gradient-to-tr from-[var(--cta-gradient-from)] to-[var(--cta-gradient-to)]">
           <div className="container mx-auto">
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-6xl mx-auto">
               <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-color)] text-center mb-12">
                 Profession of the day
               </h2>
-              <div className="bg-[var(--background-secondary-color)] rounded-lg p-8">
-                <h3 className="text-2xl font-bold text-[var(--text-color)] mb-4">
-                  Nurse Practitioner: Advanced Practice Nursing
-                </h3>
-                <p className="text-[var(--text-secondary-color)] leading-relaxed mb-4">
-                  Nurse Practitioner (NP) is a specialized profession in
-                  advanced nursing practice processes.
-                </p>
-                <p className="text-[var(--text-secondary-color)] leading-relaxed mb-6">
-                  The NP has the responsibility to ensure, once the patient is
-                  assessed and treatment is provided, that care is compliant
-                  with requirements and meets quality criteria in terms of both
-                  functionality and safety standards.
-                </p>
-                <Link
-                  to="/job-seekers/jobs"
-                  className="text-[var(--primary-500)] font-semibold hover:text-[var(--primary-700)] transition-colors duration-200"
-                >
-                  [Read more...]
-                </Link>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center bg-[var(--background-secondary-color)] rounded-lg p-8">
+                <div className="md:col-span-2">
+                  <h3 className="text-2xl font-bold text-[var(--text-color)] mb-4">
+                    Nurse Practitioner: Advanced Practice Nursing
+                  </h3>
+                  <p className="text-[var(--text-secondary-color)] leading-relaxed mb-4">
+                    Nurse Practitioner (NP) is a specialized profession in
+                    advanced nursing practice processes.
+                  </p>
+                  <p className="text-[var(--text-secondary-color)] leading-relaxed mb-6">
+                    The NP has the responsibility to ensure, once the patient is
+                    assessed and treatment is provided, that care is compliant
+                    with requirements and meets quality criteria in terms of
+                    both functionality and safety standards.
+                  </p>
+                  <Link
+                    to="/job-seekers/jobs"
+                    className="text-[var(--primary-500)] font-semibold hover:text-[var(--primary-700)] transition-colors duration-200"
+                  >
+                    [Read more...]
+                  </Link>
+                </div>
+                <div className="md:col-span-1 text-center">
+                  <img
+                    src={professionImg}
+                    alt="Nurse practitioner illustration"
+                    className="w-40 h-40 rounded-lg object-cover mx-auto shadow-sm"
+                  />
+                </div>
               </div>
             </div>
           </div>
         </section>
 
         {/* Quick Registration Section */}
-        <section className="py-16 px-4 bg-[var(--primary-500)]">
+        <section className="py-16 px-4 bg-[var(--primary-700)]">
           <div className="container mx-auto">
             <div className="max-w-4xl mx-auto text-center">
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
@@ -671,47 +787,11 @@ const Landing = () => {
           </div>
         </section>
 
-        {/* Statistics Section */}
-        <section
-          ref={sectionRefs.statistics}
-          className="py-16 px-4 bg-[var(--background-secondary-color)]"
-        >
-          <div className="container mx-auto">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-              <div className="text-center">
-                <div className="text-4xl font-bold text-[var(--primary-500)] mb-2">
-                  10K+
-                </div>
-                <p className="text-[var(--text-secondary-color)]">
-                  Active Jobs
-                </p>
-              </div>
-              <div className="text-center">
-                <div className="text-4xl font-bold text-[var(--primary-500)] mb-2">
-                  5K+
-                </div>
-                <p className="text-[var(--text-secondary-color)]">Companies</p>
-              </div>
-              <div className="text-center">
-                <div className="text-4xl font-bold text-[var(--primary-500)] mb-2">
-                  50K+
-                </div>
-                <p className="text-[var(--text-secondary-color)]">Candidates</p>
-              </div>
-              <div className="text-center">
-                <div className="text-4xl font-bold text-[var(--primary-500)] mb-2">
-                  95%
-                </div>
-                <p className="text-[var(--text-secondary-color)]">
-                  Success Rate
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* Latest Blog Posts */}
-        <section ref={sectionRefs.blog} className="py-16 px-4">
+        <section
+          ref={sectionRefs.blog}
+          className="py-16 px-4 bg-gradient-to-tr from-[var(--cta-gradient-from)] to-[var(--cta-gradient-to)]"
+        >
           <div className="container mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-color)] text-center mb-12">
               Latest from our{" "}
@@ -770,7 +850,7 @@ const Landing = () => {
             <div className="text-center mt-8">
               <Link
                 to="/blog"
-                className="inline-block border-2 border-[var(--primary-500)] text-[var(--primary-500)] px-8 py-3 rounded-md font-bold text-lg hover:bg-[var(--primary-500)] hover:text-[var(--white)] transition-all duration-200"
+                className="inline-block border-0.5 bg-gradient-to-tr from-[var(--primary-500)] to-[var(--primary-700)] border-[var(--primary-500)] px-8 py-3 rounded-md font-bold text-lg hover:bg-[var(--primary-500)] hover:text-[var(--white)] transition-all duration-200"
               >
                 View All Posts
               </Link>

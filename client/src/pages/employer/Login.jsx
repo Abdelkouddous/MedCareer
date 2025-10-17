@@ -32,9 +32,15 @@ export const action = async ({ request }) => {
       return redirect("/dashboard");
     }
   } catch (error) {
-    return {
-      msg: error?.response?.data?.msg || "An error occurred during login.",
-    };
+    const status = error?.response?.status;
+    const msg = error?.response?.data?.msg || "An error occurred during login.";
+    const userId = error?.response?.data?.userId;
+    // If OTP confirmation is required, redirect to employer confirm page
+    if (status === 403 && userId) {
+      toast.info("Please confirm your email to continue.");
+      return redirect(`/confirm-account?token=${userId}`);
+    }
+    return { msg };
   }
 };
 

@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Form,
   redirect,
@@ -16,9 +15,13 @@ export const action = async ({ request }) => {
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
   try {
-    await customFetch.post("/auth/register", data);
-    toast.success("Registration successful! Please log in.");
-    return redirect("/login");
+    const { data: res } = await customFetch.post("/auth/register", data);
+    toast.success("Registration successful! Please verify your email.");
+    const userId = res?.user?.userId;
+    const devOtp = res?.devOtp;
+    const query = new URLSearchParams({ token: userId || "" });
+    if (devOtp) query.set("otp", devOtp);
+    return redirect(`/confirm-account?${query.toString()}`);
   } catch (error) {
     toast.error(error?.response?.data?.msg);
     return error;

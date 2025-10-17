@@ -67,7 +67,6 @@ const DashboardLayout = () => {
     const newDarkTheme = !isDarkTheme;
     setIsDarkTheme(newDarkTheme);
     document.body.classList.toggle("dark-theme", newDarkTheme);
-    localStorage.setItem("darkTheme", newDarkTheme);
   };
 
   const toggleSidebar = () => {

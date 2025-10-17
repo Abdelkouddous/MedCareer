@@ -41,9 +41,9 @@ const JobSeekerSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
-  isPremium : {
-    type : Boolean,
-    default : false 
+  isPremium: {
+    type: Boolean,
+    default: false,
   },
   profilePicture: {
     type: String, // URL to stored image
@@ -55,6 +55,18 @@ const JobSeekerSchema = new mongoose.Schema({
   updatedAt: {
     type: Date,
     default: Date.now,
+  },
+  isConfirmed: {
+    type: Boolean,
+    default: false,
+  },
+  confirmOTP: {
+    type: String,
+    select: false,
+  },
+  otpExpires: {
+    type: Date,
+    select: false,
   },
 });
 

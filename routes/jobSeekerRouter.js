@@ -6,6 +6,8 @@ import {
   logoutJobSeeker,
   getCurrentJobSeeker,
   updateCurrentJobSeeker,
+  confirmEmail,
+  resendOtp,
 } from "../controllers/jobSeekerController.js";
 import {
   applyToJob,
@@ -22,9 +24,11 @@ const router = Router();
 router.get("/guest", guestJobSeeker);
 
 // Public auth for job seekers
-router.post("/", createJobSeeker);
+router.post("/register", createJobSeeker);
 router.post("/login", loginJobSeeker);
 router.post("/logout", logoutJobSeeker);
+router.post("/confirm-email", confirmEmail);
+router.post("/resend-otp", resendOtp);
 
 // Self-only profile endpoints
 router.get("/me", authenticateJobSeeker, getCurrentJobSeeker);

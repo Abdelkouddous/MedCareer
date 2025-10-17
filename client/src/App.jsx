@@ -16,7 +16,7 @@ import {
   JobSeekers,
   Employers,
   SalaryGuide,
-  ResumeTips,
+  ResumeTips, 
   CareerResources,
   Login,
   Register,
@@ -24,11 +24,13 @@ import {
 
 // for job seekers
 import RegisterJobSeeker from "./pages/job-seekers/RegisterJobSeeker";
+import ConfirmAccount from "./pages/job-seekers/ConfirmAccount";
 import LoginJobSeeker from "./pages/job-seekers/LoginJobSeeker";
 import JobsJobSeeker from "./pages/job-seekers/JobsJobSeeker";
 import StatsJobSeeker from "./pages/job-seekers/StatsJobSeeker";
 import InboxJobSeeker from "./pages/job-seekers/InboxJobSeeker";
 import ProfileJobSeeker from "./pages/job-seekers/ProfileJobSeeker";
+import Dashboard from "./pages/job-seekers/Dashboard";
 import ProtectedJobSeekerRoute from "./pages/components/ProtectedJobSeekerRoute";
 // imported actions necessary
 // removed actions for default auth routes; job seeker pages handle submit locally
@@ -46,9 +48,32 @@ import { loader as editJobLoader } from "./pages/jobs-operations/EditJob";
 // imported loaders for admin page
 import { loader as adminLoader } from "./pages/Admin";
 
-//create a function that that adds the dark model
+// Add employer auth actions
+import { action as loginAction } from "./pages/employer/Login";
+import { action as registerAction } from "./pages/employer/Register";
+// Add employer OTP confirm page
+import ConfirmAccountEmployer from "./pages/employer/ConfirmAccount";
+
+// Create a function that determines and applies the default theme.
+// Prefers saved user preference (localStorage) and falls back to system preference.
 export const checkDefaultTheme = () => {
-  const isDarkTheme = localStorage.getItem("darkTheme") === "true";
+  let isDarkTheme = false;
+  try {
+    const saved = localStorage.getItem("darkTheme");
+    if (saved !== null) {
+      isDarkTheme = saved === "true";
+    } else if (typeof window !== "undefined" && window.matchMedia) {
+      isDarkTheme = window
+        .matchMedia("(prefers-color-scheme: dark)")
+        .matches;
+    }
+  } catch {
+    if (typeof window !== "undefined" && window.matchMedia) {
+      isDarkTheme = window
+        .matchMedia("(prefers-color-scheme: dark)")
+        .matches;
+    }
+  }
   document.body.classList.toggle("dark-theme", isDarkTheme);
   return isDarkTheme;
 };
@@ -73,10 +98,17 @@ const router = createBrowserRouter([
       {
         path: "register",
         element: <Register />,
+        action: registerAction,
       },
       {
         path: "login",
         element: <Login />,
+        action: loginAction,
+      },
+      // Employer/admin OTP confirmation page
+      {
+        path: "confirm-account",
+        element: <ConfirmAccountEmployer />,
       },
       {
         path: "landing",
@@ -159,6 +191,11 @@ const router = createBrowserRouter([
     path: "job-seekers/login",
     element: <LoginJobSeeker />,
   },
+
+  {
+    path: "job-seekers/confirm-account",
+    element: <ConfirmAccount />,
+  },
   {
     path: "job-seekers/register",
     element: <RegisterJobSeeker />,
@@ -175,9 +212,10 @@ const router = createBrowserRouter([
       </ProtectedJobSeekerRoute>
     ),
     children: [
-      // Default route - redirect to jobs
-      { index: true, element: <JobsJobSeeker /> },
+      // Default route - redirect to dashboard
+      { index: true, element: <Dashboard /> },
       // Nested routes (relative to /job-seekers)
+      { path: "dashboard", element: <Dashboard /> },
       { path: "jobs", element: <JobsJobSeeker /> },
       { path: "stats", element: <StatsJobSeeker /> },
       { path: "inbox", element: <InboxJobSeeker /> },

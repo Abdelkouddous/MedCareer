@@ -12,8 +12,6 @@ import {
   authenticateUser,
   authorizePermissions,
   allowGuestForViewing,
-  ensureEmployerApproved,
-  enforceEmployerQuota,
 } from "../middleware/authMiddleware.js";
 
 const router = Router();
@@ -33,22 +31,18 @@ router.post(
   "/",
   authenticateUser,
   authorizePermissions("user", "admin"),
-  ensureEmployerApproved,
-  enforceEmployerQuota,
   createJob
 );
 router.patch(
   "/:id",
   authenticateUser,
   authorizePermissions("user", "admin"),
-  ensureEmployerApproved,
   updateJob
 );
 router.delete(
   "/:id",
   authenticateUser,
   authorizePermissions("user", "admin"),
-  ensureEmployerApproved,
   deleteJob
 );
 
