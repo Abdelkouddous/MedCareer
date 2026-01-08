@@ -2,7 +2,7 @@ import request from "supertest";
 import express from "express";
 import mongoose from "mongoose";
 import authRouter from "../../routes/authRouter.js";
-import User from "../../models/UserModel.js";
+import Employer from "../../models/EmployerModel.js";
 import { testUsers } from "../fixtures/testData.js";
 import cookieParser from "cookie-parser";
 
@@ -32,7 +32,7 @@ describe("Authentication Controller", () => {
         .expect(201);
 
       // Check if user was created as admin
-      const user = await User.findOne({ email: testUsers.admin.email });
+      const user = await Employer.findOne({ email: testUsers.admin.email });
       expect(user.role).toBe("admin");
     });
 
@@ -42,7 +42,7 @@ describe("Authentication Controller", () => {
         .send(testUsers.employer)
         .expect(201);
 
-      const user = await User.findOne({ email: testUsers.employer.email });
+      const user = await Employer.findOne({ email: testUsers.employer.email });
       expect(user.password).not.toBe(testUsers.employer.password);
       expect(user.password).toMatch(/^\$2[aby]\$\d+\$/); // bcrypt hash pattern
     });

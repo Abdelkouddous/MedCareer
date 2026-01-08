@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 dotenv.config();
-import User from "./models/UserModel.js";
+import Employer from "./models/EmployerModel.js";
 import { readFile } from "fs/promises";
 import Job from "./models/JobModel.js";
 
@@ -10,7 +10,7 @@ try {
   await mongoose.connect(process.env.MONGO_URL);
   console.log("Connected to MongoDB");
   // get user
-  const user = await User.findOne({ email: "medcareer@gg.co" });
+  const user = await Employer.findOne({ email: "medcareer@gg.co" });
   // Read JSON file
   const jsonData = await readFile(
     new URL("./utils/jobMocks2.json", import.meta.url)

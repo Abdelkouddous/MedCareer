@@ -1,6 +1,6 @@
-// UserController
+// EmployerController
 import { StatusCodes } from "http-status-codes";
-import User from "../models/UserModel.js";
+import Employer from "../models/EmployerModel.js";
 import Job from "../models/JobModel.js";
 import cloudinary from "cloudinary";
 import { promises as fs } from "fs";
@@ -29,7 +29,7 @@ export const getCurrentUser = async (req, res) => {
 
   try {
     // user not {user} cuz {user} will cause a conflict
-    const user = await User.findById(userId).select("-password");
+    const user = await Employer.findById(userId).select("-password");
     if (!user) {
       return res
         .status(StatusCodes.NOT_FOUND)
@@ -54,7 +54,7 @@ export const getApplicationStats = async (req, res) => {
     const totalJobs = await Job.countDocuments();
     const appliedJobs = jobs.filter((job) => job.applied).length;
     const pendingJobs = totalJobs - appliedJobs;
-    const totalUsers = await User.countDocuments();
+    const totalUsers = await Employer.countDocuments();
 
     res.status(StatusCodes.OK).json({
       totalJobs,
@@ -89,10 +89,10 @@ export const getUserJobs = async (req, res) => {
 };
 
 //gettnig all users
-export const getAllUsers = async (req, res) => {
+export const getAllEmployers = async (req, res) => {
   try {
     // Find all users without any authentication requirement
-    const users = await User.find({});
+    const users = await Employer.find({});
 
     if (!users || users.length === 0) {
       return res
@@ -160,9 +160,13 @@ export const updateUser = async (req, res) => {
     console.log("User data to update:", newUser);
 
     // Update user in database
-    const updateUser = await User.findByIdAndUpdate(req.user.userId, newUser, {
-      new: true,
-    });
+    const updateUser = await Employer.findByIdAndUpdate(
+      req.user.userId,
+      newUser,
+      {
+        new: true,
+      }
+    );
 
     console.log("Database update result:", updateUser);
 
@@ -228,7 +232,7 @@ export const validateDeleteUserInput = (req, res, next) => {
 export const deleteUser = async (req, res) => {
   const userId = req.user.userId;
   try {
-    const user = await User.findByIdAndDelete(userId);
+    const user = await Employer.findByIdAndDelete(userId);
     if (!user) {
       return res
         .status(StatusCodes.NOT_FOUND)
@@ -270,7 +274,7 @@ export const updateEmployerStatus = async (req, res) => {
       });
     }
 
-    const user = await User.findByIdAndUpdate(
+    const user = await Employer.findByIdAndUpdate(
       id,
       { status },
       { new: true }
@@ -312,7 +316,7 @@ export const updateEmployerQuota = async (req, res) => {
     if (plan) updateData.plan = plan;
     if (quotaExpiresAt) updateData.quotaExpiresAt = quotaExpiresAt;
 
-    const user = await User.findByIdAndUpdate(id, updateData, {
+    const user = await Employer.findByIdAndUpdate(id, updateData, {
       new: true,
     }).select("-password");
 
@@ -337,8 +341,8 @@ export const updateEmployerQuota = async (req, res) => {
 // List pending employers for admin review
 export const getPendingEmployers = async (req, res) => {
   try {
-    const pendingUsers = await User.find({
-      role: "user",
+    const pendingUsers = await Employer.find({
+      role: "employer",
       status: "pending",
     }).select("-password");
 

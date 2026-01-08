@@ -1,6 +1,6 @@
 // inside authMiddleware.js
 import { verifyJWT } from "../utils/tokenUtils.js";
-import User from "../models/UserModel.js";
+import Employer from "../models/EmployerModel.js";
 import JobSeeker from "../models/JobSeekerModel.js";
 import { StatusCodes } from "http-status-codes";
 import { Unauthenticated } from "../errors/customErrors.js";
@@ -78,7 +78,7 @@ export const ensureEmployerApproved = async (req, res, next) => {
         .status(StatusCodes.UNAUTHORIZED)
         .json({ message: "Authentication required" });
     }
-    const user = await User.findById(userId).select("status role");
+    const user = await Employer.findById(userId).select("status role");
     if (!user) {
       return res
         .status(StatusCodes.NOT_FOUND)
@@ -107,7 +107,7 @@ export const enforceEmployerQuota = async (req, res, next) => {
         .status(StatusCodes.UNAUTHORIZED)
         .json({ message: "Authentication required" });
     }
-    const user = await User.findById(userId).select(
+    const user = await Employer.findById(userId).select(
       "role lifetimeJobOffersCreated jobOffersQuota status"
     );
     if (!user) {

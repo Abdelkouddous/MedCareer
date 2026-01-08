@@ -1,4 +1,7 @@
-// import { FaLocationArrow, FaCalendarAlt, FaBriefcase } from "react-icons/fa";
+// This file is being replaced by a more flexible component or handled locally in MyJobs
+// To avoid breaking changes, I will leave this file alone and create a separate EmployerJobContainer
+// OR I will simply inline the Job mapping in MyJobs.jsx which is cleaner.
+// Reverting to previous thought: Inline logic in MyJobs.jsx.
 // import { GiMedicines } from "react-icons/gi";
 import { JobCardWrapper } from "../../assets/wrappers/AllJobsWrapper";
 import Job from "./Job";

@@ -1,6 +1,6 @@
 import request from "supertest";
 import mongoose from "mongoose";
-import User from "../../models/UserModel.js";
+import Employer from "../../models/EmployerModel.js";
 import Job from "../../models/JobModel.js";
 import JobSeeker from "../../models/JobSeekerModel.js";
 import { testUsers, testJobs } from "../fixtures/testData.js";
@@ -16,7 +16,7 @@ export class TestUtils {
     const userData = testUsers[userType];
 
     // Create user
-    const user = await User.create(userData);
+    const user = await Employer.create(userData);
 
     // Login to get token
     const loginResponse = await request(global.app)
@@ -56,7 +56,7 @@ export class TestUtils {
    * Clean up test data
    */
   static async cleanupTestData() {
-    await User.deleteMany({});
+    await Employer.deleteMany({});
     await Job.deleteMany({});
     await JobSeeker.deleteMany({});
   }
@@ -216,7 +216,7 @@ export class DatabaseUtils {
    * Seed test data
    */
   static async seedTestData() {
-    const users = await User.insertMany(
+    const users = await Employer.insertMany(
       TestUtils.generateBulkTestData("users", 5)
     );
     const jobs = await Job.insertMany(

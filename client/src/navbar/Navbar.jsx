@@ -56,7 +56,7 @@ const Navbar = () => {
           </Link>
 
           {/* Main Navigation - Desktop */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden lg:flex items-center space-x-8">
             <Link
               to="/"
               className="text-[var(--text-color)] hover:text-[var(--primary-500)] transition-colors duration-200"
@@ -75,10 +75,16 @@ const Navbar = () => {
             >
               For Employers
             </Link>
+            <Link
+              to="/blogs"
+              className="text-[var(--text-color)] hover:text-[var(--primary-500)] transition-colors duration-200"
+            >
+              Blog
+            </Link>
           </div>
 
           {/* CTA Buttons & Theme Toggle - Desktop */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden lg:flex items-center space-x-4">
             <Link
               to="/job-seekers/login"
               className="text-[var(--primary-500)] hover:text-[var(--primary-700)] transition-colors duration-200"
@@ -110,7 +116,7 @@ const Navbar = () => {
           {/* Mobile Menu Button */}
           <button
             onClick={toggleMenu}
-            className="md:hidden text-[var(--text-color)] hover:text-[var(--primary-500)] transition-colors duration-200"
+            className="lg:hidden text-[var(--text-color)] hover:text-[var(--primary-500)] transition-colors duration-200"
           >
             {isMenuOpen ? (
               <FaTimes className="h-6 w-6" />
@@ -124,7 +130,7 @@ const Navbar = () => {
         <div
           className={`${
             isMenuOpen ? "block" : "hidden"
-          } md:hidden absolute left-0 right-0 top-full bg-[var(--background-secondary-color)] shadow-lg`}
+          } lg:hidden absolute left-0 right-0 top-full bg-[var(--background-secondary-color)] shadow-lg`}
         >
           <div className="flex flex-col p-4 space-y-4">
             <Link
@@ -147,6 +153,13 @@ const Navbar = () => {
               className="text-[var(--text-color)] hover:text-[var(--primary-500)] transition-colors duration-200"
             >
               For Employers
+            </Link>
+            <Link
+              to="/blogs"
+              onClick={toggleMenu}
+              className="text-[var(--text-color)] hover:text-[var(--primary-500)] transition-colors duration-200"
+            >
+              Blog
             </Link>
 
             <Link
@@ -175,14 +188,14 @@ const Navbar = () => {
             </div>
             <div className="pt-4 border-t border-gray-200">
               <Link
-                to="/login"
+                to="/job-seekers/login"
                 onClick={toggleMenu}
                 className="block w-full text-center text-[var(--primary-500)] hover:text-[var(--primary-700)] transition-colors duration-200 mb-3"
               >
                 Login
               </Link>
               <Link
-                to="/register"
+                to="/job-seekers/register"
                 onClick={toggleMenu}
                 className="block w-full text-center bg-[var(--primary-500)] text-[var(--white)] px-6 py-2 rounded-md font-semibold hover:bg-[var(--primary-700)] transition-all duration-200"
               >

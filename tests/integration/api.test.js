@@ -1,7 +1,7 @@
 import request from "supertest";
 import express from "express";
 import mongoose from "mongoose";
-import User from "../../models/UserModel.js";
+import Employer from "../../models/EmployerModel.js";
 import Job from "../../models/JobModel.js";
 import { testUsers, testJobs } from "../fixtures/testData.js";
 

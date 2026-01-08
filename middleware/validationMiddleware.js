@@ -2,7 +2,7 @@ import { body, param, validationResult } from "express-validator";
 import { BadRequestError, NotFoundError } from "../errors/customErrors.js";
 import { JOB_STATUS, JOB_TYPE } from "../utils/constants.js";
 import Job from "../models/JobModel.js";
-import User from "../models/UserModel.js";
+import Employer from "../models/EmployerModel.js";
 import mongoose from "mongoose";
 
 /**
@@ -97,7 +97,7 @@ export const validateRegisterInput = withValidationErrors([
     .withMessage("Please provide a valid email address")
     .normalizeEmail()
     .custom(async (email) => {
-      const user = await User.findOne({ email });
+      const user = await Employer.findOne({ email });
       if (user) {
         throw new BadRequestError("Email already exists");
       }

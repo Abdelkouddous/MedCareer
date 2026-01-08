@@ -11,7 +11,7 @@ const DashboardContext = createContext();
 // middleware to block access to the dashboard
 export const loader = async () => {
   try {
-    const { data } = await customFetch.get("/users/current-user");
+    const { data } = await customFetch.get("/employers/current-user");
     return data;
   } catch (error) {
     toast.error("You must be logged in to access the dashboard");

@@ -30,19 +30,19 @@ router.get("/:id", allowGuestForViewing, getJobById);
 router.post(
   "/",
   authenticateUser,
-  authorizePermissions("user", "admin"),
+  authorizePermissions("employer", "admin"),
   createJob
 );
 router.patch(
   "/:id",
   authenticateUser,
-  authorizePermissions("user", "admin"),
+  authorizePermissions("employer", "admin"),
   updateJob
 );
 router.delete(
   "/:id",
   authenticateUser,
-  authorizePermissions("user", "admin"),
+  authorizePermissions("employer", "admin"),
   deleteJob
 );
 

@@ -13,7 +13,7 @@ export const testUsers = {
     name: "Dr. Smith",
     email: "employer@medcareer.com",
     password: "password123",
-    role: "user",
+    role: "employer",
     lastName: "Smith",
     location: "Algeria",
     specialty: "Cardiologist",
@@ -72,4 +72,3 @@ export const testApplications = {
     resume: "resume.pdf",
   },
 };
-

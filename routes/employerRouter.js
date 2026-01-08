@@ -6,21 +6,26 @@ import {
   updateUser,
   authorizePermissions,
   validateUpdateUserInput,
-  getAllUsers,
+  getAllJobSeekers,
+  getAllEmployers,
+  getUserJobs,
   updateEmployerStatus,
   updateEmployerQuota,
   getPendingEmployers,
-  getAllJobSeekers,
-} from "../controllers/userController.js";
+} from "../controllers/employerController.js";
+import { getEmployerApplications } from "../controllers/applicationController.js";
 import upload from "../middleware/multerMiddleware.js";
 
 //This is recruiters and admin router
 // All routes in this router are protected by the authorizePermissions middleware
 
 const router = Router();
-router.get("/all-users", getAllUsers);
+router.get("/all-employers", getAllEmployers);
 router.get("/all-seekers", getAllJobSeekers);
 router.get("/current-user", getCurrentUser);
+router.get("/my-jobs", getUserJobs);
+router.get("/my-applications", getEmployerApplications);
+
 router.get("/admin/app-stats", [
   authorizePermissions("admin"),
   getApplicationStats,
@@ -46,6 +51,9 @@ router.patch(
   validateUpdateUserInput,
   updateUser
 );
-router.get("/admin/users", [authorizePermissions("admin"), getAllUsers]);
+router.get("/admin/employers", [
+  authorizePermissions("admin"),
+  getAllEmployers,
+]);
 
 export default router;

@@ -1,3 +1,9 @@
+import dns from "node:dns";
+try {
+  dns.setServers(["8.8.8.8", "8.8.4.4"]);
+} catch (error) {
+  console.log("Could not set custom DNS servers");
+}
 import "express-async-errors";
 import * as dotenv from "dotenv";
 dotenv.config();
@@ -18,8 +24,10 @@ cloudinary.config({
 
 import jobRouter from "./routes/jobRouter.js";
 import authRouter from "./routes/authRouter.js";
-import userRouter from "./routes/userRouter.js";
+import employerRouter from "./routes/employerRouter.js";
 import jobSeekerRouter from "./routes/jobSeekerRouter.js";
+import blogRouter from "./routes/blogRouter.js";
+import statusRouter from "./routes/statusRouter.js";
 
 //middlewares imports
 
@@ -34,7 +42,10 @@ import { logout } from "./controllers/authController.js";
 // dirname public
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
-import { getAllUsers, getAllJobSeekers } from "./controllers/userController.js";
+import {
+  getAllEmployers,
+  getAllJobSeekers,
+} from "./controllers/employerController.js";
 import { getAllJobsCount } from "./controllers/jobController.js";
 
 const app = express();
@@ -64,7 +75,9 @@ app.use(
 // Routes section
 app.use("/api/v1/jobs", jobRouter); // Remove authenticateUser to allow guest access
 app.use("/api/v1/auth", authRouter);
-app.use("/api/v1/users", authenticateUser, userRouter);
+app.use("/api/v1/employers", authenticateUser, employerRouter);
+app.use("/api/v1/blogs", blogRouter);
+app.use("/api/v1/status", statusRouter);
 
 // job Seekers API call endpoint
 // Public routes are handled separately in the router
@@ -120,7 +133,7 @@ app.get("/api/v1/test", (req, res) => {
 
 app.get("/api/v1/auth/logout", authenticateUser, logout);
 // added global apis to check users and jobs
-app.use("/api/v1/all-users", getAllUsers);
+app.use("/api/v1/all-employers", getAllEmployers);
 app.use("/api/v1/all-seekers", getAllJobSeekers);
 app.get("/api/v1/all-jobs", allowGuestForViewing, getAllJobsCount);
 //

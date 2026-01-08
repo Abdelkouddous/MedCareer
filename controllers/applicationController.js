@@ -180,3 +180,22 @@ export const markNotificationRead = async (req, res) => {
       .json({ message: error.message });
   }
 };
+
+export const getEmployerApplications = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    // Find all jobs created by this employer
+    const jobs = await Job.find({ createdBy: userId });
+    const jobIds = jobs.map((job) => job._id);
+
+    // Find applications for these jobs
+    const applications = await Application.find({ job: { $in: jobIds } })
+      .populate("job")
+      .populate("jobSeeker")
+      .sort({ createdAt: -1 });
+
+    res.status(StatusCodes.OK).json({ applications });
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
+  }
+};

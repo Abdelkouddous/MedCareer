@@ -20,7 +20,7 @@ export const SearchContainer = () => {
       clearTimeout(timeOut);
       timeOut = setTimeout(() => {
         onChange(form);
-      }, 500);
+      }, 1000);
     };
   };
   const submit = useSubmit();

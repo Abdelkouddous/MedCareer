@@ -1,16 +1,27 @@
 import { useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { Work, Person, BarChart, Email, Logout } from "@mui/icons-material";
+import { Work, Person, BarChart, Email, Logout, Assignment } from "@mui/icons-material";
 import { toast } from "react-toastify";
 import customFetch from "../../utils/customFetch";
 import Wrapper from "../../assets/wrappers/Dashboard";
+import { Sun, Moon } from "lucide-react";
+import { checkDefaultTheme } from "../../App";
 
 const JobSeekers = () => {
   const [showSidebar, setShowSidebar] = useState(false);
+  const [isDarkTheme, setIsDarkTheme] = useState(checkDefaultTheme());
   const navigate = useNavigate();
+
+  const toggleTheme = () => {
+    const newDarkTheme = !isDarkTheme;
+    setIsDarkTheme(newDarkTheme);
+    document.body.classList.toggle("dark-theme", newDarkTheme);
+    localStorage.setItem("darkTheme", newDarkTheme);
+  };
 
   const navItems = [
     { text: "Jobs", path: "/job-seekers/jobs", icon: <Work /> },
+    { text: "Applications", path: "/job-seekers/applications", icon: <Assignment /> },
     { text: "Stats", path: "/job-seekers/stats", icon: <BarChart /> },
     { text: "Inbox", path: "/job-seekers/inbox", icon: <Email /> },
     { text: "Profile", path: "/job-seekers/profile", icon: <Person /> },
@@ -122,18 +133,30 @@ const JobSeekers = () => {
             </h2>
           </div>
 
-          {/* Logout Button in Navbar */}
-          <button
-            onClick={handleLogout}
-            className="danger-btn flex items-center gap-2 px-4 py-2"
-            style={{
-              borderRadius: "var(--border-radius)",
-              transition: "var(--transition)",
-            }}
-          >
-            <Logout />
-            <span className="hidden sm:inline">Logout</span>
-          </button>
+          {/* New Container for Theme and Logout */}
+          <div className="flex items-center gap-4">
+             {/* Theme Toggle Button */}
+            <button 
+              onClick={toggleTheme} 
+              className="btn-hipster p-2 rounded-full"
+              aria-label="Toggle Theme"
+            >
+              {isDarkTheme ? <Sun /> : <Moon />}
+            </button>
+
+            {/* Logout Button in Navbar */}
+            <button
+              onClick={handleLogout}
+              className="danger-btn flex items-center gap-2 px-4 py-2"
+              style={{
+                borderRadius: "var(--border-radius)",
+                transition: "var(--transition)",
+              }}
+            >
+              <Logout />
+              <span className="hidden sm:inline">Logout</span>
+            </button>
+          </div>
         </header>
 
         {/* Page Content */}

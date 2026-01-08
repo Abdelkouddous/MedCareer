@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const UserSchema = new mongoose.Schema({
+const EmployerSchema = new mongoose.Schema({
   name: {
     type: String,
     default: "name",
@@ -45,8 +45,8 @@ const UserSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["user", "admin", "guest"],
-    default: "user",
+    enum: ["employer", "admin", "guest"],
+    default: "employer",
   },
   // avatar setup
   avatar: String,
@@ -90,9 +90,9 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
-UserSchema.methods.toJSON = function () {
+EmployerSchema.methods.toJSON = function () {
   const obj = this.toObject();
   delete obj.password;
   return obj;
 };
-export default mongoose.model("User", UserSchema);
+export default mongoose.model("Employer", EmployerSchema);

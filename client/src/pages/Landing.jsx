@@ -12,7 +12,6 @@ import {
   FaMapMarkerAlt,
   FaStethoscope,
   FaBriefcase,
-  FaHospitalSymbol,
   FaHospital,
   FaFire,
 } from "react-icons/fa";
@@ -21,7 +20,7 @@ import customFetch from "../utils/customFetch";
 import { toast } from "react-toastify";
 import Wrapper from "../assets/wrappers/Dashboard";
 import CountUpNumber from "./components/CountUpNumber";
-import Job from "./components/Job";
+// import Job from "./components/Job"; // Removed unused import
 import JobInLanding from "./components/JobInLanding";
 
 const Landing = () => {
@@ -48,7 +47,8 @@ const Landing = () => {
   });
   const [latestJobs, setLatestJobs] = useState([]);
   const [allJobs, setAllJobs] = useState([]);
-  const [allUsers, setAllUsers] = useState([]);
+  const [allEmployers, setallEmployers] = useState([]);
+  const [latestBlogs, setLatestBlogs] = useState([]);
   const [allCandidates, setAllCandidates] = useState([]);
 
   const [loadingJobs, setLoadingJobs] = useState(true);
@@ -92,11 +92,11 @@ const Landing = () => {
   };
 
   // fetch all users
-  const fetchAllUsers = async () => {
+  const fetchallEmployers = async () => {
     try {
       setLoadingJobs(true);
-      const response = await customFetch.get("/all-users");
-      setAllUsers(response.data.users || []);
+      const response = await customFetch.get("/all-employers");
+      setallEmployers(response.data.users || []);
     } catch (error) {
       console.error("Failed to fetch latest employers:", error);
       toast.error("Failed to load latest employers");
@@ -120,11 +120,23 @@ const Landing = () => {
     }
   };
 
+  // fetch latest blogs
+  const fetchLatestBlogs = async () => {
+    try {
+      const response = await customFetch.get("/blogs?limit=3&sort=newest");
+      setLatestBlogs(response.data.blogs || []);
+    } catch (error) {
+      console.error("Failed to fetch latest blogs:", error);
+      toast.error("Failed to load latest blogs");
+    }
+  };
+
   useEffect(() => {
     fetchLatestJobs();
     fetchAllJobs();
-    fetchAllUsers();
+    fetchallEmployers();
     fetchAllCandidates();
+    fetchLatestBlogs();
   }, []);
 
   useEffect(() => {
@@ -366,7 +378,7 @@ const Landing = () => {
               </div>
               <div className="text-center">
                 <div className="text-4xl font-bold text-[var(--primary-500)] mb-2">
-                  <CountUpNumber end={allUsers.length || 0} />
+                  <CountUpNumber end={allEmployers.length || 0} />
                 </div>
                 <p className="text-[var(--text-secondary-color)]">Companies</p>
               </div>
@@ -798,58 +810,105 @@ const Landing = () => {
               <span className="text-[var(--primary-500)]">Blog</span>
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <Link to="/blog/1" className="group">
-                <div className="bg-[var(--background-secondary-color)] rounded-lg overflow-hidden">
-                  <div className="h-48 bg-gray-200"></div>
-                  <div className="p-6">
-                    <span className="text-[var(--primary-500)] text-sm font-semibold">
-                      Career Advice
-                    </span>
-                    <h3 className="text-xl font-bold text-[var(--text-color)] mt-2 group-hover:text-[var(--primary-500)] transition-colors duration-200">
-                      Top Medical Career Trends in 2024
-                    </h3>
-                    <p className="text-[var(--text-secondary-color)] mt-2">
-                      Mar 15, 2024
-                    </p>
+              {latestBlogs.length > 0 ? (
+                latestBlogs.map((blog) => (
+                  <Link
+                    key={blog._id}
+                    to={`/blogs/${blog._id}`}
+                    className="group"
+                  >
+                    <div className="bg-[var(--background-secondary-color)] rounded-lg overflow-hidden">
+                      {blog.featuredImage ? (
+                        <div className="h-48 overflow-hidden">
+                          <img
+                            src={blog.featuredImage}
+                            alt={blog.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        </div>
+                      ) : (
+                        <div className="h-48 bg-[var(--primary-100)] flex items-center justify-center">
+                          <FaStethoscope className="text-[var(--primary-500)] text-4xl" />
+                        </div>
+                      )}
+                      <div className="p-6">
+                        <span className="text-[var(--primary-500)] text-sm font-semibold">
+                          {blog.category}
+                        </span>
+                        <h3 className="text-xl font-bold text-[var(--text-color)] mt-2 group-hover:text-[var(--primary-500)] transition-colors duration-200">
+                          {blog.title}
+                        </h3>
+                        <p className="text-[var(--text-secondary-color)] mt-2">
+                          {new Date(blog.createdAt).toLocaleDateString(
+                            "en-US",
+                            {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                            }
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  </Link>
+                ))
+              ) : (
+                // Fallback content when no blogs are available
+                <>
+                  <div className="bg-[var(--background-secondary-color)] rounded-lg overflow-hidden">
+                    <div className="h-48 bg-[var(--primary-100)] flex items-center justify-center">
+                      <FaStethoscope className="text-[var(--primary-500)] text-4xl" />
+                    </div>
+                    <div className="p-6">
+                      <span className="text-[var(--primary-500)] text-sm font-semibold">
+                        Coming Soon
+                      </span>
+                      <h3 className="text-xl font-bold text-[var(--text-color)] mt-2">
+                        Medical Career Insights
+                      </h3>
+                      <p className="text-[var(--text-secondary-color)] mt-2">
+                        Stay tuned for expert advice
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </Link>
-              <Link to="/blog/2" className="group">
-                <div className="bg-[var(--background-secondary-color)] rounded-lg overflow-hidden">
-                  <div className="h-48 bg-gray-200"></div>
-                  <div className="p-6">
-                    <span className="text-[var(--primary-500)] text-sm font-semibold">
-                      Tips & Tricks
-                    </span>
-                    <h3 className="text-xl font-bold text-[var(--text-color)] mt-2 group-hover:text-[var(--primary-500)] transition-colors duration-200">
-                      How to Ace Your Medical Job Interview
-                    </h3>
-                    <p className="text-[var(--text-secondary-color)] mt-2">
-                      Mar 12, 2024
-                    </p>
+                  <div className="bg-[var(--background-secondary-color)] rounded-lg overflow-hidden">
+                    <div className="h-48 bg-[var(--primary-100)] flex items-center justify-center">
+                      <FaBriefcase className="text-[var(--primary-500)] text-4xl" />
+                    </div>
+                    <div className="p-6">
+                      <span className="text-[var(--primary-500)] text-sm font-semibold">
+                        Coming Soon
+                      </span>
+                      <h3 className="text-xl font-bold text-[var(--text-color)] mt-2">
+                        Industry News
+                      </h3>
+                      <p className="text-[var(--text-secondary-color)] mt-2">
+                        Latest healthcare updates
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </Link>
-              <Link to="/blog/3" className="group">
-                <div className="bg-[var(--background-secondary-color)] rounded-lg overflow-hidden">
-                  <div className="h-48 bg-gray-200"></div>
-                  <div className="p-6">
-                    <span className="text-[var(--primary-500)] text-sm font-semibold">
-                      Industry Insights
-                    </span>
-                    <h3 className="text-xl font-bold text-[var(--text-color)] mt-2 group-hover:text-[var(--primary-500)] transition-colors duration-200">
-                      Healthcare Industry Salary Guide
-                    </h3>
-                    <p className="text-[var(--text-secondary-color)] mt-2">
-                      Mar 10, 2024
-                    </p>
+                  <div className="bg-[var(--background-secondary-color)] rounded-lg overflow-hidden">
+                    <div className="h-48 bg-[var(--primary-100)] flex items-center justify-center">
+                      <FaHospital className="text-[var(--primary-500)] text-4xl" />
+                    </div>
+                    <div className="p-6">
+                      <span className="text-[var(--primary-500)] text-sm font-semibold">
+                        Coming Soon
+                      </span>
+                      <h3 className="text-xl font-bold text-[var(--text-color)] mt-2">
+                        Professional Tips
+                      </h3>
+                      <p className="text-[var(--text-secondary-color)] mt-2">
+                        Expert guidance for your career
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </Link>
+                </>
+              )}
             </div>
             <div className="text-center mt-8">
               <Link
-                to="/blog"
+                to="/blogs"
                 className="inline-block border-0.5 bg-gradient-to-tr from-[var(--primary-500)] to-[var(--primary-700)] border-[var(--primary-500)] px-8 py-3 rounded-md font-bold text-lg hover:bg-[var(--primary-500)] hover:text-[var(--white)] transition-all duration-200"
               >
                 View All Posts

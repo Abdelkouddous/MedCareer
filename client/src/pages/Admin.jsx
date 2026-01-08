@@ -21,7 +21,7 @@ import Wrapper from "../assets/wrappers/Dashboard";
 
 export const loader = async () => {
   try {
-    const response = await customFetch.get(`/users/admin/app-stats`);
+    const response = await customFetch.get(`/employers/admin/app-stats`);
     return response.data;
   } catch (error) {
     console.error("Error fetching admin stats:", error);

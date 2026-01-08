@@ -1,20 +1,20 @@
 // Description: Handles user authentication
 import { StatusCodes } from "http-status-codes";
-import User from "../models/UserModel.js";
+import Employer from "../models/EmployerModel.js";
 import { hashPassword, comparePassword } from "../utils/passwordUtils.js";
 import { createJWT } from "../utils/tokenUtils.js";
 import { Unauthenticated } from "../errors/customErrors.js";
 
 export const register = async (req, res, next) => {
-  const isFirstAccount = (await User.countDocuments({})) === 0;
-  const role = isFirstAccount ? "admin" : "user";
+  const isFirstAccount = (await Employer.countDocuments({})) === 0;
+  const role = isFirstAccount ? "admin" : "employer";
   req.body.role = role;
 
   /******  963f48b7-65da-4ecb-a302-c748a799047a  *******/
   try {
     const hashedPassword = await hashPassword(req.body.password);
     req.body.password = hashedPassword;
-    const user = await User.create(req.body);
+    const user = await Employer.create(req.body);
 
     // Generate OTP for email confirmation
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -48,7 +48,7 @@ export const login = async (req, res, next) => {
       throw new Unauthenticated("Please provide all values");
     }
 
-    const user = await User.findOne({ email }).select(
+    const user = await Employer.findOne({ email }).select(
       "+password +confirmOTP +otpExpires"
     );
 
@@ -99,7 +99,9 @@ export const confirmEmailUser = async (req, res, next) => {
         .json({ msg: "User ID and OTP are required" });
     }
 
-    const user = await User.findById(userId).select("+confirmOTP +otpExpires");
+    const user = await Employer.findById(userId).select(
+      "+confirmOTP +otpExpires"
+    );
     if (!user) {
       return res.status(StatusCodes.NOT_FOUND).json({ msg: "User not found" });
     }
@@ -146,7 +148,9 @@ export const resendOtpUser = async (req, res, next) => {
         .status(StatusCodes.BAD_REQUEST)
         .json({ msg: "User ID is required" });
     }
-    const user = await User.findById(userId).select("+confirmOTP +otpExpires");
+    const user = await Employer.findById(userId).select(
+      "+confirmOTP +otpExpires"
+    );
     if (!user) {
       return res.status(StatusCodes.NOT_FOUND).json({ msg: "User not found" });
     }

@@ -12,9 +12,14 @@ const links = [
   },
 
   {
-    text: "all jobs",
-    path: "all-jobs",
+    text: "my jobs",
+    path: "my-jobs",
     icon: <FaWpforms />,
+  },
+  {
+    text: "candidates",
+    path: "candidates",
+    icon: <ImProfile />,
   },
   {
     text: "stats",

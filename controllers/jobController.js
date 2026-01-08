@@ -1,5 +1,5 @@
 import { NotFoundError } from "../errors/customErrors.js";
-import User from "../models/UserModel.js";
+import Employer from "../models/EmployerModel.js";
 import { StatusCodes } from "http-status-codes";
 import mongoose from "mongoose";
 import Job from "../models/JobModel.js"; // Ensure this path is correct
@@ -362,7 +362,7 @@ export const showStats = async (req, res) => {
       ];
 
       // Get total users for demo (public info)
-      const totalUsers = await User.countDocuments();
+      const totalUsers = await Employer.countDocuments();
 
       const demoData = {
         defaultStats,
