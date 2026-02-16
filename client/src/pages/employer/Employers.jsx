@@ -18,13 +18,13 @@ const Employers = () => {
           <div className="mt-8 flex gap-4 justify-center">
             <Link
               to="/register"
-              className="bg-[var(--primary-500)] text-white px-6 py-3 rounded-md font-semibold hover:bg-[var(--primary-700)] transition-all"
+              className="bg-[var(--primary-500)] text-white px-6 py-3 rounded-full font-medium hover:opacity-90 transition-all duration-300"
             >
               Register as Employer
             </Link>
             <Link
               to="/login"
-              className="border border-[var(--primary-500)] text-[var(--primary-700)] px-6 py-3 rounded-md font-semibold hover:bg-[var(--primary-100)] transition-all"
+              className="border border-[var(--primary-500)] text-[var(--primary-500)] px-6 py-3 rounded-full font-medium hover:opacity-80 transition-all duration-300"
             >
               Login
             </Link>
@@ -39,7 +39,7 @@ const Employers = () => {
             Why MedCareer Connect
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div id="talent-search" className="p-6 rounded-lg border bg-white/60">
+            <div id="talent-search" className="p-6 rounded-2xl" style={{ background: 'var(--surface-primary)', border: '1px solid var(--border-color)' }}>
               <h3 className="font-semibold text-[var(--text-color)] mb-2">
                 Targeted Reach
               </h3>
@@ -48,7 +48,7 @@ const Employers = () => {
                 search and filters.
               </p>
             </div>
-            <div className="p-6 rounded-lg border bg-white/60">
+            <div className="p-6 rounded-2xl" style={{ background: 'var(--surface-primary)', border: '1px solid var(--border-color)' }}>
               <h3 className="font-semibold text-[var(--text-color)] mb-2">
                 Streamlined Posting
               </h3>
@@ -69,7 +69,7 @@ const Employers = () => {
       </section>
 
       {/* Pricing (Landing-style cards) */}
-      <section id="pricing" className="py-16 bg-white">
+      <section id="pricing" className="py-16" style={{ background: 'var(--background-secondary-color)' }}>
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-color)]">
@@ -82,7 +82,7 @@ const Employers = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Starter Plan */}
-            <div className="relative bg-white border rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+            <div className="relative rounded-2xl p-6 transition-all duration-300 hover-lift" style={{ background: 'var(--surface-primary)', border: '1px solid var(--border-color)' }}>
               <div className="mb-4">
                 <span className="inline-block px-3 py-1 text-xs font-semibold bg-[var(--background-secondary-color)] text-[var(--text-color)] rounded-full">
                   Starter
@@ -102,14 +102,14 @@ const Employers = () => {
               </ul>
               <Link
                 to="/register?role=employer"
-                className="w-full inline-block text-center bg-[var(--primary-500)] text-white px-6 py-3 rounded-md font-semibold hover:bg-[var(--primary-700)] transition-colors"
+                className="w-full inline-block text-center bg-[var(--primary-500)] text-white px-6 py-3 rounded-full font-medium hover:opacity-90 transition-all duration-300"
               >
                 Get Started
               </Link>
             </div>
 
             {/* Professional Plan */}
-            <div className="relative bg-white border rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow ring-2 ring-[var(--primary-200)]">
+            <div className="relative rounded-2xl p-6 transition-all duration-300 hover-lift ring-2 ring-[var(--primary-500)]" style={{ background: 'var(--surface-primary)', border: '1px solid var(--border-color)' }}>
               <div className="flex items-center justify-between mb-4">
                 <span className="inline-block px-3 py-1 text-xs font-semibold bg-[var(--primary-100)] text-[var(--primary-700)] rounded-full">
                   Professional
@@ -139,7 +139,7 @@ const Employers = () => {
             </div>
 
             {/* Enterprise Plan */}
-            <div className="relative bg-white border rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+            <div className="relative rounded-2xl p-6 transition-all duration-300 hover-lift" style={{ background: 'var(--surface-primary)', border: '1px solid var(--border-color)' }}>
               <div className="mb-4">
                 <span className="inline-block px-3 py-1 text-xs font-semibold bg-[var(--background-secondary-color)] text-[var(--text-color)] rounded-full">
                   Enterprise
@@ -159,7 +159,7 @@ const Employers = () => {
               </ul>
               <Link
                 to="/register?role=employer"
-                className="w-full inline-block text-center border border-[var(--primary-500)] text-[var(--primary-700)] px-6 py-3 rounded-md font-semibold hover:bg-[var(--primary-100)] transition-colors"
+                className="w-full inline-block text-center border border-[var(--primary-500)] text-[var(--primary-500)] px-6 py-3 rounded-full font-medium hover:opacity-80 transition-all duration-300"
               >
                 Contact Sales
               </Link>
@@ -180,13 +180,13 @@ const Employers = () => {
           <div className="flex gap-4 justify-center">
             <Link
               to="/register"
-              className="bg-[var(--primary-500)] text-white px-6 py-3 rounded-md font-semibold hover:bg-[var(--primary-700)] transition-all"
+              className="bg-[var(--primary-500)] text-white px-6 py-3 rounded-full font-medium hover:opacity-90 transition-all duration-300"
             >
               Register
             </Link>
             <Link
               to="/login"
-              className="border border-[var(--primary-500)] text-[var(--primary-700)] px-6 py-3 rounded-md font-semibold hover:bg-[var(--primary-100)] transition-all"
+              className="border border-[var(--primary-500)] text-[var(--primary-500)] px-6 py-3 rounded-full font-medium hover:opacity-80 transition-all duration-300"
             >
               Login
             </Link>

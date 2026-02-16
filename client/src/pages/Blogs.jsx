@@ -38,7 +38,7 @@ const BlogCard = ({ blog, user, onLike }) => {
   };
 
   return (
-    <article className="bg-[var(--background-secondary-color)] rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
+    <article className="rounded-2xl overflow-hidden transition-all duration-300 hover-lift" style={{ background: 'var(--surface-primary)', border: '1px solid var(--border-color)' }}>
       {blog.featuredImage && (
         <div className="h-48 overflow-hidden">
           <img
@@ -116,14 +116,14 @@ const BlogCard = ({ blog, user, onLike }) => {
 
         <div className="mt-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+            <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium" style={{ background: 'var(--primary-500)' }}>
               {blog.author?.name?.charAt(0)?.toUpperCase()}
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-900 dark:text-white">
+              <p className="text-sm font-medium" style={{ color: 'var(--text-color)' }}>
                 {blog.author?.name} {blog.author?.lastName}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Author</p>
+              <p className="text-xs" style={{ color: 'var(--text-secondary-color)' }}>Author</p>
             </div>
           </div>
 

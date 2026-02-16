@@ -62,7 +62,8 @@ const Contact = () => {
                   <input
                     type="text"
                     id="name"
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[var(--primary-500)] focus:border-transparent"
+                    className="w-full px-4 py-2 rounded-xl border focus:ring-2 focus:ring-[var(--primary-500)] focus:border-transparent transition-all duration-200"
+                    style={{ borderColor: 'var(--border-color)', background: 'var(--background-color)', color: 'var(--text-color)' }}
                     placeholder="Your name"
                   />
                 </div>
@@ -90,13 +91,14 @@ const Contact = () => {
                   <textarea
                     id="message"
                     rows="4"
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[var(--primary-500)] focus:border-transparent"
+                    className="w-full px-4 py-2 rounded-xl border focus:ring-2 focus:ring-[var(--primary-500)] focus:border-transparent transition-all duration-200"
+                    style={{ borderColor: 'var(--border-color)', background: 'var(--background-color)', color: 'var(--text-color)' }}
                     placeholder="How can we help you?"
                   ></textarea>
                 </div>
                 <button
                   type="submit"
-                  className="w-full bg-[var(--primary-500)] text-white py-3 rounded-lg font-semibold hover:bg-[var(--primary-700)] transition-colors"
+                  className="w-full bg-[var(--primary-500)] text-white py-3 rounded-full font-medium hover:opacity-90 transition-all duration-300"
                 >
                   Send Message
                 </button>

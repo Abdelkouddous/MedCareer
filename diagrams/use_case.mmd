@@ -1,0 +1,33 @@
+graph LR
+    subgraph Actors
+        GT((Guest))
+        JS((Job Seeker))
+        ER((Employer))
+        AD((Admin))
+    end
+
+    subgraph "MedCareer System"
+        UC1(Browse Jobs)
+        UC2(User Registration/Login)
+        UC3(Job Management)
+        UC4(Application Submission)
+        UC5(Profile/CV Management)
+        UC6(Application Review)
+        UC7(Admin/Quota Management)
+        UC8(Notification System)
+    end
+
+    GT --- UC1
+    GT --- UC2
+
+    JS --- UC1
+    JS --- UC4
+    JS --- UC5
+    JS --- UC8
+
+    ER --- UC3
+    ER --- UC6
+    ER --- UC5
+
+    AD --- UC7
+    AD --- UC3

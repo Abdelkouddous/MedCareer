@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { FaBars, FaTimes, FaMoon, FaSun } from "react-icons/fa"; // Make sure to install react-icons
+import { FaBars, FaTimes, FaMoon, FaSun } from "react-icons/fa";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
   const getInitialTheme = () => {
     try {
       const saved = localStorage.getItem("darkTheme");
       if (saved !== null) return saved === "true";
-    } catch (error) {
-      // localStorage might be unavailable (e.g., privacy mode or SSR). Fallback to system preference.
+    } catch {
       if (typeof window !== "undefined" && window.matchMedia) {
         return window.matchMedia("(prefers-color-scheme: dark)").matches;
       }
@@ -19,11 +20,10 @@ const Navbar = () => {
     }
     return false;
   };
+
   const [isDarkTheme, setIsDarkTheme] = useState(getInitialTheme());
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   const toggleDarkTheme = () => {
     setIsDarkTheme((prev) => {
@@ -31,8 +31,6 @@ const Navbar = () => {
       try {
         localStorage.setItem("darkTheme", String(next));
       } catch (error) {
-        // If persisting preference fails, continue without saving and optionally warn.
-        // eslint-disable-next-line no-console
         console.warn("Failed to persist theme preference", error);
       }
       return next;
@@ -43,163 +41,174 @@ const Navbar = () => {
     document.body.classList.toggle("dark-theme", isDarkTheme);
   }, [isDarkTheme]);
 
+  // Track scroll for glass effect intensity change
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const navLinks = [
+    { to: "/", label: "Home" },
+    { to: "/jobs", label: "Find Jobs" },
+    { to: "/employers", label: "For Employers" },
+    { to: "/blogs", label: "Blog" },
+    { to: "/contact", label: "Contact" },
+  ];
+
   return (
-    <header className="bg-[var(--background-secondary-color)] shadow-lg sticky w-full top-0 z-50">
-      <nav className="container mx-auto px-4 py-3">
-        <div className="flex items-center justify-between relative">
-          {/* Logo/Brand */}
-          <Link to="/" className="flex items-center space-x-2">
-            <span className="text-[var(--primary-500)] text-2xl font-bold">
+    <header
+      className={`fixed w-full top-0 z-50 transition-all duration-500 ${
+        isScrolled
+          ? "glass shadow-sm"
+          : "bg-transparent"
+      }`}
+      style={{
+        borderBottom: isScrolled
+          ? "1px solid var(--glass-border)"
+          : "1px solid transparent",
+      }}
+    >
+      <nav className="max-w-[1200px] mx-auto px-6">
+        <div className="flex items-center justify-between h-12">
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-1 group">
+            <span
+              className="text-lg font-semibold tracking-tight"
+              style={{ color: "var(--text-color)" }}
+            >
               MedCareer
             </span>
-            <span className="text-[var(--text-color)] text-xl">Connect</span>
+            <span
+              className="text-lg font-light tracking-tight"
+              style={{ color: "var(--text-secondary-color)" }}
+            >
+              Connect
+            </span>
           </Link>
 
-          {/* Main Navigation - Desktop */}
-          <div className="hidden lg:flex items-center space-x-8">
-            <Link
-              to="/"
-              className="text-[var(--text-color)] hover:text-[var(--primary-500)] transition-colors duration-200"
-            >
-              Home
-            </Link>
-            <Link
-              to="/jobs"
-              className="text-[var(--text-color)] hover:text-[var(--primary-500)] transition-colors duration-200"
-            >
-              Find Jobs
-            </Link>
-            <Link
-              to="/employers"
-              className="text-[var(--text-color)] hover:text-[var(--primary-500)] transition-colors duration-200"
-            >
-              For Employers
-            </Link>
-            <Link
-              to="/blogs"
-              className="text-[var(--text-color)] hover:text-[var(--primary-500)] transition-colors duration-200"
-            >
-              Blog
-            </Link>
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex items-center gap-7">
+            {navLinks.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className="text-xs font-normal tracking-wide transition-opacity duration-200 hover:opacity-70"
+                style={{ color: "var(--text-color)" }}
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
 
-          {/* CTA Buttons & Theme Toggle - Desktop */}
-          <div className="hidden lg:flex items-center space-x-4">
+          {/* Desktop CTA & Theme Toggle */}
+          <div className="hidden lg:flex items-center gap-4">
             <Link
               to="/job-seekers/login"
-              className="text-[var(--primary-500)] hover:text-[var(--primary-700)] transition-colors duration-200"
+              className="text-xs font-normal tracking-wide transition-opacity duration-200 hover:opacity-70"
+              style={{ color: "var(--text-color)" }}
             >
-              Login
+              Sign In
             </Link>
             <Link
               to="/job-seekers/register"
-              className="bg-[var(--primary-500)] text-[var(--white)] px-6 py-2 rounded-md font-semibold hover:bg-[var(--primary-700)] transition-all duration-200"
+              className="text-xs font-medium px-4 py-1.5 rounded-full transition-all duration-300 hover:opacity-90"
+              style={{
+                backgroundColor: "var(--primary-500)",
+                color: "#ffffff",
+              }}
             >
-              Sign Up
+              Get Started
             </Link>
             <button
-              className="w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+              className="w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 hover:opacity-70"
               onClick={toggleDarkTheme}
               aria-label={
                 isDarkTheme ? "Switch to light mode" : "Switch to dark mode"
               }
               title={isDarkTheme ? "Light mode" : "Dark mode"}
+              style={{
+                transform: isDarkTheme ? "rotate(180deg)" : "rotate(0deg)",
+              }}
             >
               {isDarkTheme ? (
-                <FaSun className="text-[var(--text-color)]" />
+                <FaSun className="w-3.5 h-3.5" style={{ color: "var(--text-color)" }} />
               ) : (
-                <FaMoon className="text-[var(--text-color)]" />
+                <FaMoon className="w-3.5 h-3.5" style={{ color: "var(--text-color)" }} />
               )}
             </button>
           </div>
 
           {/* Mobile Menu Button */}
-          <button
-            onClick={toggleMenu}
-            className="lg:hidden text-[var(--text-color)] hover:text-[var(--primary-500)] transition-colors duration-200"
-          >
-            {isMenuOpen ? (
-              <FaTimes className="h-6 w-6" />
-            ) : (
-              <FaBars className="h-6 w-6" />
-            )}
-          </button>
+          <div className="flex lg:hidden items-center gap-3">
+            <button
+              className="w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 hover:opacity-70"
+              onClick={toggleDarkTheme}
+              aria-label={
+                isDarkTheme ? "Switch to light mode" : "Switch to dark mode"
+              }
+            >
+              {isDarkTheme ? (
+                <FaSun className="w-3.5 h-3.5" style={{ color: "var(--text-color)" }} />
+              ) : (
+                <FaMoon className="w-3.5 h-3.5" style={{ color: "var(--text-color)" }} />
+              )}
+            </button>
+            <button
+              onClick={toggleMenu}
+              className="transition-opacity duration-200 hover:opacity-70"
+              style={{ color: "var(--text-color)" }}
+              aria-label="Toggle navigation menu"
+            >
+              {isMenuOpen ? (
+                <FaTimes className="h-5 w-5" />
+              ) : (
+                <FaBars className="h-5 w-5" />
+              )}
+            </button>
+          </div>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu — Slide Down with Glass */}
         <div
-          className={`${
-            isMenuOpen ? "block" : "hidden"
-          } lg:hidden absolute left-0 right-0 top-full bg-[var(--background-secondary-color)] shadow-lg`}
+          className={`lg:hidden overflow-hidden transition-all duration-500 ease-in-out ${
+            isMenuOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+          }`}
         >
-          <div className="flex flex-col p-4 space-y-4">
-            <Link
-              to="/"
-              onClick={toggleMenu}
-              className="text-[var(--text-color)] hover:text-[var(--primary-500)] transition-colors duration-200"
-            >
-              Home
-            </Link>
-            <Link
-              to="/jobs"
-              onClick={toggleMenu}
-              className="text-[var(--text-color)] hover:text-[var(--primary-500)] transition-colors duration-200"
-            >
-              Find Jobs
-            </Link>
-            <Link
-              to="/employers"
-              onClick={toggleMenu}
-              className="text-[var(--text-color)] hover:text-[var(--primary-500)] transition-colors duration-200"
-            >
-              For Employers
-            </Link>
-            <Link
-              to="/blogs"
-              onClick={toggleMenu}
-              className="text-[var(--text-color)] hover:text-[var(--primary-500)] transition-colors duration-200"
-            >
-              Blog
-            </Link>
-
-            <Link
-              to="/contact"
-              onClick={toggleMenu}
-              className="text-[var(--text-color)] hover:text-[var(--primary-500)] transition-colors duration-200"
-            >
-              Contact
-            </Link>
-            {/* Theme Toggle - Mobile */}
-            <div className="flex items-center justify-between">
-              <button
-                className="w-8 h-8 rounded-full flex items-center justify-center transition-colors"
-                onClick={toggleDarkTheme}
-                aria-label={
-                  isDarkTheme ? "Switch to light mode" : "Switch to dark mode"
-                }
-                title={isDarkTheme ? "Light mode" : "Dark mode"}
+          <div className="py-4 space-y-1">
+            {navLinks.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                onClick={toggleMenu}
+                className="block py-2 text-sm font-normal transition-opacity duration-200 hover:opacity-70"
+                style={{ color: "var(--text-color)" }}
               >
-                {isDarkTheme ? (
-                  <FaSun className="text-[var(--text-color)]" />
-                ) : (
-                  <FaMoon className="text-[var(--text-color)]" />
-                )}
-              </button>
-            </div>
-            <div className="pt-4 border-t border-gray-200">
+                {link.label}
+              </Link>
+            ))}
+            <div
+              className="pt-4 mt-3 space-y-3"
+              style={{ borderTop: "1px solid var(--border-color)" }}
+            >
               <Link
                 to="/job-seekers/login"
                 onClick={toggleMenu}
-                className="block w-full text-center text-[var(--primary-500)] hover:text-[var(--primary-700)] transition-colors duration-200 mb-3"
+                className="block text-center text-sm font-normal py-2 transition-opacity duration-200 hover:opacity-70"
+                style={{ color: "var(--primary-500)" }}
               >
-                Login
+                Sign In
               </Link>
               <Link
                 to="/job-seekers/register"
                 onClick={toggleMenu}
-                className="block w-full text-center bg-[var(--primary-500)] text-[var(--white)] px-6 py-2 rounded-md font-semibold hover:bg-[var(--primary-700)] transition-all duration-200"
+                className="block text-center text-sm font-medium py-2.5 rounded-lg transition-all duration-300 hover:opacity-90"
+                style={{
+                  backgroundColor: "var(--primary-500)",
+                  color: "#ffffff",
+                }}
               >
-                Sign Up
+                Get Started
               </Link>
             </div>
           </div>

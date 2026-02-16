@@ -52,55 +52,79 @@ const ApplicationsJobSeeker = () => {
     <Wrapper>
       <h1 className="text-3xl font-bold mb-8 text-[var(--text-color)]">My Applications</h1>
       <div className="jobs">
-        {applications.map((app) => (
-          <article key={app._id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-4">
-            <header className="flex justify-between items-start mb-4 border-b border-gray-100 dark:border-gray-700 pb-4">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-primary-500 rounded text-white flex items-center justify-center text-xl font-bold uppercase">
-                  {app.job.company.charAt(0)}
+        {applications.map((app) => {
+          if (!app.job) {
+            return (
+              <article key={app._id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-4 opacity-75">
+                <header className="flex justify-between items-start mb-4 border-b border-gray-100 dark:border-gray-700 pb-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-gray-400 rounded text-white flex items-center justify-center text-xl font-bold uppercase">
+                      ?
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-semibold text-[var(--text-color)]">Job No Longer Available</h3>
+                      <p className="text-[var(--text-secondary-color)]">The original posting has been removed</p>
+                    </div>
+                  </div>
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800`}>
+                    {app.status.toUpperCase()}
+                  </span>
+                </header>
+                <div className="text-sm text-[var(--text-secondary-color)]">
+                  <span className="font-semibold">Applied:</span> {day(app.createdAt).format("MMM Do, YYYY")}
                 </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-[var(--text-color)]">{app.job.position}</h3>
-                  <p className="text-[var(--text-secondary-color)]">{app.job.company}</p>
+              </article>
+            );
+          }
+          return (
+            <article key={app._id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-4">
+              <header className="flex justify-between items-start mb-4 border-b border-gray-100 dark:border-gray-700 pb-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-primary-500 rounded text-white flex items-center justify-center text-xl font-bold uppercase">
+                    {app.job.company?.charAt(0) || "C"}
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-[var(--text-color)]">{app.job.position}</h3>
+                    <p className="text-[var(--text-secondary-color)]">{app.job.company}</p>
+                  </div>
                 </div>
+                <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                  app.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                  app.status === 'interview' ? 'bg-blue-100 text-blue-800' :
+                  app.status === 'declined' ? 'bg-red-100 text-red-800' :
+                  'bg-green-100 text-green-800'
+                }`}>
+                  {app.status.toUpperCase()}
+                </span>
+              </header>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-[var(--text-secondary-color)]">
+                 <div className="flex items-center gap-2">
+                   <span className="font-semibold">Applied:</span>
+                   {day(app.createdAt).format("MMM Do, YYYY")}
+                 </div>
+                 <div className="flex items-center gap-2">
+                   <span className="font-semibold">Location:</span>
+                   {app.job.jobLocation}
+                 </div>
+                 <div className="flex items-center gap-2">
+                   <span className="font-semibold">Type:</span>
+                   {app.job.jobType}
+                 </div>
+                 <div className="flex items-center gap-2">
+                   <span className="font-semibold">Compatibility:</span>
+                   {app.compatibilityScore ? `${app.compatibilityScore}%` : 'N/A'}
+                 </div>
               </div>
-              <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                app.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                app.status === 'interview' ? 'bg-blue-100 text-blue-800' :
-                app.status === 'declined' ? 'bg-red-100 text-red-800' :
-                'bg-green-100 text-green-800'
-              }`}>
-                {app.status.toUpperCase()}
-              </span>
-            </header>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-[var(--text-secondary-color)]">
-               <div className="flex items-center gap-2">
-                 <span className="font-semibold">Applied:</span>
-                 {day(app.createdAt).format("MMM Do, YYYY")}
-               </div>
-               <div className="flex items-center gap-2">
-                 <span className="font-semibold">Location:</span>
-                 {app.job.jobLocation}
-               </div>
-               <div className="flex items-center gap-2">
-                 <span className="font-semibold">Type:</span>
-                 {app.job.jobType}
-               </div>
-               <div className="flex items-center gap-2">
-                 <span className="font-semibold">Compatibility:</span>
-                 {app.compatibilityScore ? `${app.compatibilityScore}%` : 'N/A'}
-               </div>
-            </div>
 
-            <footer className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 flex justify-end">
-               {/* Could add a link to view job details if that route exists */}
-               <Link to={`/job-details/${app.job._id}`} className="text-primary-500 hover:text-primary-700 font-medium">
-                  View Job Details
-               </Link>
-            </footer>
-          </article>
-        ))}
+              <footer className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 flex justify-end">
+                 <Link to={`/job-details/${app.job._id}`} className="text-primary-500 hover:text-primary-700 font-medium">
+                    View Job Details
+                 </Link>
+              </footer>
+            </article>
+          );
+        })}
       </div>
     </Wrapper>
   );

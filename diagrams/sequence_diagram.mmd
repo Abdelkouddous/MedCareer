@@ -1,0 +1,26 @@
+sequenceDiagram
+    autonumber
+    actor JS as Job Seeker
+    participant API as JobSeekerRouter
+    participant CTRL as ApplicationController
+    participant JM as JobModel
+    participant AM as ApplicationModel
+    participant NM as NotificationModel
+
+    JS->>API: POST /apply/:jobId
+    API->>CTRL: applyToJob(req)
+    CTRL->>JM: findById(jobId)
+    JM-->>CTRL: Job Details
+    
+    CTRL->>AM: findOne(job, seeker)
+    AM-->>CTRL: Existing Application Check
+    
+    Note over CTRL: Calculate Compatibility
+    
+    CTRL->>AM: create(Application)
+    AM-->>CTRL: Application Success
+    
+    CTRL->>NM: create(Notification)
+    NM-->>CTRL: Notification Created
+    
+    CTRL-->>JS: 201 Created (Application Data)

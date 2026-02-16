@@ -1,0 +1,54 @@
+classDiagram
+    class JobSeeker {
+        +String name
+        +String lastName
+        +String email
+        +String curriculumVitae
+        +String location
+        +Boolean isPremium
+        +register()
+        +applyToJob()
+    }
+
+    class Employer {
+        +String name
+        +String email
+        +Enum specialty
+        +Enum status
+        +Number jobOffersQuota
+        +Enum plan
+        +postJob()
+        +reviewApplication()
+    }
+
+    class Job {
+        +String position
+        +String company
+        +String jobLocation
+        +Enum jobType
+        +Enum specialization
+        +ObjectId createdBy
+        +create()
+        +update()
+    }
+
+    class Application {
+        +ObjectId job
+        +ObjectId jobSeeker
+        +Enum status
+        +Number compatibilityScore
+        +submit()
+    }
+
+    class Notification {
+        +ObjectId recipientJobSeeker
+        +Enum type
+        +String message
+        +Boolean read
+        +send()
+    }
+
+    Employer "1" -- "0..*" Job : manages
+    Job "1" -- "0..*" Application : has
+    JobSeeker "1" -- "0..*" Application : submits
+    JobSeeker "1" -- "0..*" Notification : receives
