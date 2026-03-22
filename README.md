@@ -4,7 +4,7 @@ A comprehensive medical career platform built with the MERN stack, designed to c
 
 ## Try it out !
 
-[![Medcareer demo](https://medcareer.onrender.com/)](https://app.netlify.com/start/deploy?repository=https://github.com/medcareer/medcareer)
+[![Medcareer demo](https://medcareer.onrender.com/)](https://medcareer.onrender.com/)
 
 ## 🌟 Features
 
