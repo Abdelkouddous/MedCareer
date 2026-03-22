@@ -24,17 +24,17 @@ const Comment = ({ comment, user, onDelete }) => {
   };
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+    <div className="bg-[var(--background-color)] rounded-lg p-4">
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3 mb-3">
           <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-medium">
             {comment.user.name.charAt(0).toUpperCase()}
           </div>
           <div>
-            <h4 className="font-medium text-gray-900 dark:text-white">
+            <h4 className="font-medium text-[var(--text-color)]">
               {comment.user.name} {comment.user.lastName}
             </h4>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-[var(--text-secondary-color)]">
               {new Date(comment.createdAt).toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "short",
@@ -66,7 +66,7 @@ const Comment = ({ comment, user, onDelete }) => {
           </button>
         )}
       </div>
-      <p className="text-gray-700 dark:text-gray-300">{comment.content}</p>
+      <p className="text-[var(--text-secondary-color)]">{comment.content}</p>
     </div>
   );
 };
@@ -101,7 +101,7 @@ const CommentForm = ({ blogId, user, onCommentAdded }) => {
       <div>
         <label
           htmlFor="comment"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+          className="block text-sm font-medium text-[var(--text-secondary-color)] mb-2"
         >
           Add a comment
         </label>
@@ -111,7 +111,7 @@ const CommentForm = ({ blogId, user, onCommentAdded }) => {
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="Share your thoughts..."
-          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+          className="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-[var(--surface-primary)] text-[var(--text-color)] placeholder-gray-500 dark:placeholder-gray-400"
           required
         />
       </div>
@@ -191,7 +191,7 @@ const BlogDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+      <div className="min-h-screen bg-[var(--background-color)] py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
@@ -203,10 +203,10 @@ const BlogDetail = () => {
 
   if (!blog) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+      <div className="min-h-screen bg-[var(--background-color)] py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center py-12">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h1 className="text-2xl font-bold text-[var(--text-color)] mb-4">
               Blog not found
             </h1>
             <Link
@@ -222,7 +222,7 @@ const BlogDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+    <div className="min-h-screen bg-[var(--background-color)] py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Back Button */}
         <div className="mb-6">
@@ -247,7 +247,7 @@ const BlogDetail = () => {
           </Link>
         </div>
 
-        <article className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+        <article className="bg-[var(--surface-primary)] rounded-lg shadow-lg overflow-hidden">
           {/* Featured Image */}
           {blog.featuredImage && (
             <div className="h-64 md:h-96 overflow-hidden">
@@ -266,12 +266,12 @@ const BlogDetail = () => {
                 <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-sm rounded-full">
                   {blog.category}
                 </span>
-                <span className="text-gray-500 dark:text-gray-400 text-sm">
+                <span className="text-[var(--text-secondary-color)] text-sm">
                   {formatDate(blog.createdAt)}
                 </span>
               </div>
 
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              <h1 className="text-3xl md:text-4xl font-bold text-[var(--text-color)] mb-4">
                 {blog.title}
               </h1>
 
@@ -282,17 +282,17 @@ const BlogDetail = () => {
                     {blog.author?.name?.charAt(0)?.toUpperCase()}
                   </div>
                   <div>
-                    <h3 className="font-medium text-gray-900 dark:text-white">
+                    <h3 className="font-medium text-[var(--text-color)]">
                       {blog.author?.name} {blog.author?.lastName}
                     </h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                    <p className="text-sm text-[var(--text-secondary-color)]">
                       Author
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
+                  <div className="flex items-center gap-2 text-[var(--text-secondary-color)]">
                     <svg
                       className="w-5 h-5"
                       fill="currentColor"
@@ -334,22 +334,22 @@ const BlogDetail = () => {
 
             {/* Content */}
             <div className="prose prose-lg dark:prose-invert max-w-none">
-              <div className="text-gray-600 dark:text-gray-300 whitespace-pre-line">
+              <div className="text-[var(--text-secondary-color)] whitespace-pre-line">
                 {blog.content}
               </div>
             </div>
 
             {/* Tags */}
             {blog.tags && blog.tags.length > 0 && (
-              <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
-                <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+              <div className="mt-8 pt-6 border-t border-[var(--border-color)]">
+                <h4 className="text-sm font-medium text-[var(--text-secondary-color)] mb-3">
                   Tags:
                 </h4>
                 <div className="flex flex-wrap gap-2">
                   {blog.tags.map((tag, index) => (
                     <span
                       key={index}
-                      className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm rounded-full"
+                      className="px-3 py-1 bg-[var(--background-secondary-color)] text-[var(--text-secondary-color)] text-sm rounded-full"
                     >
                       #{tag}
                     </span>
@@ -361,9 +361,9 @@ const BlogDetail = () => {
         </article>
 
         {/* Comments Section */}
-        <div className="mt-12 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+        <div className="mt-12 bg-[var(--surface-primary)] rounded-lg shadow-lg p-8">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <h2 className="text-2xl font-bold text-[var(--text-color)]">
               Comments ({comments.length})
             </h2>
           </div>
@@ -395,7 +395,7 @@ const BlogDetail = () => {
           {/* Comments List */}
           <div className="space-y-4">
             {comments.length === 0 ? (
-              <p className="text-gray-500 dark:text-gray-400 text-center py-8">
+              <p className="text-[var(--text-secondary-color)] text-center py-8">
                 No comments yet. Be the first to share your thoughts!
               </p>
             ) : (

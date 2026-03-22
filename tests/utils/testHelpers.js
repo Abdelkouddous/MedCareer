@@ -1,8 +1,8 @@
 import request from "supertest";
 import mongoose from "mongoose";
-import Employer from "../../models/EmployerModel.js";
-import Job from "../../models/JobModel.js";
-import JobSeeker from "../../models/JobSeekerModel.js";
+import Employer from "../../backend/models/EmployerModel.js";
+import Job from "../../backend/models/JobModel.js";
+import JobSeeker from "../../backend/models/JobSeekerModel.js";
 import { testUsers, testJobs } from "../fixtures/testData.js";
 
 /**

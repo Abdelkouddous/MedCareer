@@ -58,8 +58,8 @@ const CreateBlogForm = ({ onBlogCreated, onCancel }) => {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+    <div className="bg-[var(--surface-primary)] rounded-lg shadow-lg p-6 mb-8">
+      <h2 className="text-2xl font-bold text-[var(--text-color)] mb-6">
         Create New Blog
       </h2>
 
@@ -67,7 +67,7 @@ const CreateBlogForm = ({ onBlogCreated, onCancel }) => {
         <div>
           <label
             htmlFor="title"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+            className="block text-sm font-medium text-[var(--text-secondary-color)] mb-2"
           >
             Title *
           </label>
@@ -77,7 +77,7 @@ const CreateBlogForm = ({ onBlogCreated, onCancel }) => {
             name="title"
             value={formData.title}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            className="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-[var(--surface-primary)] text-[var(--text-color)]"
             required
           />
         </div>
@@ -85,7 +85,7 @@ const CreateBlogForm = ({ onBlogCreated, onCancel }) => {
         <div>
           <label
             htmlFor="excerpt"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+            className="block text-sm font-medium text-[var(--text-secondary-color)] mb-2"
           >
             Excerpt
           </label>
@@ -96,14 +96,14 @@ const CreateBlogForm = ({ onBlogCreated, onCancel }) => {
             value={formData.excerpt}
             onChange={handleChange}
             placeholder="Brief description of the blog..."
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            className="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-[var(--surface-primary)] text-[var(--text-color)]"
           />
         </div>
 
         <div>
           <label
             htmlFor="category"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+            className="block text-sm font-medium text-[var(--text-secondary-color)] mb-2"
           >
             Category
           </label>
@@ -112,7 +112,7 @@ const CreateBlogForm = ({ onBlogCreated, onCancel }) => {
             name="category"
             value={formData.category}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            className="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-[var(--surface-primary)] text-[var(--text-color)]"
           >
             <option value="Medical News">Medical News</option>
             <option value="Career Advice">Career Advice</option>
@@ -127,7 +127,7 @@ const CreateBlogForm = ({ onBlogCreated, onCancel }) => {
         <div>
           <label
             htmlFor="tags"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+            className="block text-sm font-medium text-[var(--text-secondary-color)] mb-2"
           >
             Tags (comma-separated)
           </label>
@@ -138,14 +138,14 @@ const CreateBlogForm = ({ onBlogCreated, onCancel }) => {
             value={formData.tags}
             onChange={handleChange}
             placeholder="technology, healthcare, career..."
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            className="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-[var(--surface-primary)] text-[var(--text-color)]"
           />
         </div>
 
         <div>
           <label
             htmlFor="featuredImage"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+            className="block text-sm font-medium text-[var(--text-secondary-color)] mb-2"
           >
             Featured Image URL
           </label>
@@ -156,14 +156,14 @@ const CreateBlogForm = ({ onBlogCreated, onCancel }) => {
             value={formData.featuredImage}
             onChange={handleChange}
             placeholder="https://example.com/image.jpg"
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            className="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-[var(--surface-primary)] text-[var(--text-color)]"
           />
         </div>
 
         <div>
           <label
             htmlFor="content"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+            className="block text-sm font-medium text-[var(--text-secondary-color)] mb-2"
           >
             Content *
           </label>
@@ -174,7 +174,7 @@ const CreateBlogForm = ({ onBlogCreated, onCancel }) => {
             value={formData.content}
             onChange={handleChange}
             placeholder="Write your blog content here..."
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            className="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-[var(--surface-primary)] text-[var(--text-color)]"
             required
           />
         </div>
@@ -190,7 +190,7 @@ const CreateBlogForm = ({ onBlogCreated, onCancel }) => {
           <button
             type="button"
             onClick={onCancel}
-            className="px-6 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors"
+            className="px-6 py-2 bg-gray-300 dark:bg-gray-600 text-[var(--text-secondary-color)] rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors"
           >
             Cancel
           </button>
@@ -231,10 +231,10 @@ const BlogManagement = ({ blog, onBlogDeleted, user }) => {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+    <div className="bg-[var(--surface-primary)] rounded-lg shadow-lg p-6">
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+          <h3 className="text-xl font-bold text-[var(--text-color)] mb-2">
             <Link
               to={`/blogs/${blog._id}`}
               className="hover:text-blue-600 dark:hover:text-blue-400"
@@ -251,7 +251,7 @@ const BlogManagement = ({ blog, onBlogDeleted, user }) => {
             <span>{blog.likes?.length || 0} likes</span>
             <span>{blog.comments?.length || 0} comments</span>
           </div>
-          <p className="text-gray-600 dark:text-gray-300 line-clamp-2">
+          <p className="text-[var(--text-secondary-color)] line-clamp-2">
             {blog.excerpt || blog.content.substring(0, 200) + "..."}
           </p>
         </div>
@@ -308,13 +308,13 @@ const AdminBlogs = () => {
   // Allow employers, job seekers, and admins to create blogs
   if (!user || !["admin", "employer", "jobseeker"].includes(user.role)) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+      <div className="min-h-screen bg-[var(--background-color)] py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h1 className="text-2xl font-bold text-[var(--text-color)] mb-4">
               Access Denied
             </h1>
-            <p className="text-gray-600 dark:text-gray-300">
+            <p className="text-[var(--text-secondary-color)]">
               You need to be logged in as an employer, job seeker, or admin to
               access this page.
             </p>
@@ -326,7 +326,7 @@ const AdminBlogs = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+      <div className="min-h-screen bg-[var(--background-color)] py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
@@ -337,16 +337,16 @@ const AdminBlogs = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+    <div className="min-h-screen bg-[var(--background-color)] py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              <h1 className="text-3xl font-bold text-[var(--text-color)] mb-2">
                 Blog Management
               </h1>
-              <p className="text-gray-600 dark:text-gray-300">
+              <p className="text-[var(--text-secondary-color)]">
                 Create and manage your blog posts and content.
               </p>
             </div>
@@ -369,7 +369,7 @@ const AdminBlogs = () => {
 
         {/* Blogs List */}
         <div className="space-y-6">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+          <h2 className="text-xl font-semibold text-[var(--text-color)]">
             All Blogs ({blogs.length})
           </h2>
 
@@ -378,7 +378,7 @@ const AdminBlogs = () => {
               <div className="text-gray-400 dark:text-gray-500 text-6xl mb-4">
                 📝
               </div>
-              <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-2">
+              <h3 className="text-xl font-medium text-[var(--text-color)] mb-2">
                 No blogs found
               </h3>
               <p className="text-gray-600 dark:text-gray-400">

@@ -5,7 +5,7 @@ import {
   JOB_STATUS,
   JOB_TYPE,
   MEDICAL_SPECIALIZATION,
-} from "../../../../utils/constants";
+} from "../../../../backend/utils/constants";
 import { Form, redirect } from "react-router-dom";
 import { toast } from "react-toastify";
 import customFetch from "../../utils/customFetch";

@@ -13,7 +13,7 @@ import {
   updateEmployerQuota,
   getPendingEmployers,
 } from "../controllers/employerController.js";
-import { getEmployerApplications } from "../controllers/applicationController.js";
+import { getEmployerApplications, updateApplicationStatus } from "../controllers/applicationController.js";
 import upload from "../middleware/multerMiddleware.js";
 
 //This is recruiters and admin router
@@ -25,6 +25,7 @@ router.get("/all-seekers", getAllJobSeekers);
 router.get("/current-user", getCurrentUser);
 router.get("/my-jobs", getUserJobs);
 router.get("/my-applications", getEmployerApplications);
+router.patch("/applications/:id/status", updateApplicationStatus);
 
 router.get("/admin/app-stats", [
   authorizePermissions("admin"),

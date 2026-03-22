@@ -55,8 +55,8 @@ const ApplicationsJobSeeker = () => {
         {applications.map((app) => {
           if (!app.job) {
             return (
-              <article key={app._id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-4 opacity-75">
-                <header className="flex justify-between items-start mb-4 border-b border-gray-100 dark:border-gray-700 pb-4">
+              <article key={app._id} className="bg-[var(--surface-primary)] rounded-lg shadow-md p-6 mb-4 opacity-75">
+                <header className="flex justify-between items-start mb-4 border-b border-[var(--border-color)] pb-4">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-gray-400 rounded text-white flex items-center justify-center text-xl font-bold uppercase">
                       ?
@@ -77,8 +77,8 @@ const ApplicationsJobSeeker = () => {
             );
           }
           return (
-            <article key={app._id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-4">
-              <header className="flex justify-between items-start mb-4 border-b border-gray-100 dark:border-gray-700 pb-4">
+            <article key={app._id} className="bg-[var(--surface-primary)] rounded-lg shadow-md p-6 mb-4">
+              <header className="flex justify-between items-start mb-4 border-b border-[var(--border-color)] pb-4">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-primary-500 rounded text-white flex items-center justify-center text-xl font-bold uppercase">
                     {app.job.company?.charAt(0) || "C"}
@@ -117,7 +117,7 @@ const ApplicationsJobSeeker = () => {
                  </div>
               </div>
 
-              <footer className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 flex justify-end">
+              <footer className="mt-4 pt-4 border-t border-[var(--border-color)] flex justify-end">
                  <Link to={`/job-details/${app.job._id}`} className="text-primary-500 hover:text-primary-700 font-medium">
                     View Job Details
                  </Link>

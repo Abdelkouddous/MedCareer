@@ -48,18 +48,18 @@ const Dashboard = () => {
       <h1 className="text-3xl font-bold mb-8">Job Seeker Dashboard</h1>
 
       {/* Welcome Section */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+      <div className="bg-[var(--surface-primary)] rounded-lg shadow-md p-6 mb-8">
         <h2 className="text-2xl font-semibold mb-4">
           Welcome, {jobSeeker?.name || "Job Seeker"}!
         </h2>
-        <p className="text-gray-600">
+        <p className="text-[var(--text-secondary-color)]">
           Manage your job applications and career progress from this dashboard.
         </p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-[var(--surface-primary)] rounded-lg shadow-md p-6">
           <div className="flex items-center mb-4">
             <div className="bg-primary-100 p-3 rounded-full mr-4">
               <FiBriefcase className="text-primary-500 text-xl" />
@@ -69,7 +69,7 @@ const Dashboard = () => {
           <p className="text-3xl font-bold">{stats.applications}</p>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-[var(--surface-primary)] rounded-lg shadow-md p-6">
           <div className="flex items-center mb-4">
             <div className="bg-blue-100 p-3 rounded-full mr-4">
               <FiMail className="text-blue-500 text-xl" />
@@ -79,7 +79,7 @@ const Dashboard = () => {
           <p className="text-3xl font-bold">{stats.interviews}</p>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-[var(--surface-primary)] rounded-lg shadow-md p-6">
           <div className="flex items-center mb-4">
             <div className="bg-green-100 p-3 rounded-full mr-4">
               <FiBarChart2 className="text-green-500 text-xl" />
@@ -91,12 +91,12 @@ const Dashboard = () => {
       </div>
 
       {/* Quick Links */}
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="bg-[var(--surface-primary)] rounded-lg shadow-md p-6">
         <h2 className="text-xl font-semibold mb-4">Quick Links</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Link
             to="/job-seekers/jobs"
-            className="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+            className="flex items-center p-4 bg-[var(--surface-secondary)] hover:bg-[var(--border-color)] transition-colors"
           >
             <FiBriefcase className="text-primary-500 mr-3 text-xl" />
             <span>Browse Jobs</span>
@@ -104,7 +104,7 @@ const Dashboard = () => {
 
           <Link
             to="/job-seekers/applications"
-            className="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+            className="flex items-center p-4 bg-[var(--surface-secondary)] hover:bg-[var(--border-color)] transition-colors"
           >
             <FiBarChart2 className="text-blue-500 mr-3 text-xl" />
             <span>My Applications</span>
@@ -112,7 +112,7 @@ const Dashboard = () => {
 
           <Link
             to="/job-seekers/inbox"
-            className="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+            className="flex items-center p-4 bg-[var(--surface-secondary)] hover:bg-[var(--border-color)] transition-colors"
           >
             <FiMail className="text-green-500 mr-3 text-xl" />
             <span>Messages</span>
@@ -120,7 +120,7 @@ const Dashboard = () => {
 
           <Link
             to="/job-seekers/profile"
-            className="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+            className="flex items-center p-4 bg-[var(--surface-secondary)] hover:bg-[var(--border-color)] transition-colors"
           >
             <FiUser className="text-purple-500 mr-3 text-xl" />
             <span>My Profile</span>

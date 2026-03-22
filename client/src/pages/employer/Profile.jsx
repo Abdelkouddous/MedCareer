@@ -140,7 +140,7 @@ import { FormRow, FormRowSelect } from "../components";
 import Wrapper from "../../assets/wrappers/DashboardFormPage";
 import { useOutletContext } from "react-router-dom";
 import customFetch from "../../utils/customFetch";
-import { MEDICAL_SPECIALIZATION } from "../../../../utils/constants";
+import { MEDICAL_SPECIALIZATION } from "../../../../backend/utils/constants";
 import { SubmitBtn } from "../components/SubmitBtn";
 import {
   FaUser,

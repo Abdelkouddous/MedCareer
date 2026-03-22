@@ -110,7 +110,7 @@ const Login = () => {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-[var(--text-color)] mb-1"
             >
               Email Address
             </label>
@@ -120,7 +120,7 @@ const Login = () => {
                 name="email"
                 id="email"
                 placeholder="your_email@example.com"
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 rounded-lg border border-[var(--border-color)] focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
                 required
               />
             </div>
@@ -139,7 +139,7 @@ const Login = () => {
                 name="password"
                 id="password"
                 placeholder="••••••••"
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all pr-12"
+                className="w-full px-4 py-3 rounded-lg border border-[var(--border-color)] focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all pr-12"
                 required
               />
               <button
@@ -196,15 +196,15 @@ const Login = () => {
           </button>
 
           <div className="relative flex items-center justify-center mt-4">
-            <div className="border-t border-gray-200 w-full"></div>
-            <div className="bg-white px-3 text-sm text-gray-500">or</div>
-            <div className="border-t border-gray-200 w-full"></div>
+            <div className="border-t border-[var(--border-color)] w-full"></div>
+            <div className="bg-[var(--surface-primary)] px-3 text-sm text-[var(--text-secondary-color)]">or</div>
+            <div className="border-t border-[var(--border-color)] w-full"></div>
           </div>
 
           <button
             type="button"
             onClick={handleGuestLogin}
-            className="w-full bg-gray-100 text-gray-800 font-medium py-3 px-4 rounded-lg shadow-sm transition-all duration-300 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-70 disabled:cursor-not-allowed"
+            className="w-full bg-[var(--background-color)] text-[var(--text-color)] font-medium py-3 px-4 rounded-lg shadow-sm transition-all duration-300 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-70 disabled:cursor-not-allowed"
             disabled={isGuestLoading}
           >
             {isGuestLoading ? (
@@ -236,7 +236,7 @@ const Login = () => {
             )}
           </button>
 
-          <div className="text-center mt-8 pt-6 border-t border-gray-200">
+          <div className="text-center mt-8 pt-6 border-t border-[var(--border-color)]">
             <p className="text-sm ">
               Don&apos;t have an account?{" "}
               <Link

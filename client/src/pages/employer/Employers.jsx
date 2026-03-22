@@ -56,7 +56,7 @@ const Employers = () => {
                 Post jobs in minutes and manage applications in a simple dashboard.
               </p>
             </div>
-            <div className="p-6 rounded-lg border bg-white/60">
+            <div className="p-6 rounded-2xl" style={{ background: 'var(--surface-primary)', border: '1px solid var(--border-color)' }}>
               <h3 className="font-semibold text-[var(--text-color)] mb-2">
                 Insights & Controls
               </h3>

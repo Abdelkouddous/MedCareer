@@ -16,6 +16,11 @@ import {
   listNotifications,
   markNotificationRead,
 } from "../controllers/applicationController.js";
+import {
+  getJobSeekerConversations,
+  sendMessageAsJobSeeker,
+  getMessagesAsJobSeeker,
+} from "../controllers/messageController.js";
 import { authenticateJobSeeker } from "../middleware/authMiddleware.js";
 
 const router = Router();
@@ -46,5 +51,10 @@ router.patch(
   authenticateJobSeeker,
   markNotificationRead
 );
+
+// Messaging (self — only accepted applications)
+router.get("/conversations", authenticateJobSeeker, getJobSeekerConversations);
+router.post("/messages/send", authenticateJobSeeker, sendMessageAsJobSeeker);
+router.get("/messages/:conversationId", authenticateJobSeeker, getMessagesAsJobSeeker);
 
 export default router;

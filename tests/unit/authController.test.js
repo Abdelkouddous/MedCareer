@@ -1,8 +1,8 @@
 import request from "supertest";
 import express from "express";
 import mongoose from "mongoose";
-import authRouter from "../../routes/authRouter.js";
-import Employer from "../../models/EmployerModel.js";
+import authRouter from "../../backend/routes/authRouter.js";
+import Employer from "../../backend/models/EmployerModel.js";
 import { testUsers } from "../fixtures/testData.js";
 import cookieParser from "cookie-parser";
 

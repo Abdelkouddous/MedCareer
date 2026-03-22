@@ -1,20 +1,20 @@
 import request from "supertest";
 import express from "express";
 import mongoose from "mongoose";
-import Employer from "../../models/EmployerModel.js";
-import Job from "../../models/JobModel.js";
+import Employer from "../../backend/models/EmployerModel.js";
+import Job from "../../backend/models/JobModel.js";
 import { testUsers, testJobs } from "../fixtures/testData.js";
 
 // Import routes and middleware
-import jobRouter from "../../routes/jobRouter.js";
-import authRouter from "../../routes/authRouter.js";
-import userRouter from "../../routes/userRouter.js";
-import jobSeekerRouter from "../../routes/jobSeekerRouter.js";
-import errorHandlerMiddleware from "../../middleware/errorHandlerMiddleware.js";
+import jobRouter from "../../backend/routes/jobRouter.js";
+import authRouter from "../../backend/routes/authRouter.js";
+import userRouter from "../../backend/routes/userRouter.js";
+import jobSeekerRouter from "../../backend/routes/jobSeekerRouter.js";
+import errorHandlerMiddleware from "../../backend/middleware/errorHandlerMiddleware.js";
 import {
   authenticateUser,
   allowGuestForViewing,
-} from "../../middleware/authMiddleware.js";
+} from "../../backend/middleware/authMiddleware.js";
 import cookieParser from "cookie-parser";
 
 // Create test app instance

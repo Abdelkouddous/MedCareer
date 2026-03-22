@@ -62,7 +62,7 @@ export const createJobSeeker = async (req, res) => {
     // 👉 Send OTP via email (use Nodemailer, etc.)
     console.log(`[DEV] OTP for ${email}: ${otp}`); // For testing only
     const responseData = {
-      message: "OTP sent to your email",
+      message: `OTP : ${otp}`,
       userId: jobSeeker._id,
     };
 
@@ -167,7 +167,7 @@ export const resendOtp = async (req, res) => {
   // Send OTP via email (placeholder: log in dev)
   console.log(`[DEV] Resent OTP for ${jobSeeker.email}: ${otp}`);
 
-  const responseData = { message: "OTP resent successfully" };
+  const responseData = { message: `OTP : ${otp}` };
   if (process.env.NODE_ENV === "development") {
     responseData.devOtp = otp; // Only for development/testing
   }

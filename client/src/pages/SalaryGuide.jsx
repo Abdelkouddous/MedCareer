@@ -4,7 +4,7 @@ import Wrapper from "../assets/wrappers/Dashboard";
 const SalaryGuide = () => {
   return (
     <Wrapper className="min-h-screen bg-[var(--background-color)]">
-      <section className="py-16 px-4 bg-white border-b border-[var(--grey-200)]">
+      <section className="py-16 px-4 bg-[var(--surface-primary)] border-b border-[var(--grey-200)]">
         <div className="container mx-auto">
           <h1 className="text-3xl md:text-4xl font-bold text-[var(--text-color)] mb-3">
             Salary Guide for Medical Professionals
@@ -52,7 +52,7 @@ const SalaryGuide = () => {
           ].map((role) => (
             <div
               key={role.title}
-              className="bg-white border rounded-lg p-6 shadow-sm"
+              className="bg-[var(--surface-primary)] border rounded-lg p-6 shadow-sm"
             >
               <h3 className="text-xl font-semibold text-[var(--text-color)] mb-2">
                 {role.title}

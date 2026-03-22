@@ -14,7 +14,7 @@ import {
   FaHospital,
   FaFire,
 } from "react-icons/fa";
-import { MEDICAL_SPECIALIZATION } from "../../../utils/constants";
+import { MEDICAL_SPECIALIZATION } from "../../../backend/utils/constants";
 import customFetch from "../utils/customFetch";
 import { toast } from "react-toastify";
 import Wrapper from "../assets/wrappers/Dashboard";

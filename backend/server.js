@@ -28,6 +28,7 @@ import employerRouter from "./routes/employerRouter.js";
 import jobSeekerRouter from "./routes/jobSeekerRouter.js";
 import blogRouter from "./routes/blogRouter.js";
 import statusRouter from "./routes/statusRouter.js";
+import messageRouter from "./routes/messageRouter.js";
 
 //middlewares imports
 
@@ -48,8 +49,36 @@ import {
 } from "./controllers/employerController.js";
 import { getAllJobsCount } from "./controllers/jobController.js";
 
+import http from "http";
+import { Server } from "socket.io";
+
 const app = express();
 const port = process.env.PORT || 5100;
+
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*", // allow frontends to connect via Websocket
+    methods: ["GET", "POST"],
+  },
+});
+
+io.on("connection", (socket) => {
+  console.log(`[Socket.io] User connected: ${socket.id}`);
+  
+  socket.on("join_chat", (conversationId) => {
+    socket.join(conversationId);
+  });
+
+  socket.on("send_message", (data) => {
+    // Emit to other users in the chat room
+    socket.to(data.conversationId).emit("receive_message", data);
+  });
+
+  socket.on("disconnect", () => {
+    console.log(`[Socket.io] User disconnected: ${socket.id}`);
+  });
+});
 
 // Middleware section
 
@@ -64,12 +93,12 @@ app.use(express.json());
 const __dirname = dirname(fileURLToPath(import.meta.url));
 // use path .resolve not path.join
 // deprecated
-// app.use(express.static(path.resolve(__dirname, "./public")));
-app.use(express.static(path.resolve(__dirname, "./client/dist")));
+// app.use(express.static(path.resolve(__dirname, "../public")));
+app.use(express.static(path.resolve(__dirname, "../client/dist")));
 // Make sure uploads directory is accessible
 app.use(
   "/uploads",
-  express.static(path.resolve(__dirname, "./public/uploads"))
+  express.static(path.resolve(__dirname, "../public/uploads"))
 );
 
 // Routes section
@@ -82,6 +111,7 @@ app.use("/api/v1/status", statusRouter);
 // job Seekers API call endpoint
 // Public routes are handled separately in the router
 app.use("/api/v1/jobseekers", jobSeekerRouter);
+app.use("/api/v1/messages", messageRouter);
 // API
 app.get("/", (req, res) => {
   res.send(`
@@ -185,7 +215,7 @@ const start = async () => {
   try {
     const connected = await connectDB();
     if (connected) {
-      app.listen(port, () => {
+      server.listen(port, () => {
         console.log(`Server running on port ${port}...`);
       });
     } else {
@@ -201,8 +231,8 @@ start();
 //
 app.use("*", (req, res) => {
   // deprecated
-  // res.sendFile(path.resolve(__dirname, "./public", "index.html"));
-  res.sendFile(path.resolve(__dirname, "./client/dist", "index.html"));
+  // res.sendFile(path.resolve(__dirname, "../public", "index.html"));
+  res.sendFile(path.resolve(__dirname, "../client/dist", "index.html"));
 });
 // Error handling middleware
 app.use("*", (req, res) => {

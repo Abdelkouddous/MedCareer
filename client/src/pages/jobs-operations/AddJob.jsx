@@ -4,7 +4,7 @@ import {
   JOB_STATUS,
   JOB_TYPE,
   MEDICAL_SPECIALIZATION,
-} from "../../../../utils/constants";
+} from "../../../../backend/utils/constants";
 import { FormRow, FormRowSelect } from "../components";
 import customFetch from "../../utils/customFetch";
 import { SubmitBtn } from "../components/SubmitBtn";

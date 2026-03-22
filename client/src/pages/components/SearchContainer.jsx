@@ -5,7 +5,7 @@ import {
   JOB_STATUS,
   JOB_SORT_BY,
   MEDICAL_SPECIALIZATION,
-} from "../../../../utils/constants";
+} from "../../../../backend/utils/constants";
 import FormRowSelect from "./FormRowSelect";
 import FormRow from "./FormRow";
 

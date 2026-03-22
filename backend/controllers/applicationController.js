@@ -199,3 +199,53 @@ export const getEmployerApplications = async (req, res) => {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
   }
 };
+
+export const updateApplicationStatus = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const validStatuses = ["applied", "viewed", "accepted", "rejected"];
+    if (!validStatuses.includes(status)) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: `Invalid status. Must be one of: ${validStatuses.join(", ")}` });
+    }
+
+    const application = await Application.findById(id).populate("job");
+    if (!application) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "Application not found" });
+    }
+
+    // Verify the employer owns the job this application belongs to
+    const job = await Job.findById(application.job._id);
+    if (!job || job.createdBy.toString() !== userId) {
+      return res
+        .status(StatusCodes.FORBIDDEN)
+        .json({ message: "You are not authorized to update this application" });
+    }
+
+    application.status = status;
+    await application.save();
+
+    // Send notification to the job seeker
+    await Notification.create({
+      recipientJobSeeker: application.jobSeeker,
+      type: status,
+      message: `Your application for ${job.position} at ${job.company} has been ${status}`,
+    });
+
+    const updated = await Application.findById(id)
+      .populate("job")
+      .populate("jobSeeker");
+
+    res.status(StatusCodes.OK).json({ application: updated });
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
+  }
+};
