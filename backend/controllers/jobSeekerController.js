@@ -5,6 +5,7 @@ import JobSeeker from "../models/JobSeekerModel.js";
 import { hashPassword, comparePassword } from "../utils/passwordUtils.js";
 import { createJWT } from "../utils/tokenUtils.js";
 import mongoose from "mongoose";
+import CV from "../models/CVModel.js";
 
 // Get all job seekers
 // You can call it in frontend by using getAllJobSeekers.length to count all job seekers
@@ -69,6 +70,17 @@ export const createJobSeeker = async (req, res) => {
     // 👇 ONLY in development: expose OTP for testing
     if (process.env.NODE_ENV === "development") {
       responseData.devOtp = otp; // Never do this in production!
+    }
+
+    // If user uploaded a CV during registration, save it
+    if (req.file) {
+      await CV.create({
+        jobSeekerId: jobSeeker._id,
+        cvType: "uploaded",
+        cvUrl: `/uploads/${req.file.filename}`,
+        cvPublicId: req.file.filename,
+        originalFileName: req.file.originalname,
+      });
     }
 
     res.status(201).json(responseData);
@@ -366,6 +378,12 @@ export const updateCurrentJobSeeker = async (req, res) => {
       "phoneNumber",
       "profilePicture",
       "curriculumVitae",
+      "specialization",
+      "bio",
+      "experience",
+      "education",
+      "skills",
+      "languages",
     ];
     Object.keys(updates).forEach((k) => {
       if (!allowed.includes(k)) delete updates[k];

@@ -62,7 +62,7 @@ scenarios:
             Authorization: "Bearer {{ authToken }}"
           json:
             position: "Test Position"
-            company: "Test Company"
+            company: "Test Clinic"
             jobLocation: "Test Location"
             jobType: "full-time"
             description: "Test Description"

@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VitalWork — UI Design System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --teal: #00C2A8;
+      --teal-light: #00dfc0;
+      --navy: #0D1B2A;
+      --bg: #0a1520;
+      --surface: #111f2e;
+      --surface2: #1a2d3d;
+      --text: #ffffff;
+      --text-muted: #8ca0b3;
+      --border: rgba(0,194,168,0.15);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      font-family: 'Inter', sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── TOP BAR ── */
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,21,32,0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 32px; height: 60px;
+    }
+    .topbar-logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; color: var(--teal); }
+    .topbar-logo svg { width: 26px; height: 26px; }
+    .topbar-nav { display: flex; gap: 8px; }
+    .nav-btn {
+      background: none; border: none; cursor: pointer;
+      padding: 7px 16px; border-radius: 8px;
+      font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500;
+      color: var(--text-muted); transition: all 0.2s;
+    }
+    .nav-btn:hover { background: var(--surface2); color: var(--text); }
+    .nav-btn.active { background: var(--teal); color: #fff; }
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+    .theme-toggle {
+      display: flex; gap: 2px; background: var(--surface2);
+      border-radius: 10px; padding: 3px;
+    }
+    .theme-btn {
+      padding: 6px 12px; border-radius: 8px; border: none; cursor: pointer;
+      font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 500;
+      transition: all 0.2s;
+    }
+    .theme-btn.active { background: var(--teal); color: #fff; }
+    .theme-btn:not(.active) { background: none; color: var(--text-muted); }
+    .export-btn {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--teal); color: #fff; border: none; border-radius: 8px;
+      padding: 8px 16px; font-family: 'Inter', sans-serif; font-size: 13px;
+      font-weight: 600; cursor: pointer; transition: all 0.2s;
+    }
+    .export-btn:hover { background: var(--teal-light); transform: translateY(-1px); }
+
+    /* ── LEFT PANEL ── */
+    .layout { display: flex; min-height: calc(100vh - 60px); }
+    .sidebar {
+      width: 230px; flex-shrink: 0;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 20px 0;
+      position: sticky; top: 60px; height: calc(100vh - 60px); overflow-y: auto;
+    }
+    .sidebar-section { padding: 0 16px 8px; }
+    .sidebar-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+      color: var(--text-muted); text-transform: uppercase;
+      padding: 12px 16px 6px; display: block;
+    }
+    .sidebar-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 16px; border-radius: 8px; cursor: pointer;
+      font-size: 13px; color: var(--text-muted); transition: all 0.2s;
+      margin: 1px 8px; border: none; background: none;
+      width: calc(100% - 16px); text-align: left; font-family: 'Inter', sans-serif;
+    }
+    .sidebar-item:hover { background: var(--surface2); color: var(--text); }
+    .sidebar-item.active { background: rgba(0,194,168,0.12); color: var(--teal); }
+    .sidebar-item .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ── MAIN CANVAS ── */
+    .canvas { flex: 1; padding: 40px 48px; overflow-x: hidden; }
+    .section-header {
+      display: flex; align-items: center; gap: 14px; margin-bottom: 28px;
+    }
+    .section-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: rgba(0,194,168,0.12); border: 1px solid rgba(0,194,168,0.3);
+      display: flex; align-items: center; justify-content: center; font-size: 18px;
+    }
+    .section-title { font-size: 22px; font-weight: 700; }
+    .section-sub { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+    .divider { height: 1px; background: var(--border); margin: 48px 0; }
+    .mode-row {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 20px;
+    }
+    .mode-badge {
+      padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.5px; text-transform: uppercase;
+    }
+    .mode-badge.dark { background: rgba(0,194,168,0.15); color: var(--teal); border: 1px solid rgba(0,194,168,0.3); }
+    .mode-badge.light { background: rgba(255,255,255,0.1); color: #c0d0df; border: 1px solid rgba(255,255,255,0.15); }
+    .screen-grid { display: grid; gap: 24px; }
+    .screen-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .screen-grid.cols-1 { grid-template-columns: 1fr; }
+    .screen-card {
+      border-radius: 16px; overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      transition: transform 0.25s, box-shadow 0.25s;
+      cursor: pointer; position: relative;
+    }
+    .screen-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,194,168,0.3);
+    }
+    .screen-card img { width: 100%; display: block; }
+    .screen-card-label {
+      padding: 12px 16px;
+      font-size: 12px; font-weight: 600; color: var(--text-muted);
+      display: flex; align-items: center; justify-content: space-between;
+      border-top: 1px solid var(--border);
+    }
+    .screen-card-label span { color: var(--text); }
+    .tag { font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+    .tag.web { background: rgba(59,130,246,0.15); color: #60a5fa; }
+    .tag.mobile { background: rgba(139,92,246,0.15); color: #a78bfa; }
+
+    /* ── DESIGN TOKENS ── */
+    .tokens-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+    .token-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px; text-align: center;
+    }
+    .token-swatch { width: 100%; height: 48px; border-radius: 8px; margin-bottom: 10px; }
+    .token-name { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+    .token-value { font-size: 11px; color: var(--text-muted); font-family: monospace; }
+    .type-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .type-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px;
+    }
+    .type-sample { font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .type-meta { font-size: 11px; color: var(--text-muted); font-family: monospace; }
+
+    /* ── PRINT ── */
+    @media print {
+      .topbar { position: relative; }
+      .sidebar { position: relative; height: auto; }
+      .screen-card { break-inside: avoid; }
+    }
+
+    /* ── HIDDEN SECTIONS ── */
+    .page-section { display: none; }
+    .page-section.active { display: block; }
+  </style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#00C2A8" stroke-width="2.5" stroke-linecap="round">
+      <path d="M12 2v20M2 12h20" />
+      <rect x="5" y="5" width="14" height="14" rx="3" stroke-opacity="0.4" />
+    </svg>
+    VitalWork
+  </div>
+  <nav class="topbar-nav">
+    <button class="nav-btn active" onclick="showPage('web')">🌐 Web App</button>
+    <button class="nav-btn" onclick="showPage('mobile')">📱 Mobile App</button>
+    <button class="nav-btn" onclick="showPage('tokens')">🎨 Design Tokens</button>
+  </nav>
+  <div class="topbar-right">
+    <div class="theme-toggle">
+      <button class="theme-btn active" id="btn-dark" onclick="showTheme('dark')">🌙 Dark</button>
+      <button class="theme-btn" id="btn-light" onclick="showTheme('light')">☀️ Light</button>
+      <button class="theme-btn" id="btn-both" onclick="showTheme('both')">Both</button>
+    </div>
+    <button class="export-btn" onclick="window.print()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Export PDF
+    </button>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <!-- Web -->
+    <span class="sidebar-label">Web App</span>
+    <button class="sidebar-item active" onclick="scrollTo('web-landing')">
+      <span class="dot" style="background:#00C2A8"></span> Landing Page
+    </button>
+    <button class="sidebar-item" onclick="scrollTo('web-browse')">
+      <span class="dot" style="background:#60a5fa"></span> Browse Jobs
+    </button>
+    <button class="sidebar-item" onclick="scrollTo('web-seeker')">
+      <span class="dot" style="background:#a78bfa"></span> Job Seeker Dashboard
+    </button>
+    <button class="sidebar-item" onclick="scrollTo('web-employer')">
+      <span class="dot" style="background:#f59e0b"></span> Employer Dashboard
+    </button>
+
+    <!-- Mobile -->
+    <span class="sidebar-label">Mobile App</span>
+    <button class="sidebar-item" onclick="scrollTo('mob-onboard')">
+      <span class="dot" style="background:#00C2A8"></span> Onboarding & Auth
+    </button>
+    <button class="sidebar-item" onclick="scrollTo('mob-home')">
+      <span class="dot" style="background:#60a5fa"></span> Home / Jobs
+    </button>
+    <button class="sidebar-item" onclick="scrollTo('mob-profile')">
+      <span class="dot" style="background:#a78bfa"></span> Profile & Applications
+    </button>
+    <button class="sidebar-item" onclick="scrollTo('mob-chat')">
+      <span class="dot" style="background:#f59e0b"></span> Chat / CV / Stats
+    </button>
+
+    <!-- Tokens -->
+    <span class="sidebar-label">System</span>
+    <button class="sidebar-item" onclick="scrollTo('tokens-section')">
+      <span class="dot" style="background:#ec4899"></span> Design Tokens
+    </button>
+  </aside>
+
+  <!-- CANVAS -->
+  <main class="canvas">
+
+    <!-- ━━ WEB LANDING ━━ -->
+    <div id="web-landing">
+      <div class="section-header">
+        <div class="section-icon">🏠</div>
+        <div>
+          <div class="section-title">Landing Page</div>
+          <div class="section-sub">Public homepage — Hero · Stats · Specializations · Featured Jobs</div>
+        </div>
+      </div>
+
+      <div class="mode-row"><span class="mode-badge dark">Dark Mode</span></div>
+      <div class="screen-grid cols-1 dark-only">
+        <div class="screen-card">
+          <img src="./web_landing_page_1774324490631.png" alt="Landing Page Dark" />
+          <div class="screen-card-label"><span>Landing Page — Dark</span><span class="tag web">Web</span></div>
+        </div>
+      </div>
+
+      <div class="mode-row" style="margin-top:24px"><span class="mode-badge light">Light Mode</span></div>
+      <div class="screen-grid cols-1 light-only">
+        <div class="screen-card">
+          <img src="./light_web_landing_1774328804275.png" alt="Landing Page Light" />
+          <div class="screen-card-label"><span>Landing Page — Light</span><span class="tag web">Web</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ━━ WEB BROWSE JOBS ━━ -->
+    <div id="web-browse">
+      <div class="section-header">
+        <div class="section-icon">🔍</div>
+        <div>
+          <div class="section-title">Browse Jobs</div>
+          <div class="section-sub">Search · Filters · Job Cards · Pagination</div>
+        </div>
+      </div>
+
+      <div class="mode-row"><span class="mode-badge dark">Dark Mode</span></div>
+      <div class="screen-grid cols-1 dark-only">
+        <div class="screen-card">
+          <img src="./web_jobs_browse_1774324559523.png" alt="Browse Jobs Dark" />
+          <div class="screen-card-label"><span>Browse Jobs — Dark</span><span class="tag web">Web</span></div>
+        </div>
+      </div>
+
+      <div class="mode-row" style="margin-top:24px"><span class="mode-badge light">Light Mode</span></div>
+      <div class="screen-grid cols-1 light-only">
+        <div class="screen-card">
+          <img src="./light_web_jobs_browse_1774328825468.png" alt="Browse Jobs Light" />
+          <div class="screen-card-label"><span>Browse Jobs — Light</span><span class="tag web">Web</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ━━ JOB SEEKER DASHBOARD ━━ -->
+    <div id="web-seeker">
+      <div class="section-header">
+        <div class="section-icon">👨‍⚕️</div>
+        <div>
+          <div class="section-title">Job Seeker Dashboard</div>
+          <div class="section-sub">KPI Cards · Applications Table · Recommendations</div>
+        </div>
+      </div>
+
+      <div class="screen-grid cols-2">
+        <div>
+          <div class="mode-row"><span class="mode-badge dark">Dark</span></div>
+          <div class="screen-card dark-only">
+            <img src="./web_job_seeker_dashboard_1774324503872.png" alt="Dashboard Dark" />
+            <div class="screen-card-label"><span>Job Seeker Dashboard — Dark</span><span class="tag web">Web</span></div>
+          </div>
+        </div>
+        <div>
+          <div class="mode-row"><span class="mode-badge light">Light</span></div>
+          <div class="screen-card light-only">
+            <img src="./light_web_jobseeker_dashboard_1774328837001.png" alt="Dashboard Light" />
+            <div class="screen-card-label"><span>Job Seeker Dashboard — Light</span><span class="tag web">Web</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ━━ EMPLOYER DASHBOARD ━━ -->
+    <div id="web-employer">
+      <div class="section-header">
+        <div class="section-icon">🏥</div>
+        <div>
+          <div class="section-title">Employer Dashboard</div>
+          <div class="section-sub">Active Jobs Table · KPI Cards · Recent Applicants</div>
+        </div>
+      </div>
+
+      <div class="screen-grid cols-2">
+        <div>
+          <div class="mode-row"><span class="mode-badge dark">Dark</span></div>
+          <div class="screen-card dark-only">
+            <img src="./web_employer_dashboard_1774324543507.png" alt="Employer Dark" />
+            <div class="screen-card-label"><span>Employer Dashboard — Dark</span><span class="tag web">Web</span></div>
+          </div>
+        </div>
+        <div>
+          <div class="mode-row"><span class="mode-badge light">Light</span></div>
+          <div class="screen-card light-only">
+            <img src="./light_web_employer_dashboard_1774328849190.png" alt="Employer Light" />
+            <div class="screen-card-label"><span>Employer Dashboard — Light</span><span class="tag web">Web</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ━━ MOBILE ONBOARDING ━━ -->
+    <div id="mob-onboard">
+      <div class="section-header">
+        <div class="section-icon">📲</div>
+        <div>
+          <div class="section-title">Onboarding & Authentication</div>
+          <div class="section-sub">Splash · Sign Up (Job Seeker / Employer tabs) · Login</div>
+        </div>
+      </div>
+
+      <div class="screen-grid cols-2">
+        <div>
+          <div class="mode-row"><span class="mode-badge dark">Dark</span></div>
+          <div class="screen-card dark-only">
+            <img src="./mobile_onboarding_login_1774324601818.png" alt="Onboarding Dark" />
+            <div class="screen-card-label"><span>Onboarding / Auth — Dark</span><span class="tag mobile">Mobile</span></div>
+          </div>
+        </div>
+        <div>
+          <div class="mode-row"><span class="mode-badge light">Light</span></div>
+          <div class="screen-card light-only">
+            <img src="./light_mobile_onboarding_1774328893100.png" alt="Onboarding Light" />
+            <div class="screen-card-label"><span>Onboarding / Auth — Light</span><span class="tag mobile">Mobile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ━━ MOBILE HOME / JOBS ━━ -->
+    <div id="mob-home">
+      <div class="section-header">
+        <div class="section-icon">🏠</div>
+        <div>
+          <div class="section-title">Home · Jobs List · Job Detail</div>
+          <div class="section-sub">Personalized feed · Filters · Detailed job view with Apply</div>
+        </div>
+      </div>
+
+      <div class="screen-grid cols-2">
+        <div>
+          <div class="mode-row"><span class="mode-badge dark">Dark</span></div>
+          <div class="screen-card dark-only">
+            <img src="./mobile_home_jobs_1774324617846.png" alt="Mobile Home Dark" />
+            <div class="screen-card-label"><span>Home / Jobs — Dark</span><span class="tag mobile">Mobile</span></div>
+          </div>
+        </div>
+        <div>
+          <div class="mode-row"><span class="mode-badge light">Light</span></div>
+          <div class="screen-card light-only">
+            <img src="./light_mobile_home_jobs_1774328908136.png" alt="Mobile Home Light" />
+            <div class="screen-card-label"><span>Home / Jobs — Light</span><span class="tag mobile">Mobile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ━━ MOBILE PROFILE / APPS ━━ -->
+    <div id="mob-profile">
+      <div class="section-header">
+        <div class="section-icon">👤</div>
+        <div>
+          <div class="section-title">Profile · Applications · Messages</div>
+          <div class="section-sub">Profile editor · Application tracker · Inbox list</div>
+        </div>
+      </div>
+
+      <div class="screen-grid cols-2">
+        <div>
+          <div class="mode-row"><span class="mode-badge dark">Dark</span></div>
+          <div class="screen-card dark-only">
+            <img src="./mobile_profile_inbox_applications_1774324657865.png" alt="Profile Dark" />
+            <div class="screen-card-label"><span>Profile / Apps / Inbox — Dark</span><span class="tag mobile">Mobile</span></div>
+          </div>
+        </div>
+        <div>
+          <div class="mode-row"><span class="mode-badge light">Light</span></div>
+          <div class="screen-card light-only">
+            <img src="./light_mobile_profile_apps_1774328921408.png" alt="Profile Light" />
+            <div class="screen-card-label"><span>Profile / Apps / Inbox — Light</span><span class="tag mobile">Mobile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ━━ MOBILE CHAT / CV / STATS ━━ -->
+    <div id="mob-chat">
+      <div class="section-header">
+        <div class="section-icon">💬</div>
+        <div>
+          <div class="section-title">Chat · CV Builder · Stats</div>
+          <div class="section-sub">Message thread · PDF CV generator · Analytics charts</div>
+        </div>
+      </div>
+
+      <div class="screen-grid cols-2">
+        <div>
+          <div class="mode-row"><span class="mode-badge dark">Dark</span></div>
+          <div class="screen-card dark-only">
+            <img src="./mobile_chat_cv_template_1774324673391.png" alt="Chat Dark" />
+            <div class="screen-card-label"><span>Chat / CV / Stats — Dark</span><span class="tag mobile">Mobile</span></div>
+          </div>
+        </div>
+        <div>
+          <div class="mode-row"><span class="mode-badge light">Light</span></div>
+          <div class="screen-card light-only">
+            <img src="./light_mobile_chat_cv_1774328936939.png" alt="Chat Light" />
+            <div class="screen-card-label"><span>Chat / CV / Stats — Light</span><span class="tag mobile">Mobile</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ━━ DESIGN TOKENS ━━ -->
+    <div id="tokens-section">
+      <div class="section-header">
+        <div class="section-icon">🎨</div>
+        <div>
+          <div class="section-title">Design Tokens</div>
+          <div class="section-sub">Colors · Typography · Spacing system</div>
+        </div>
+      </div>
+
+      <h3 style="font-size:14px;font-weight:600;color:var(--text-muted);margin-bottom:16px;text-transform:uppercase;letter-spacing:1px">Color Palette</h3>
+      <div class="tokens-grid">
+        <div class="token-card">
+          <div class="token-swatch" style="background:#00C2A8"></div>
+          <div class="token-name">Primary Teal</div>
+          <div class="token-value">#00C2A8</div>
+        </div>
+        <div class="token-card">
+          <div class="token-swatch" style="background:#0D1B2A"></div>
+          <div class="token-name">Navy Dark</div>
+          <div class="token-value">#0D1B2A</div>
+        </div>
+        <div class="token-card">
+          <div class="token-swatch" style="background:#1A2D3D"></div>
+          <div class="token-name">Surface Dark</div>
+          <div class="token-value">#1A2D3D</div>
+        </div>
+        <div class="token-card">
+          <div class="token-swatch" style="background:#F5F7FA;border:1px solid #e2e8f0"></div>
+          <div class="token-name">Surface Light</div>
+          <div class="token-value">#F5F7FA</div>
+        </div>
+        <div class="token-card">
+          <div class="token-swatch" style="background:#F59E0B"></div>
+          <div class="token-name">Pending / Warning</div>
+          <div class="token-value">#F59E0B</div>
+        </div>
+        <div class="token-card">
+          <div class="token-swatch" style="background:#EF4444"></div>
+          <div class="token-name">Declined / Error</div>
+          <div class="token-value">#EF4444</div>
+        </div>
+        <div class="token-card">
+          <div class="token-swatch" style="background:#8B5CF6"></div>
+          <div class="token-name">Specialty Tag</div>
+          <div class="token-value">#8B5CF6</div>
+        </div>
+        <div class="token-card">
+          <div class="token-swatch" style="background:#D97706"></div>
+          <div class="token-name">Premium Gold</div>
+          <div class="token-value">#D97706</div>
+        </div>
+      </div>
+
+      <h3 style="font-size:14px;font-weight:600;color:var(--text-muted);margin:28px 0 16px;text-transform:uppercase;letter-spacing:1px">Typography Scale</h3>
+      <div class="type-grid">
+        <div class="type-card">
+          <div class="type-sample" style="font-size:32px">Display</div>
+          <div class="type-meta">Inter 700 · 32px / 40px</div>
+        </div>
+        <div class="type-card">
+          <div class="type-sample" style="font-size:22px">Heading 1</div>
+          <div class="type-meta">Inter 700 · 22px / 30px</div>
+        </div>
+        <div class="type-card">
+          <div class="type-sample" style="font-size:18px">Heading 2</div>
+          <div class="type-meta">Inter 600 · 18px / 26px</div>
+        </div>
+        <div class="type-card">
+          <div class="type-sample" style="font-size:15px">Body Large</div>
+          <div class="type-meta">Inter 400 · 15px / 24px</div>
+        </div>
+        <div class="type-card">
+          <div class="type-sample" style="font-size:13px">Body Default</div>
+          <div class="type-meta">Inter 400 · 13px / 20px</div>
+        </div>
+        <div class="type-card">
+          <div class="type-sample" style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted)">Label / Caption</div>
+          <div class="type-meta">Inter 600 · 11px / caps</div>
+        </div>
+      </div>
+
+      <h3 style="font-size:14px;font-weight:600;color:var(--text-muted);margin:28px 0 16px;text-transform:uppercase;letter-spacing:1px">Component Status Colors</h3>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <div style="padding:6px 16px;border-radius:20px;background:rgba(0,194,168,0.15);color:#00C2A8;font-size:12px;font-weight:700;border:1px solid rgba(0,194,168,0.3)">● Interview</div>
+        <div style="padding:6px 16px;border-radius:20px;background:rgba(245,158,11,0.15);color:#f59e0b;font-size:12px;font-weight:700;border:1px solid rgba(245,158,11,0.3)">● Pending</div>
+        <div style="padding:6px 16px;border-radius:20px;background:rgba(239,68,68,0.15);color:#ef4444;font-size:12px;font-weight:700;border:1px solid rgba(239,68,68,0.3)">● Declined</div>
+        <div style="padding:6px 16px;border-radius:20px;background:rgba(139,92,246,0.15);color:#a78bfa;font-size:12px;font-weight:700;border:1px solid rgba(139,92,246,0.3)">● Specialty</div>
+        <div style="padding:6px 16px;border-radius:20px;background:rgba(96,165,250,0.15);color:#60a5fa;font-size:12px;font-weight:700;border:1px solid rgba(96,165,250,0.3)">● Full-time</div>
+        <div style="padding:6px 16px;border-radius:20px;background:rgba(217,119,6,0.15);color:#d97706;font-size:12px;font-weight:700;border:1px solid rgba(217,119,6,0.3)">👑 Premium</div>
+      </div>
+    </div>
+
+    <div style="height:80px"></div>
+  </main>
+</div>
+
+<script>
+  let currentTheme = 'both';
+
+  function showTheme(theme) {
+    currentTheme = theme;
+    document.getElementById('btn-dark').classList.toggle('active', theme === 'dark');
+    document.getElementById('btn-light').classList.toggle('active', theme === 'light');
+    document.getElementById('btn-both').classList.toggle('active', theme === 'both');
+
+    document.querySelectorAll('.dark-only').forEach(el => {
+      el.style.display = (theme === 'light') ? 'none' : '';
+    });
+    document.querySelectorAll('.light-only').forEach(el => {
+      el.style.display = (theme === 'dark') ? 'none' : '';
+    });
+    document.querySelectorAll('.mode-row').forEach(el => {
+      const badge = el.querySelector('.mode-badge');
+      if (!badge) return;
+      if (theme === 'dark' && badge.classList.contains('light')) el.style.display = 'none';
+      else if (theme === 'light' && badge.classList.contains('dark')) el.style.display = 'none';
+      else el.style.display = '';
+    });
+  }
+
+  function scrollTo(id) {
+    document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
+    event.target.closest('.sidebar-item').classList.add('active');
+  }
+
+  // Initialize: show both modes
+  showTheme('both');
+</script>
+</body>
+</html>

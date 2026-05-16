@@ -23,7 +23,7 @@ const Footer = () => {
       ],
     },
     {
-      title: "Company",
+      title: "Clinic",
       links: [
         { to: "/contact", label: "Contact" },
         { to: "/blogs", label: "Blog" },
@@ -45,15 +45,25 @@ const Footer = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1 mb-4 md:mb-0">
-            <Link to="/" className="inline-block mb-4">
+            <Link to="/" className="inline-flex items-center gap-2 mb-4">
+            <svg width="28" height="28" viewBox="0 0 100 100" fill="none">
+              <rect x="5" y="5" width="90" height="90" rx="20" fill="var(--primary-500)" fillOpacity="0.15"/>
+              <path 
+                d="M 18 28 L 40 74 L 54 36 L 58 48 L 64 22 L 68 52 L 73 42 L 82 46"
+                stroke="var(--primary-500)" 
+                strokeWidth="7" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              />
+            </svg>
               <span
-                className="text-lg font-semibold tracking-tight"
+                className="text-lg font-bold tracking-tight"
                 style={{ color: "var(--text-color)" }}
               >
-                MedCareer
+                VitalWork
               </span>
               <span
-                className="text-lg font-light tracking-tight ml-1"
+                className="text-lg font-light tracking-tight"
                 style={{ color: "var(--text-secondary-color)" }}
               >
                 Connect
@@ -108,7 +118,7 @@ const Footer = () => {
             className="text-xs"
             style={{ color: "var(--text-secondary-color)" }}
           >
-            &copy; {currentYear} MedCareer Connect. All rights reserved.
+            &copy; {currentYear} VitalWork Connect. All rights reserved.
           </p>
           <p
             className="text-xs"

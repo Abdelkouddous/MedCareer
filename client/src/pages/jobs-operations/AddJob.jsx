@@ -85,16 +85,18 @@ export const AddJob = () => {
           <FormRow
             type="text"
             name="company"
-            labelText="Company Name"
+            labelText="Clinic Name"
             defaultValue={user.company}
-            placeholder={"Your company"}
+            placeholder={"Your clinic"}
           />
-          <FormRow
-            type="text"
+import { ALGERIAN_WILAYAS } from "../../utils/algeriaWilayas";
+
+// ... further down ...
+          <FormRowSelect
             name="jobLocation"
             labelText="Job Location"
-            defaultValue={user.jobLocation}
-            placeholder={"Your location"}
+            list={ALGERIAN_WILAYAS}
+            defaultValue={user.jobLocation || ALGERIAN_WILAYAS[0]}
           />
           <FormRowSelect
             name="jobType"

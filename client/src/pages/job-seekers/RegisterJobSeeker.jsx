@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
+import { ALGERIAN_WILAYAS } from "../../utils/algeriaWilayas";
 import customFetch from "../../utils/customFetch";
 import { toast } from "react-toastify";
 import {
@@ -12,10 +13,14 @@ import {
   FiPhone,
   FiUserPlus,
 } from "react-icons/fi";
+import { FaGoogle, FaApple } from "react-icons/fa";
 import Wrapper from "../../assets/wrappers/RegisterAndLoginPage";
 
 function RegisterJobSeeker() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const pendingCV = location.state?.pendingCV;
+
   const [form, setForm] = useState({
     name: "",
     lastName: "",
@@ -59,8 +64,8 @@ function RegisterJobSeeker() {
       newErrors.password = "Password must be at least 6 characters";
     }
 
-    if (form.phoneNumber && !/^\+?[\d\s\-()]+$/.test(form.phoneNumber)) {
-      newErrors.phoneNumber = "Please enter a valid phone number";
+    if (form.phoneNumber && !/^\+213[567]\d{8}$/.test(form.phoneNumber)) {
+      newErrors.phoneNumber = "Phone number must start with +213 followed by 5, 6, or 7, and 8 digits";
     }
 
     setErrors(newErrors);
@@ -76,8 +81,17 @@ function RegisterJobSeeker() {
 
     try {
       setLoading(true);
-      // In your Register.jsx after successful registration
-      const response = await customFetch.post("/jobseekers/register", form);
+      let response;
+      if (pendingCV) {
+        const formData = new FormData();
+        Object.keys(form).forEach(key => formData.append(key, form[key]));
+        formData.append("cv", pendingCV);
+        response = await customFetch.post("/jobseekers/register", formData, {
+          headers: { "Content-Type": "multipart/form-data" }
+        });
+      } else {
+        response = await customFetch.post("/jobseekers/register", form);
+      }
 
       // Redirect to confirm page (public route)
       let url = `/job-seekers/confirm-account?token=${response.data.userId}`;
@@ -87,7 +101,8 @@ function RegisterJobSeeker() {
         url += `&otp=${response.data.devOtp}`;
         toast.success(`Dev OTP: ${response.data.devOtp}`);
       } else {
-        toast.success("Account created successfully! Please confirm your email!");
+        // toast.success("Account created successfully! Please confirm your email!");
+        toast.info(`Your otp is ${response.data.devOtp}`);
       }
 
       navigate(url);
@@ -296,16 +311,20 @@ function RegisterJobSeeker() {
                 Location
               </label>
               <div className="relative">
-                <input
+                <select
                   id="location"
                   name="location"
-                  type="text"
-                  placeholder="City, Country"
                   value={form.location}
                   onChange={onChange}
-                  className="form-input"
+                  className="form-input appearance-none cursor-pointer"
                   style={{ paddingLeft: "2.5rem" }}
-                />
+                  required
+                >
+                  <option value="" disabled>Select your Wilaya</option>
+                  {ALGERIAN_WILAYAS.map((wilaya) => (
+                    <option key={wilaya} value={wilaya}>{wilaya}</option>
+                  ))}
+                </select>
                 <FiMapPin
                   className="absolute left-3 top-1/2 transform -translate-y-1/2"
                   style={{ color: "var(--grey-400)" }}
@@ -325,7 +344,7 @@ function RegisterJobSeeker() {
                   id="phoneNumber"
                   name="phoneNumber"
                   type="tel"
-                  placeholder="+1 (555) 123-4567"
+                  placeholder="+213555555555"
                   value={form.phoneNumber}
                   onChange={onChange}
                   className={`form-input ${
@@ -374,6 +393,27 @@ function RegisterJobSeeker() {
               "Create Account"
             )}
           </button>
+          
+          <div className="relative flex items-center justify-center mt-6">
+            <div className="border-t border-[var(--grey-300)] w-full"></div>
+            <div className="bg-[var(--background-secondary-color)] px-3 text-sm text-[var(--text-secondary-color)] whitespace-nowrap">or sign up with</div>
+            <div className="border-t border-[var(--grey-300)] w-full"></div>
+          </div>
+
+          <div className="flex gap-4 mt-6">
+            <button
+              type="button"
+              className="flex-1 flex justify-center items-center gap-2 py-2.5 px-4 border border-[var(--grey-300)] rounded-lg hover:bg-[var(--grey-50)] transition-colors text-[var(--text-color)]"
+            >
+              <FaGoogle className="text-[var(--text-secondary-color)]" /> Google
+            </button>
+            <button
+              type="button"
+              className="flex-1 flex justify-center items-center gap-2 py-2.5 px-4 border border-[var(--grey-300)] rounded-lg hover:bg-[var(--grey-50)] transition-colors text-[var(--text-color)]"
+            >
+              <FaApple className="text-[var(--text-secondary-color)]" /> Apple
+            </button>
+          </div>
         </form>
 
         {/* Footer */}

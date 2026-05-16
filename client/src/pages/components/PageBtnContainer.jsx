@@ -37,40 +37,42 @@ const PageBtnContainer = () => {
   };
 
   return (
-    <Wrapper className="page-btn-container m-auto flex justify-center items-center gap-4 my-8">
-      <button
-        className="btn btn-primary rounded-full px-4 py-2 hover:opacity-90 transition-opacity"
-        onClick={() => handlePageChange(page - 10)}
-        disabled={page === 1}
-      >
-        {page - 10 < 1 ? 1 : page - 10}
-      </button>
+    <Wrapper>
+      <div className="nav-row">
+        <button
+          className="btn btn-primary rounded-full px-4 py-2 hover:opacity-90 transition-opacity"
+          onClick={() => handlePageChange(page - 10)}
+          disabled={page === 1}
+        >
+          {page - 10 < 1 ? 1 : page - 10}
+        </button>
 
-      <button
-        className="btn prev-btn rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
-        onClick={() => handlePageChange(page - 1)}
-        disabled={page === 1}
-      >
-        <HiChevronDoubleLeft className="w-5 h-5" />
-      </button>
+        <button
+          className="prev-btn"
+          onClick={() => handlePageChange(page - 1)}
+          disabled={page === 1}
+        >
+          <HiChevronDoubleLeft className="w-5 h-5" />
+        </button>
 
-      <div className="btn-container flex gap-2">{renderPageButtons()}</div>
+        <div className="btn-container">{renderPageButtons()}</div>
 
-      <button
-        className="btn next-btn rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
-        onClick={() => handlePageChange(page + 1)}
-        disabled={page === numOfPages}
-      >
-        <HiChevronDoubleRight className="w-5 h-5" />
-      </button>
+        <button
+          className="next-btn"
+          onClick={() => handlePageChange(page + 1)}
+          disabled={page === numOfPages}
+        >
+          <HiChevronDoubleRight className="w-5 h-5" />
+        </button>
 
-      <button
-        className="btn btn-primary rounded-full px-4 py-2 hover:opacity-90 transition-opacity"
-        onClick={() => handlePageChange(page + 10)}
-        disabled={page === numOfPages || page + 10 > numOfPages}
-      >
-        {Math.min(page + 10, numOfPages)}
-      </button>
+        <button
+          className="btn btn-primary rounded-full px-4 py-2 hover:opacity-90 transition-opacity"
+          onClick={() => handlePageChange(page + 10)}
+          disabled={page === numOfPages || page + 10 > numOfPages}
+        >
+          {Math.min(page + 10, numOfPages)}
+        </button>
+      </div>
     </Wrapper>
   );
 };

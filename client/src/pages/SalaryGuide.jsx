@@ -21,32 +21,32 @@ const SalaryGuide = () => {
           {[
             {
               title: "Registered Nurse",
-              range: "$45k – $85k",
+              range: "50,000 DA – 80,000 DA",
               notes: "Hospital, clinic, home care",
             },
             {
               title: "General Practitioner",
-              range: "$120k – $250k",
+              range: "150,000 DA – 250,000 DA",
               notes: "Public and private practice",
             },
             {
               title: "Pharmacist",
-              range: "$60k – $120k",
+              range: "80,000 DA – 150,000 DA",
               notes: "Retail, hospital, industry",
             },
             {
               title: "Radiology Technician",
-              range: "$50k – $90k",
+              range: "40,000 DA – 70,000 DA",
               notes: "Hospitals and imaging centers",
             },
             {
               title: "Dental Surgeon",
-              range: "$90k – $220k",
+              range: "120,000 DA – 220,000 DA",
               notes: "Clinics and private practice",
             },
             {
               title: "Physiotherapist",
-              range: "$45k – $95k",
+              range: "60,000 DA – 100,000 DA",
               notes: "Rehab centers and private practice",
             },
           ].map((role) => (

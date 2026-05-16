@@ -1,10 +1,10 @@
-# MedCareer 🏥
+# VitalWork 🏥
 
 A comprehensive medical career platform built with the MERN stack, designed to connect healthcare professionals with medical job opportunities. This application serves as a specialized job board for the medical industry, featuring role-based authentication, job management, and application tracking.
 
 ## Try it out !
 
-[![Deploy to Render](https://medcareer.onrender.com/)](https://app.netlify.com/start/deploy?repository=https://github.com/medcareer/medcareer)
+[![Deploy to Render](https://VitalWork.onrender.com/)]
 
 ## 🌟 Features
 
@@ -94,8 +94,8 @@ A comprehensive medical career platform built with the MERN stack, designed to c
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/Abdelkouddous/MedCareer.git
-   cd MedCareer
+   git clone https://github.com/Abdelkouddous/VitalWork.git
+   cd VitalWork
    ```
 
 2. **Install dependencies for both server and client**
@@ -139,7 +139,7 @@ npm start
 ## 📁 Project Structure
 
 ```
-MedCareer/
+VitalWork/
 ├── /                    # Backend code
 ├── client/              # Frontend code
 ├── .env                 # Environment variables

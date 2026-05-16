@@ -22,6 +22,7 @@ import {
   getMessagesAsJobSeeker,
 } from "../controllers/messageController.js";
 import { authenticateJobSeeker } from "../middleware/authMiddleware.js";
+import upload from "../middleware/multerMiddleware.js";
 
 const router = Router();
 
@@ -29,7 +30,7 @@ const router = Router();
 router.get("/guest", guestJobSeeker);
 
 // Public auth for job seekers
-router.post("/register", createJobSeeker);
+router.post("/register", upload.single('cv'), createJobSeeker);
 router.post("/login", loginJobSeeker);
 router.post("/logout", logoutJobSeeker);
 router.post("/confirm-email", confirmEmail);

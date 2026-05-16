@@ -9,7 +9,7 @@ export const getStatus = async (req, res) => {
     status: "success",
     message: "Server is running",
     timestamp: new Date(),
-    service: "MedCareer API",
+    service: "VitalWork API",
     database: dbStatus,
   });
 };

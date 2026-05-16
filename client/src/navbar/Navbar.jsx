@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaBars, FaTimes, FaMoon, FaSun } from "react-icons/fa";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -49,11 +50,11 @@ const Navbar = () => {
   }, []);
 
   const navLinks = [
-    { to: "/", label: "Home" },
-    { to: "/jobs", label: "Find Jobs" },
-    { to: "/employers", label: "For Employers" },
-    { to: "/blogs", label: "Blog" },
-    { to: "/contact", label: "Contact" },
+    { to: "/", label: "nav.home".tr },
+    { to: "/jobs", label: "nav.findJobs".tr },
+    { to: "/employers", label: "nav.forEmployers".tr },
+    { to: "/blogs", label: "nav.blog".tr },
+    { to: "/contact", label: "nav.contact".tr },
   ];
 
   return (
@@ -69,22 +70,30 @@ const Navbar = () => {
           : "1px solid transparent",
       }}
     >
-      <nav className="max-w-[1200px] mx-auto px-6">
+      <nav className="max-w-[1200px] mx-auto px-6 ">
         <div className="flex items-center justify-between h-12">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-1 group">
+          <Link to="/" className="flex items-center gap-2 group">
+            <svg width="28" height="28" viewBox="0 0 100 100" fill="none">
+  <rect x="5" y="5" width="90" height="90" rx="20" fill="var(--primary-500)" fillOpacity="0.15"/>
+  <path 
+    d="M 18 28 L 40 74 L 54 36 L 58 48 L 64 22 L 68 52 L 73 42 L 82 46"
+    stroke="var(--primary-500)" 
+    strokeWidth="7" 
+    strokeLinecap="round" 
+    strokeLinejoin="round"
+  />
+</svg>
+
             <span
-              className="text-lg font-semibold tracking-tight"
+              className="text-lg font-bold tracking-tight"
               style={{ color: "var(--text-color)" }}
             >
-              MedCareer
+              VitalWork
             </span>
-            <span
-              className="text-lg font-light tracking-tight"
-              style={{ color: "var(--text-secondary-color)" }}
-            >
-              Connect
-            </span>
+            <span className="text-xs font-normal tracking-wide transition-opacity duration-200 hover:opacity-70"
+              style={{ color: "var(--primary-500)" }}>Connect</span>
+            
           </Link>
 
           {/* Desktop Navigation */}
@@ -103,12 +112,13 @@ const Navbar = () => {
 
           {/* Desktop CTA & Theme Toggle */}
           <div className="hidden lg:flex items-center gap-4">
+            <LanguageSwitcher />
             <Link
               to="/job-seekers/login"
               className="text-xs font-normal tracking-wide transition-opacity duration-200 hover:opacity-70"
               style={{ color: "var(--text-color)" }}
             >
-              Sign In
+              {"nav.login".tr}
             </Link>
             <Link
               to="/job-seekers/register"
@@ -118,7 +128,7 @@ const Navbar = () => {
                 color: "#ffffff",
               }}
             >
-              Get Started
+              {"nav.register".tr}
             </Link>
             <button
               className="w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 hover:opacity-70"
@@ -141,6 +151,7 @@ const Navbar = () => {
 
           {/* Mobile Menu Button */}
           <div className="flex lg:hidden items-center gap-3">
+            <LanguageSwitcher />
             <button
               className="w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 hover:opacity-70"
               onClick={toggleDarkTheme}
@@ -197,7 +208,7 @@ const Navbar = () => {
                 className="block text-center text-sm font-normal py-2 transition-opacity duration-200 hover:opacity-70"
                 style={{ color: "var(--primary-500)" }}
               >
-                Sign In
+                {"nav.login".tr}
               </Link>
               <Link
                 to="/job-seekers/register"
@@ -208,7 +219,7 @@ const Navbar = () => {
                   color: "#ffffff",
                 }}
               >
-                Get Started
+                {"nav.register".tr}
               </Link>
             </div>
           </div>

@@ -22,6 +22,7 @@ const Wrapper = styled.section`
   .form-center {
     display: grid;
     row-gap: 1rem;
+    grid-template-columns: 1fr;
   }
   .form-btn {
     align-self: end;
@@ -31,14 +32,14 @@ const Wrapper = styled.section`
   }
   @media (min-width: 992px) {
     .form-center {
-      grid-template-columns: 1fr 1fr;
-      align-items: center;
-      column-gap: 1rem;
+      grid-template-columns: 1fr;
+      row-gap: 1.25rem;
     }
   }
   @media (min-width: 1120px) {
     .form-center {
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
+      column-gap: 1.5rem;
     }
   }
 `;

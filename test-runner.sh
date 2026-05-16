@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# MedCareer Test Automation Script
-# This script runs all tests for the MedCareer application
+# VitalWork Test Automation Script
+# This script runs all tests for the VitalWork application
 
 set -e  # Exit on any error
 
@@ -192,7 +192,7 @@ generate_report() {
     
     # Generate test summary
     cat > reports/test-summary.md << EOF
-# MedCareer Test Report
+# VitalWork Test Report
 
 Generated on: $(date)
 
@@ -236,7 +236,7 @@ cleanup() {
 
 # Main function
 main() {
-    print_status "Starting MedCareer Test Automation..."
+    print_status "Starting VitalWork Test Automation..."
     
     # Parse command line arguments
     case "${1:-all}" in

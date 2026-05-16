@@ -22,22 +22,24 @@ export const JobContainer = () => {
     );
   }
   return (
-    <JobCardWrapper>
-      <h1 className="text-center text-4xl md:text-5xl lg:text-6xl font-bold text-[var(--text-color)] mb-6">
-        Our Recent
-        <span className="text-[var(--primary-500)]"> Jobs</span>
-      </h1>
-      <h4 className="text-lg md:text-xl font-medium text-[var(--text-secondary)] mb-6 text-center">
-        <span className="text-[var(--primary-500)]">{jobs.length}</span> job
-        {jobs.length > 1 ? "s" : ""} displayed out of{" "}
-        <span className="text-[var(--primary-500)]">{totalJobs}</span> job
-        {totalJobs > 1 ? "s" : ""} found
-      </h4>
+    <div className="w-full">
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-color)]">
+          Our Recent
+          <span className="text-[var(--primary-500)]"> Jobs</span>
+        </h1>
+        <h4 className="text-md md:text-lg font-medium text-[var(--text-secondary)]">
+          Showing <span className="text-[var(--primary-500)]">{jobs.length}</span> out of{" "}
+          <span className="text-[var(--primary-500)]">{totalJobs}</span> found
+        </h4>
+      </div>
 
-      {jobs.map((job) => {
-        return <Job key={job._id} {...job} />;
-      })}
-    </JobCardWrapper>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+        {jobs.map((job) => {
+          return <Job key={job._id} {...job} />;
+        })}
+      </div>
+    </div>
   );
 };
 

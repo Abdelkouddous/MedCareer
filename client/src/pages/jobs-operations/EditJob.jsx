@@ -93,9 +93,9 @@ const EditJob = () => {
         <FormRow
           type="text"
           name="company"
-          labelText="Hospital/Clinic"
+          labelText="Clinic Name"
           defaultValue={job?.company}
-          placeholder="Enter company name"
+          placeholder="Enter clinic name"
         />
         <FormRow
           type="text"

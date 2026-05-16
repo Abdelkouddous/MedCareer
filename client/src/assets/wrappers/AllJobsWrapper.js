@@ -49,11 +49,13 @@ export const JobCardWrapper = styled.article`
 
   .content-center {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: 1fr;
     gap: 1rem;
     margin-bottom: 1.5rem;
   }
 
+  /* Grid styles removed from here, moving them to JobCardWrapper parent in JobContainer */
+  
   .job-info {
     display: flex;
     align-items: center;
@@ -152,9 +154,16 @@ export const SearchFormWrapper = styled.div`
 
   .form-center {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: 1fr;
     gap: 1.5rem;
     align-items: end;
+  }
+
+  /* When rendered in the sidebar, we want it to stay mostly 1 column, but maybe 2 on medium generic screens */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .form-center {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 
   .form-row {
@@ -232,7 +241,21 @@ export const PageWrapper = styled.section`
 
   .jobs {
     display: grid;
-    gap: 2rem;
+    gap: 1.5rem;
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 768px) {
+    .jobs {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .jobs {
+      /* If sidebar takes space, 2 columns may be enough, or 3 if space permits. I'll stick to 2 here to prevent squeezing. */
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 
   .no-jobs {

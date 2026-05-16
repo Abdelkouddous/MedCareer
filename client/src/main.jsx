@@ -5,6 +5,7 @@ import "./index.css";
 // add toasting library
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "./i18n"; // Import i18n before the app renders
 import axios from "axios";
 
 // fetch("/api/v1/test")

@@ -39,6 +39,7 @@ import StatsJobSeeker from "./pages/job-seekers/StatsJobSeeker";
 import InboxJobSeeker from "./pages/job-seekers/InboxJobSeeker";
 import ProfileJobSeeker from "./pages/job-seekers/ProfileJobSeeker";
 import ApplicationsJobSeeker from "./pages/job-seekers/ApplicationsJobSeeker";
+import CVTemplate from "./pages/job-seekers/CVTemplate";
 import Dashboard from "./pages/job-seekers/Dashboard";
 import ProtectedJobSeekerRoute from "./pages/components/ProtectedJobSeekerRoute";
 // imported actions necessary
@@ -64,6 +65,7 @@ import { action as registerAction } from "./pages/employer/Register";
 import ConfirmAccountEmployer from "./pages/employer/ConfirmAccount";
 import { loader as myJobsLoader } from "./pages/employer/MyJobs";
 import { loader as candidatesLoader } from "./pages/employer/Candidates";
+import ApplicantGeneratedCV from "./pages/employer/ApplicantGeneratedCV";
 // Blog loader
 import { blogLoader } from "./pages/loaders/blogLoader";
 
@@ -225,6 +227,10 @@ const router = createBrowserRouter([
         loader: candidatesLoader,
       },
       {
+        path: "generated-cv/:id",
+        element: <ApplicantGeneratedCV />,
+      },
+      {
         path: "blog-management",
         element: <AdminBlogs></AdminBlogs>,
         loader: blogLoader,
@@ -267,6 +273,7 @@ const router = createBrowserRouter([
       { path: "inbox", element: <InboxJobSeeker /> },
       { path: "applications", element: <ApplicationsJobSeeker /> },
       { path: "profile", element: <ProfileJobSeeker /> },
+      { path: "cv-template", element: <CVTemplate /> },
       { path: "blog-management", element: <AdminBlogs />, loader: blogLoader },
     ],
   },

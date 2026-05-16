@@ -282,7 +282,7 @@ const Blogs = () => {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-[var(--text-color)] mb-4">
-            Medical Career Blog
+            VitalWork Blog
           </h1>
           <p className="text-xl text-[var(--text-secondary-color)] max-w-3xl mx-auto">
             Stay updated with the latest insights, career advice, and industry

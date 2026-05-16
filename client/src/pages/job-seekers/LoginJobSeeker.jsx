@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import customFetch from "../../utils/customFetch";
 import { toast } from "react-toastify";
 import { FiEye, FiEyeOff, FiMail, FiLock, FiUser } from "react-icons/fi";
+import { FaGoogle, FaApple } from "react-icons/fa";
 import Wrapper from "../../assets/wrappers/RegisterAndLoginPage";
 
 function LoginJobSeeker() {
@@ -53,7 +54,7 @@ function LoginJobSeeker() {
       // Successful login only if confirmed
       if (res.status === 200) {
         // Rely on HTTP-only cookies set by the backend; no localStorage
-        toast.success("Welcome back! Login successful");
+        // toast.success("Welcome back! Login successful");
         navigate("/job-seekers/dashboard");
       }
     } catch (err) {
@@ -207,6 +208,27 @@ function LoginJobSeeker() {
               "Sign In"
             )}
           </button>
+          
+          <div className="relative flex items-center justify-center mt-6">
+            <div className="border-t border-[var(--grey-300)] w-full"></div>
+            <div className="bg-[var(--background-secondary-color)] px-3 text-sm text-[var(--text-secondary-color)] whitespace-nowrap">or sign up with</div>
+            <div className="border-t border-[var(--grey-300)] w-full"></div>
+          </div>
+
+          <div className="flex gap-4 mt-6">
+            <button
+              type="button"
+              className="flex-1 flex justify-center items-center gap-2 py-2.5 px-4 border border-[var(--grey-300)] rounded-lg hover:bg-[var(--grey-50)] transition-colors text-[var(--text-color)]"
+            >
+              <FaGoogle className="text-[var(--text-secondary-color)]" /> Google
+            </button>
+            <button
+              type="button"
+              className="flex-1 flex justify-center items-center gap-2 py-2.5 px-4 border border-[var(--grey-300)] rounded-lg hover:bg-[var(--grey-50)] transition-colors text-[var(--text-color)]"
+            >
+              <FaApple className="text-[var(--text-secondary-color)]" /> Apple
+            </button>
+          </div>
         </form>
 
         {/* Footer */}

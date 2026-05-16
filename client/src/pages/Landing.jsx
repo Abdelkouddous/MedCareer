@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { ALGERIAN_WILAYAS } from "../utils/algeriaWilayas";
 import missionImg from "../assets/images/main-alternative.svg";
 import featuredLogo from "../assets/images/00-dis--logo.svg";
 import professionImg from "../assets/images/avatar-2.jpg";
@@ -13,6 +14,9 @@ import {
   FaBriefcase,
   FaHospital,
   FaFire,
+  FaUserMd,
+  FaHeartbeat,
+  FaNotesMedical,
 } from "react-icons/fa";
 import { MEDICAL_SPECIALIZATION } from "../../../backend/utils/constants";
 import customFetch from "../utils/customFetch";
@@ -22,25 +26,23 @@ import CountUpNumber from "./components/CountUpNumber";
 import JobInLanding from "./components/JobInLanding";
 
 const Landing = () => {
+  const navigate = useNavigate();
   // Create refs for each section that will have animations
   const sectionRefs = {
     hero: useRef(null),
-    features: useRef(null),
-    jobCategories: useRef(null),
-    pricing: useRef(null),
     featuredJobs: useRef(null),
-    howItWorks: useRef(null),
-    testimonials: useRef(null),
     statistics: useRef(null),
-    blog: useRef(null),
-    newsletter: useRef(null),
-    cta: useRef(null),
-    about: useRef(null),
+    specializations: useRef(null),
+    howItWorks: useRef(null),
     mission: useRef(null),
     featured: useRef(null),
     profession: useRef(null),
-    quickReg: useRef(null),
     latestJobs: useRef(null),
+    about: useRef(null),
+    quickReg: useRef(null),
+    testimonials: useRef(null),
+    blog: useRef(null),
+    newsletter: useRef(null),
   };
 
   // State for search functionality and latest jobs
@@ -49,6 +51,9 @@ const Landing = () => {
     location: "",
     specialization: "",
   });
+  // selected specialization added to use that when clicking on the specialization tags
+  const [selectedSpecialization, setSelectedSpecialization] = useState("");
+
   const [latestJobs, setLatestJobs] = useState([]);
   const [allJobs, setAllJobs] = useState([]);
   const [allEmployers, setallEmployers] = useState([]);
@@ -57,6 +62,15 @@ const Landing = () => {
 
   const [loadingJobs, setLoadingJobs] = useState(true);
   const autoSearchTimerRef = useRef(null);
+  // added 15/05/2026 filter displayed jobs
+  const filteredLatestJobs = selectedSpecialization
+  ? latestJobs.filter(job => job.specialization === selectedSpecialization)
+  : latestJobs;
+
+const filteredAllJobs = selectedSpecialization
+  ? allJobs.filter(job => job.specialization === selectedSpecialization)
+  : allJobs;
+
 
   const fetchAllJobs = async () => {
     try {
@@ -237,17 +251,15 @@ const Landing = () => {
             </div>
 
             <h1
-              className="mb-6"
+              className="mb-6 font-bold"
               style={{
                 color: "var(--text-color)",
                 lineHeight: 1.06,
                 letterSpacing: "-0.045em",
+                fontSize: "clamp(2.5rem, 5vw, 4rem)"
               }}
             >
-              The{" "}
-              <span style={{ color: "var(--primary-500)" }}>largest</span>{" "}
-              healthcare job portal in{" "}
-              <span style={{ color: "var(--primary-500)" }}>Algeria.</span>
+              {"landing.heroTitle".tr}
             </h1>
 
             <p
@@ -258,8 +270,7 @@ const Landing = () => {
                 fontWeight: 300,
               }}
             >
-              Find your dream medical career. Connect with top healthcare
-              employers across the country.
+              {"landing.heroSubtitle".tr}
             </p>
 
             {/* CTA Buttons */}
@@ -306,7 +317,7 @@ const Landing = () => {
                   />
                   <input
                     type="text"
-                    placeholder="Job title or keyword..."
+                    placeholder={"landing.searchPlaceholder".tr}
                     value={searchData.keywords}
                     onChange={(e) =>
                       handleSearchChange("keywords", e.target.value)
@@ -325,20 +336,25 @@ const Landing = () => {
                     className="absolute left-3 top-1/2 transform -translate-y-1/2"
                     style={{ color: "var(--grey-400)" }}
                   />
-                  <input
-                    type="text"
-                    placeholder="City or region..."
+                  <select
                     value={searchData.location}
                     onChange={(e) =>
                       handleSearchChange("location", e.target.value)
                     }
-                    className="w-full pl-10 pr-4 py-3 rounded-xl text-sm transition-all duration-200 focus:outline-none"
+                    className="w-full pl-10 pr-4 py-3 rounded-xl text-sm transition-all duration-200 focus:outline-none appearance-none cursor-pointer"
                     style={{
                       background: "var(--background-secondary-color)",
                       color: "var(--text-color)",
                       border: "1px solid var(--border-color)",
                     }}
-                  />
+                  >
+                    <option value="">{"landing.locationPlaceholder".tr}</option>
+                    {ALGERIAN_WILAYAS.map((wilaya) => (
+                      <option key={wilaya} value={wilaya}>
+                        {wilaya}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className="relative">
@@ -358,7 +374,7 @@ const Landing = () => {
                       border: "1px solid var(--border-color)",
                     }}
                   >
-                    <option value="">All specialties</option>
+                    <option value="">{"landing.specializationPlaceholder".tr}</option>
                     {Object.values(MEDICAL_SPECIALIZATION).map((spec) => (
                       <option key={spec} value={spec}>
                         {spec}
@@ -377,54 +393,9 @@ const Landing = () => {
                 }}
               >
                 <FaSearch className="text-xs" />
-                Search {latestJobs.length || 0} positions
+                {"landing.searchBtn".tr}
               </button>
             </form>
-          </div>
-        </section>
-
-        {/* ========== STATISTICS SECTION ========== */}
-        <section
-          ref={sectionRefs.statistics}
-          className="fade-in-section stagger-children py-20 px-6"
-          style={{ background: "var(--background-secondary-color)" }}
-        >
-          <div className="max-w-[980px] mx-auto">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-              {[
-                {
-                  value: allJobs.length || 0,
-                  label: "Active Jobs",
-                },
-                {
-                  value: allEmployers.length || 0,
-                  label: "Companies",
-                },
-                {
-                  value: allCandidates.length || 0,
-                  label: "Candidates",
-                },
-                { value: 95, label: "Success Rate", suffix: "%" },
-              ].map((stat) => (
-                <div key={stat.label} className="text-center">
-                  <div
-                    className="text-4xl md:text-5xl font-bold mb-2"
-                    style={{ color: "var(--text-color)", letterSpacing: "-0.04em" }}
-                  >
-                    <CountUpNumber
-                      end={stat.value}
-                      suffix={stat.suffix || ""}
-                    />
-                  </div>
-                  <p
-                    className="text-sm font-normal"
-                    style={{ color: "var(--text-secondary-color)" }}
-                  >
-                    {stat.label}
-                  </p>
-                </div>
-              ))}
-            </div>
           </div>
         </section>
 
@@ -432,7 +403,7 @@ const Landing = () => {
         <section
           ref={sectionRefs.featuredJobs}
           className="fade-in-section py-20 px-6"
-          style={{ background: "var(--background-color)" }}
+          style={{ background: "var(--background-secondary-color)" }}
         >
           <div className="max-w-[980px] mx-auto">
             <div className="text-center mb-12">
@@ -454,7 +425,7 @@ const Landing = () => {
               <div className="flex items-center justify-center min-h-32">
                 <div className="loading"></div>
               </div>
-            ) : latestJobs.length === 0 ? (
+            ) : filteredLatestJobs.length === 0 ? (
               <div className="text-center py-8">
                 <p style={{ color: "var(--text-secondary-color)" }}>
                   No featured jobs available at the moment.
@@ -462,13 +433,142 @@ const Landing = () => {
               </div>
             ) : (
               <Wrapper className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {latestJobs.slice(0, 5).map((job) => (
+                {filteredLatestJobs.slice(0, 5).map((job) => (
                   <JobInLanding key={job._id} {...job} to="/job-seekers/jobs" />
                 ))}
               </Wrapper>
             )}
           </div>
         </section>
+
+        {/* ========== STATISTICS SECTION ========== */}
+        <section
+          ref={sectionRefs.statistics}
+          className="fade-in-section stagger-children py-20 px-6"
+          style={{ background: "var(--background-color)" }}
+        >
+          <div className="max-w-[980px] mx-auto">
+            <div className="text-center mb-12">
+              <h2 style={{ color: "var(--text-color)" }}>
+                VitalWork by the{" "}
+                <span style={{ color: "var(--primary-500)" }}>Numbers</span>
+              </h2>
+              <p
+                className="mt-3 text-base max-w-lg mx-auto"
+                style={{ color: "var(--text-secondary-color)", fontWeight: 300 }}
+              >
+                Growing every day to connect healthcare professionals across Algeria
+              </p>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {[
+                {
+                  value: allJobs.length || 0,
+                  label: "landing.stats.activeJobs".tr,
+                  icon: <FaBriefcase />,
+                  color: "var(--primary-500)",
+                },
+                {
+                  value: allEmployers.length || 0,
+                  label: "landing.stats.hospitals".tr,
+                  icon: <FaHospital />,
+                  color: "#8B5CF6",
+                },
+                {
+                  value: allCandidates.length || 0,
+                  label: "landing.stats.professionals".tr,
+                  icon: <FaUserMd />,
+                  color: "#F59E0B",
+                },
+                { value: 58, label: "landing.stats.wilayas".tr, icon: <FaMapMarkerAlt />, color: "#EF4444" },
+              ].map((stat) => (
+                <div
+                  key={stat.label}
+                  className="glass-card p-6 text-center"
+                >
+                  <div
+                    className="w-10 h-10 rounded-xl flex items-center justify-center mx-auto mb-3 text-lg"
+                    style={{ background: `${stat.color}20`, color: stat.color }}
+                  >
+                    {stat.icon}
+                  </div>
+                  <div
+                    className="text-3xl md:text-4xl font-bold mb-1"
+                    style={{ color: "var(--text-color)", letterSpacing: "-0.04em" }}
+                  >
+                    <CountUpNumber
+                      end={stat.value}
+                      suffix={stat.suffix || ""}
+                    />
+                  </div>
+                  <p
+                    className="text-sm font-normal"
+                    style={{ color: "var(--text-secondary-color)" }}
+                  >
+                    {stat.label}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ========== BROWSE BY SPECIALIZATION ========== */}
+        <section
+          ref={sectionRefs.specializations}
+          className="fade-in-section py-16 px-6"
+          style={{ background: "var(--background-secondary-color)" }}
+        >
+          <div className="max-w-[980px] mx-auto">
+            <div className="text-center mb-10">
+              <h2 style={{ color: "var(--text-color)" }}>
+                Browse by{" "}
+                <span style={{ color: "var(--primary-500)" }}>
+                  Specialization
+                </span>
+              </h2>
+              <p
+                className="mt-3 text-base max-w-lg mx-auto"
+                style={{ color: "var(--text-secondary-color)", fontWeight: 300 }}
+              >
+                Find positions tailored to your medical expertise
+              </p>
+            </div>
+            <div className="flex flex-wrap justify-center gap-3">
+              {Object.values(MEDICAL_SPECIALIZATION).slice(0, 14).map((spec) => 
+              <button
+  key={spec}
+  onClick={() => setSelectedSpecialization(prev => prev === spec ? "" : spec)}
+  className="px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 hover:scale-105"
+  style={{
+    background: selectedSpecialization === spec ? "var(--primary-500)" : "var(--surface-primary)",
+    color: selectedSpecialization === spec ? "#ffffff" : "var(--text-color)",
+    border: `1px solid ${selectedSpecialization === spec ? "var(--primary-500)" : "var(--border-color)"}`,
+  }}
+>
+  <FaStethoscope className="inline-block mr-2 text-xs" style={{ color: selectedSpecialization === spec ? "#ffffff" : "var(--primary-500)" }} />
+  {spec}
+</button>
+
+               
+              )}
+              <button
+  onClick={() => setSelectedSpecialization("")}
+  className="px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300"
+  style={{
+    background: selectedSpecialization === "" ? "var(--primary-500)" : "transparent",
+    color: selectedSpecialization === "" ? "#ffffff" : "var(--primary-500)",
+    border: "1px solid var(--primary-500)",
+  }}
+>
+  All Specializations
+</button>
+
+              
+            </div>
+          </div>
+        </section>
+
 
         {/* ========== LATEST JOBS ========== */}
         <section
@@ -496,7 +596,8 @@ const Landing = () => {
               </div>
             ) : (
               <div className="space-y-4">
-                {latestJobs.slice(0, 5).map((job) => (
+                {/* filtering latestJobs using the filter button added on 15/05/2026 */}
+                {filteredLatestJobs.slice(0, 5).map((job) => (
                   <div
                     key={job._id}
                     className="rounded-2xl p-6 transition-all duration-300 hover-lift flex flex-col md:flex-row md:items-center md:justify-between"
@@ -584,7 +685,7 @@ const Landing = () => {
         >
           <div className="max-w-[680px] mx-auto text-center">
             <h2 className="mb-6" style={{ color: "var(--text-color)" }}>
-              Who we are.
+              About us.
             </h2>
             <p
               className="text-lg leading-relaxed mb-6"
@@ -596,7 +697,7 @@ const Landing = () => {
             >
               Tired of recruiters who think Java is a detergent brand? That HTML
               is a programming language? Trust your healthcare career to the
-              &apos;MedCareer&apos; community that speaks the same language(s)
+              &apos;VitalWork&apos; community that speaks the same language(s)
               as you.
             </p>
             <Link
@@ -659,7 +760,7 @@ const Landing = () => {
               <div className="order-1 md:order-2 flex justify-center">
                 <img
                   src={missionImg}
-                  alt="MedCareer mission illustration"
+                  alt="VitalWork mission illustration"
                   className="w-full max-w-[380px] object-contain"
                   style={{ filter: "drop-shadow(0 20px 40px rgba(0,0,0,0.08))" }}
                 />
@@ -679,70 +780,82 @@ const Landing = () => {
               className="text-center mb-14"
               style={{ color: "var(--text-color)" }}
             >
-              Featured Company
+              Featured Clinics & Hospitals
             </h2>
-            <div
-              className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center rounded-2xl p-8 md:p-12"
-              style={{
-                background: "var(--surface-primary)",
-                border: "1px solid var(--border-color)",
-                boxShadow: "var(--shadow-2)",
-              }}
-            >
-              <div className="md:col-span-2">
-                <h3
-                  className="text-2xl font-semibold mb-4"
-                  style={{ color: "var(--text-color)" }}
-                >
-                  MedTech Solutions
-                </h3>
-                <p
-                  className="leading-relaxed mb-4"
+            {(() => {
+              const featured = allEmployers[0];
+              const companyName = featured ? `${featured.name} ${featured.lastName || ''}`.trim() : 'VitalWork Partner';
+              const companyCity = featured?.location || 'Algiers';
+              const companySpec = featured?.specialty || 'General Practitioner';
+              const companyJobs = allJobs.filter(j => featured && j.createdBy === featured._id).length;
+              return (
+                <div
+                  className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center rounded-2xl p-8 md:p-12"
                   style={{
-                    color: "var(--text-secondary-color)",
-                    fontWeight: 300,
+                    background: "var(--surface-primary)",
+                    border: "1px solid var(--border-color)",
+                    boxShadow: "var(--shadow-2)",
                   }}
                 >
-                  MedTech Solutions is a healthcare technology platform
-                  connecting patients with medical professionals:
-                </p>
-                <ul
-                  className="space-y-2 text-sm"
-                  style={{ color: "var(--text-secondary-color)" }}
-                >
-                  <li className="flex items-start gap-2">
-                    <span style={{ color: "var(--primary-500)" }}>•</span>
-                    Find specialists by specialty
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span style={{ color: "var(--primary-500)" }}>•</span>
-                    Build reliable medical strategies
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span style={{ color: "var(--primary-500)" }}>•</span>
-                    Analyze medical documents
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span style={{ color: "var(--primary-500)" }}>•</span>
-                    Relevant connections in medical big data
-                  </li>
-                </ul>
-              </div>
-              <div className="md:col-span-1 text-center">
-                <img
-                  src={featuredLogo}
-                  alt="Featured company logo"
-                  className="w-32 h-32 mx-auto object-contain mb-3"
-                  style={{ opacity: 0.9 }}
-                />
-                <p
-                  className="text-xs"
-                  style={{ color: "var(--text-secondary-color)" }}
-                >
-                  Trusted partner for digital health innovation
-                </p>
-              </div>
-            </div>
+                  <div className="md:col-span-2">
+                    <h3
+                      className="text-2xl font-semibold mb-4"
+                      style={{ color: "var(--text-color)" }}
+                    >
+                      {companyName}
+                    </h3>
+                    <p
+                      className="leading-relaxed mb-4"
+                      style={{
+                        color: "var(--text-secondary-color)",
+                        fontWeight: 300,
+                      }}
+                    >
+                      A trusted Algerian healthcare employer based in {companyCity},
+                      specializing in {companySpec} and actively hiring medical professionals.
+                    </p>
+                    <ul
+                      className="space-y-2 text-sm"
+                      style={{ color: "var(--text-secondary-color)" }}
+                    >
+                      <li className="flex items-start gap-2">
+                        <span style={{ color: "var(--primary-500)" }}>•</span>
+                        Based in {companyCity}, Algeria
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span style={{ color: "var(--primary-500)" }}>•</span>
+                        Specialization: {companySpec}
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span style={{ color: "var(--primary-500)" }}>•</span>
+                        {companyJobs > 0 ? `${companyJobs} active job postings` : 'Actively recruiting'}
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span style={{ color: "var(--primary-500)" }}>•</span>
+                        Hiring qualified medical professionals
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="md:col-span-1 text-center">
+                    <div
+                      className="w-32 h-32 mx-auto rounded-2xl flex items-center justify-center text-4xl font-bold mb-3"
+                      style={{
+                        background: "var(--primary-500)",
+                        color: "#ffffff",
+                      }}
+                    >
+                      {companyName.charAt(0)}
+                    </div>
+                    <p
+                      className="text-xs"
+                      style={{ color: "var(--text-secondary-color)" }}
+                    >
+                      Verified healthcare employer
+                    </p>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         </section>
 
@@ -759,51 +872,74 @@ const Landing = () => {
             >
               Profession of the day
             </h2>
-            <div
-              className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center rounded-2xl p-8 md:p-12"
-              style={{
-                background: "var(--surface-primary)",
-                border: "1px solid var(--border-color)",
-                boxShadow: "var(--shadow-2)",
-              }}
-            >
-              <div className="md:col-span-2">
-                <h3
-                  className="text-xl font-semibold mb-4"
-                  style={{ color: "var(--text-color)" }}
-                >
-                  Nurse Practitioner
-                </h3>
-                <p
-                  className="text-sm leading-relaxed mb-3"
+            {(() => {
+              const professions = {
+                "General Practitioner": "The General Practitioner is the first point of contact in Algeria's healthcare system. They provide primary care, diagnose common illnesses, and refer patients to specialists when needed.",
+                "Cardiologist": "Cardiologists specialize in the diagnosis and treatment of heart and blood vessel diseases. In Algerian hospitals like CHU Mustapha Pacha, they perform critical cardiac procedures.",
+                "Nurse": "Nurses are the backbone of Algeria's healthcare system, providing essential patient care, administering medications, and coordinating with medical teams across hospitals and clinics.",
+                "Pharmacist": "Pharmacists play a vital role in Algeria's pharmaceutical sector, dispensing medications, providing health advice, and contributing to the country's growing local drug production industry.",
+                "Pediatrician": "Pediatricians specialize in children's health from infancy through adolescence. Algerian pediatric departments handle a high volume of cases, making this a demanding and rewarding specialization.",
+                "Surgery Specialist": "Surgery Specialists perform complex surgical procedures across Algerian hospitals. With modern equipment in CHUs, they handle everything from emergency operations to planned interventions.",
+                "Dentist": "Dentists in Algeria provide oral healthcare including preventive care, restorative procedures, and orthodontics. The demand for dental professionals continues to grow across all wilayas.",
+              };
+              const specKeys = Object.keys(professions);
+              const dayIndex = Math.floor(Date.now() / 86400000) % specKeys.length;
+              const todaySpec = specKeys[dayIndex];
+              const todayDesc = professions[todaySpec];
+              const jobCount = allJobs.filter(j => j.specialization === todaySpec).length;
+              return (
+                <div
+                  className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center rounded-2xl p-8 md:p-12"
                   style={{
-                    color: "var(--text-secondary-color)",
-                    fontWeight: 300,
-                    lineHeight: 1.7,
+                    background: "var(--surface-primary)",
+                    border: "1px solid var(--border-color)",
+                    boxShadow: "var(--shadow-2)",
                   }}
                 >
-                  A specialized profession in advanced nursing practice.
-                  The Nurse Practitioner ensures that care is compliant with
-                  requirements and meets quality criteria in terms of both
-                  functionality and safety standards.
-                </p>
-                <Link
-                  to="/job-seekers/jobs"
-                  className="text-sm font-medium transition-opacity duration-200 hover:opacity-70"
-                  style={{ color: "var(--primary-500)" }}
-                >
-                  Read more →
-                </Link>
-              </div>
-              <div className="md:col-span-1 text-center">
-                <img
-                  src={professionImg}
-                  alt="Nurse practitioner"
-                  className="w-36 h-36 rounded-2xl object-cover mx-auto"
-                  style={{ boxShadow: "var(--shadow-2)" }}
-                />
-              </div>
-            </div>
+                  <div className="md:col-span-2">
+                    <h3
+                      className="text-xl font-semibold mb-4"
+                      style={{ color: "var(--text-color)" }}
+                    >
+                      {todaySpec}
+                    </h3>
+                    <p
+                      className="text-sm leading-relaxed mb-3"
+                      style={{
+                        color: "var(--text-secondary-color)",
+                        fontWeight: 300,
+                        lineHeight: 1.7,
+                      }}
+                    >
+                      {todayDesc}
+                    </p>
+                    {jobCount > 0 && (
+                      <p className="text-sm mb-3" style={{ color: "var(--primary-500)", fontWeight: 500 }}>
+                        {jobCount} open position{jobCount > 1 ? 's' : ''} available
+                      </p>
+                    )}
+                    <Link
+                      to={`/job-seekers/jobs?specialization=${encodeURIComponent(todaySpec)}`}
+                      className="text-sm font-medium transition-opacity duration-200 hover:opacity-70"
+                      style={{ color: "var(--primary-500)" }}
+                    >
+                      Browse {todaySpec} jobs →
+                    </Link>
+                  </div>
+                  <div className="md:col-span-1 text-center">
+                    <div
+                      className="w-36 h-36 rounded-2xl mx-auto flex items-center justify-center"
+                      style={{
+                        background: "var(--primary-500)",
+                        boxShadow: "var(--shadow-2)",
+                      }}
+                    >
+                      <FaStethoscope className="text-5xl text-white" />
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         </section>
 
@@ -856,6 +992,12 @@ const Landing = () => {
                   accept=".pdf,.doc,.docx"
                   className="hidden"
                   id="cv-upload"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      navigate("/job-seekers/register", { state: { pendingCV: file } });
+                    }
+                  }}
                 />
                 <label htmlFor="cv-upload" className="cursor-pointer">
                   <p
@@ -908,13 +1050,13 @@ const Landing = () => {
                   desc: "Apply to positions that match your skills and connect directly with employers.",
                 },
               ].map(({ step, title, desc }) => (
-                <div key={step} className="text-center">
+                <div key={step} className="text-center" >
                   <div
-                    className="text-5xl font-bold mb-4"
+                    className="text-6xl border-primary-500 rounded-full font-bold mb-4 bg-gradient-to-br from-primary-50 to-primary-100"
                     style={{
                       color: "var(--primary-500)",
-                      opacity: 0.3,
-                      letterSpacing: "-0.04em",
+                      opacity: 0.8,
+                      letterSpacing: "-0.02em",
                     }}
                   >
                     {step}
@@ -958,22 +1100,22 @@ const Landing = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
                 {
-                  name: "Dr. Sarah Johnson",
-                  role: "Cardiologist",
+                  name: "Dr. Amine Benali",
+                  role: "Cardiologist — CHU Mustapha Pacha",
                   quote:
-                    "Found my dream position at a leading hospital through MedCareer Connect. The process was smooth and professional.",
+                    "VitalWork Connect m'a permis de trouver un poste de cardiologue au CHU en quelques semaines. La plateforme est rapide et professionnelle.",
                 },
                 {
-                  name: "James Wilson",
-                  role: "Registered Nurse",
+                  name: "Meriem Slimani",
+                  role: "Infirmière — EHU Oran",
                   quote:
-                    "The platform made it easy to find and apply to relevant nursing positions. I'm now working at an amazing facility.",
+                    "Grâce à VitalWork, j'ai trouvé un poste d'infirmière dans un hôpital moderne. Le processus de candidature est simple et efficace.",
                 },
                 {
-                  name: "Dr. Emily Chen",
-                  role: "Pediatrician",
+                  name: "Dr. Karim Bouzid",
+                  role: "Pédiatre — CHU Constantine",
                   quote:
-                    "Excellent platform for medical professionals. Found great opportunities and the support team was very helpful.",
+                    "Excellente plateforme pour les professionnels de santé algériens. J'ai reçu plusieurs offres correspondant à ma spécialité.",
                 },
               ].map(({ name, role, quote }) => (
                 <div
@@ -1192,14 +1334,14 @@ const Landing = () => {
             <div
               className="rounded-3xl p-10 md:p-14"
               style={{
-                background: "var(--primary-500)",
+                background: "var(--surface-primary)",
               }}
             >
-              <h2 className="text-white mb-4" style={{ letterSpacing: "-0.03em" }}>
+              <h2 className="text-primary-500 mb-4" style={{ letterSpacing: "-0.03em" }}>
                 Stay updated.
               </h2>
               <p
-                className="text-white/80 text-base mb-8"
+                className="text-primary-500 text-base mb-8"
                 style={{ fontWeight: 300, lineHeight: 1.6 }}
               >
                 Subscribe for the latest medical jobs, career advice, and
@@ -1210,11 +1352,6 @@ const Landing = () => {
                   type="email"
                   placeholder="Your email address"
                   className="flex-1 px-5 py-3 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-white/30"
-                  style={{
-                    background: "rgba(255,255,255,0.15)",
-                    color: "#ffffff",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                  }}
                 />
                 <button
                   type="submit"

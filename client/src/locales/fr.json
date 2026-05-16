@@ -1,0 +1,33 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "findJobs": "Trouver des emplois",
+    "forEmployers": "Pour les employeurs",
+    "blog": "Blog",
+    "contact": "Contact",
+    "login": "Se connecter",
+    "register": "S'inscrire",
+    "dashboard": "Tableau de bord"
+  },
+  "landing": {
+    "heroTitle": "La première plateforme de recrutement médical en Algérie",
+    "heroSubtitle": "Connectez-vous avec les meilleurs hôpitaux, cliniques et professionnels de la santé dans les 58 wilayas.",
+    "searchPlaceholder": "Rechercher par titre ou mot-clé...",
+    "locationPlaceholder": "Sélectionner la Wilaya...",
+    "specializationPlaceholder": "Sélectionner la Spécialité...",
+    "searchBtn": "Rechercher des emplois",
+    "stats": {
+      "activeJobs": "Emplois médicaux actifs",
+      "professionals": "Professionnels inscrits",
+      "hospitals": "Hôpitaux et cliniques",
+      "wilayas": "Wilayas couvertes"
+    }
+  },
+  "common": {
+    "loading": "Chargement...",
+    "save": "Sauvegarder",
+    "cancel": "Annuler",
+    "edit": "Modifier",
+    "delete": "Supprimer"
+  }
+}

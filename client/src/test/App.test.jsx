@@ -25,7 +25,7 @@ const TestWrapper = ({ children }) => {
   );
 };
 
-describe("MedCareer App", () => {
+describe("VitalWork App", () => {
   beforeEach(() => {
     // Clear any previous mocks
     vi.clearAllMocks();
@@ -38,7 +38,7 @@ describe("MedCareer App", () => {
       </TestWrapper>
     );
 
-    expect(screen.getByText(/MedCareer/i)).toBeInTheDocument();
+    expect(screen.getByText(/VitalWork/i)).toBeInTheDocument();
   });
 
   test("navigates to jobs page", async () => {

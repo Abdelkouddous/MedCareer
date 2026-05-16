@@ -2,7 +2,7 @@
 export const testUsers = {
   admin: {
     name: "Admin User",
-    email: "admin@medcareer.com",
+    email: "admin@VitalWork.com",
     password: "password123",
     role: "admin",
     lastName: "Admin",
@@ -11,7 +11,7 @@ export const testUsers = {
   },
   employer: {
     name: "Dr. Smith",
-    email: "employer@medcareer.com",
+    email: "employer@VitalWork.com",
     password: "password123",
     role: "employer",
     lastName: "Smith",
@@ -20,7 +20,7 @@ export const testUsers = {
   },
   jobSeeker: {
     name: "Dr. Johnson",
-    email: "jobseeker@medcareer.com",
+    email: "jobseeker@VitalWork.com",
     password: "password123",
     lastName: "Johnson",
     location: "Algeria",

@@ -11,7 +11,7 @@ const Employers = () => {
             Hire Qualified Medical Professionals Faster
           </h1>
           <p className="text-[var(--text-secondary-color)] max-w-3xl mx-auto">
-            MedCareer Connect helps hospitals, clinics, and healthcare providers
+            VitalWork Connect helps hospitals, clinics, and healthcare providers
             attract and hire verified medical talent with streamlined job
             posting, smart matching, and applicant tracking.
           </p>
@@ -36,7 +36,7 @@ const Employers = () => {
       <section id="recruitment-solutions" className="py-16">
         <div className="container mx-auto px-4">
           <h2 className="text-2xl font-bold text-[var(--text-color)] mb-8 text-center">
-            Why MedCareer Connect
+            Why VitalWork Connect
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div id="talent-search" className="p-6 rounded-2xl" style={{ background: 'var(--surface-primary)', border: '1px solid var(--border-color)' }}>

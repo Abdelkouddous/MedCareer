@@ -10,7 +10,7 @@ const Contact = () => {
             <div className="p-8 bg-[var(--primary-500)] text-white">
               <h1 className="text-3xl font-bold mb-6">Get in touch</h1>
               <p className="mb-8 text-white/90">
-                Have questions about MedCareer Connect? We're here to help you
+                Have questions about VitalWork Connect? We're here to help you
                 find your dream job or the perfect candidate.
               </p>
 
@@ -31,7 +31,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <p className="font-semibold">Email</p>
-                    <p>hml_soft@medcareer.com</p>
+                    <p>hml_soft@VitalWork.com</p>
                   </div>
                 </div>
 

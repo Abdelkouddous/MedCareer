@@ -6,7 +6,7 @@ import JobSeeker from "../../backend/models/JobSeekerModel.js";
 import { testUsers, testJobs } from "../fixtures/testData.js";
 
 /**
- * Test utilities for MedCareer application
+ * Test utilities for VitalWork application
  */
 export class TestUtils {
   /**
@@ -80,7 +80,7 @@ export class TestUtils {
           data.push({
             ...testJobs.cardiologist,
             position: `Test Position ${i}`,
-            company: `Test Company ${i}`,
+            company: `Test Clinic ${i}`,
           });
           break;
         case "jobSeekers":
@@ -138,7 +138,7 @@ export class TestUtils {
     process.env.CLOUDINARY_NAME = "test-cloud";
     process.env.CLOUDINARY_API_KEY = "test-key";
     process.env.CLOUDINARY_API_SECRET = "test-secret";
-    process.env.MONGO_URL = "mongodb://localhost:27017/medcareer-test";
+    process.env.MONGO_URL = "mongodb://localhost:27017/VitalWork-test";
   }
 
   /**

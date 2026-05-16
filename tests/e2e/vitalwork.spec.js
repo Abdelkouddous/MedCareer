@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("MedCareer E2E Tests", () => {
+test.describe("VitalWork E2E Tests", () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to the home page before each test
     await page.goto("/");
@@ -10,7 +10,7 @@ test.describe("MedCareer E2E Tests", () => {
     test("should display landing page correctly", async ({ page }) => {
       // Check if main elements are visible
       await expect(page.locator("h1")).toBeVisible();
-      await expect(page.locator("text=MedCareer")).toBeVisible();
+      await expect(page.locator("text=VitalWork")).toBeVisible();
 
       // Check navigation links
       await expect(page.locator('a[href*="jobs"]')).toBeVisible();

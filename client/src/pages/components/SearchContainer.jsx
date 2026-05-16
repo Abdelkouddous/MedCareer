@@ -1,4 +1,5 @@
 import { Form, Link, useSubmit, useSearchParams } from "react-router-dom";
+import { ALGERIAN_WILAYAS } from "../../utils/algeriaWilayas";
 import { SearchFormWrapper } from "../../assets/wrappers/AllJobsWrapper";
 import {
   JOB_TYPE,
@@ -28,6 +29,7 @@ export const SearchContainer = () => {
   const [searchParams] = useSearchParams();
   const current = {
     search: searchParams.get("search") || "",
+    jobLocation: searchParams.get("jobLocation") || "all",
     jobStatus: searchParams.get("jobStatus") || "all",
     jobType: searchParams.get("jobType") || "all",
     specialization: searchParams.get("specialization") || "all",
@@ -70,9 +72,20 @@ export const SearchContainer = () => {
                   submit(e.currentTarget.form);
                 }}
                 list={["all", ...Object.values(JOB_STATUS)]}
-              >
-                {/* <option value="all">All</option> */}
-              </FormRowSelect>
+              />
+            </div>
+
+            <div className="form-row">
+              <FormRowSelect
+                name="jobLocation"
+                id="jobLocation"
+                className="form-select"
+                defaultValue={current.jobLocation}
+                onChange={(e) => {
+                  submit(e.currentTarget.form);
+                }}
+                list={["all", ...ALGERIAN_WILAYAS]}
+              />
             </div>
 
             <div className="form-row">

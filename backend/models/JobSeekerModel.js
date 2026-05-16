@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { MEDICAL_SPECIALIZATION } from "../utils/constants.js";
 
 const JobSeekerSchema = new mongoose.Schema({
   name: {
@@ -28,10 +29,40 @@ const JobSeekerSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please provide a password"],
   },
+  specialization: {
+    type: String,
+    enum: Object.values(MEDICAL_SPECIALIZATION),
+  },
+  bio: {
+    type: String,
+    trim: true,
+    maxlength: 500,
+  },
+  experience: {
+    type: String,
+    trim: true,
+  },
+  education: {
+    type: String,
+    trim: true,
+  },
+  skills: {
+    type: [String],
+    default: [],
+  },
+  languages: {
+    type: [String],
+    default: [],
+  },
   curriculumVitae: {
     type: String, // URL to stored PDF file
     // made optional for MVP registration
     required: false,
+  },
+  activeCV: {
+    type: String,
+    enum: ["uploaded", "generated"],
+    default: "generated", // Default implies they have a template automatically available
   },
   location: {
     type: String,

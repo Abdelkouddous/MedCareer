@@ -1,8 +1,8 @@
-# MedCareer Testing Documentation
+# VitalWork Testing Documentation
 
 ## Overview
 
-This document provides comprehensive information about the testing automation setup for the MedCareer medical recruitment application. The testing framework includes unit tests, integration tests, end-to-end (E2E) tests, and performance tests.
+This document provides comprehensive information about the testing automation setup for the VitalWork medical recruitment application. The testing framework includes unit tests, integration tests, end-to-end (E2E) tests, and performance tests.
 
 ## Testing Architecture
 
@@ -213,7 +213,7 @@ import App from "../App";
 
 test("renders landing page", () => {
   render(<App />);
-  expect(screen.getByText(/MedCareer/i)).toBeInTheDocument();
+  expect(screen.getByText(/VitalWork/i)).toBeInTheDocument();
 });
 ```
 
@@ -227,7 +227,7 @@ Test data is managed through fixtures in `tests/fixtures/testData.js`:
 export const testUsers = {
   admin: {
     name: "Admin User",
-    email: "admin@medcareer.com",
+    email: "admin@VitalWork.com",
     password: "password123",
     role: "admin",
   },

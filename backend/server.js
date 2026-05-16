@@ -29,6 +29,7 @@ import jobSeekerRouter from "./routes/jobSeekerRouter.js";
 import blogRouter from "./routes/blogRouter.js";
 import statusRouter from "./routes/statusRouter.js";
 import messageRouter from "./routes/messageRouter.js";
+import cvRouter from "./routes/cvRouter.js";
 
 //middlewares imports
 
@@ -112,6 +113,7 @@ app.use("/api/v1/status", statusRouter);
 // Public routes are handled separately in the router
 app.use("/api/v1/jobseekers", jobSeekerRouter);
 app.use("/api/v1/messages", messageRouter);
+app.use("/api/v1/cv", cvRouter);
 // API
 app.get("/", (req, res) => {
   res.send(`

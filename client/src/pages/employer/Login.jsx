@@ -12,6 +12,7 @@ import Wrapper from "../../assets/wrappers/RegisterAndLoginPage";
 import { toast } from "react-toastify";
 import customFetch from "../../utils/customFetch";
 import { FiEye, FiEyeOff } from "react-icons/fi";
+import { FaGoogle, FaApple } from "react-icons/fa";
 
 export const action = async ({ request }) => {
   const formData = await request.formData();
@@ -197,8 +198,23 @@ const Login = () => {
 
           <div className="relative flex items-center justify-center mt-4">
             <div className="border-t border-[var(--border-color)] w-full"></div>
-            <div className="bg-[var(--surface-primary)] px-3 text-sm text-[var(--text-secondary-color)]">or</div>
+            <div className="bg-[var(--surface-primary)] px-3 text-sm text-[var(--text-secondary-color)] whitespace-nowrap">or continue with</div>
             <div className="border-t border-[var(--border-color)] w-full"></div>
+          </div>
+
+          <div className="flex gap-4 mt-4 mb-4">
+            <button
+              type="button"
+              className="flex-1 flex justify-center items-center gap-2 py-2.5 px-4 border border-[var(--border-color)] rounded-lg hover:bg-gray-100 transition-colors text-[var(--text-color)] shadow-sm"
+            >
+              <FaGoogle className="text-red-500" /> Google
+            </button>
+            <button
+              type="button"
+              className="flex-1 flex justify-center items-center gap-2 py-2.5 px-4 border border-[var(--border-color)] rounded-lg hover:bg-gray-100 transition-colors text-[var(--text-color)] shadow-sm"
+            >
+              <FaApple className="text-gray-900" /> Apple
+            </button>
           </div>
 
           <button

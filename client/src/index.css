@@ -1,4 +1,5 @@
-/* ============= GLOBAL CSS — Apple-Inspired Design System =============== */
+/* ============= GLOBAL CSS — VitalWork Teal Design System =============== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -19,17 +20,17 @@ html {
 }
 
 :root {
-  /* ── Apple-inspired primary accent ── */
-  --primary-50: #e8f4fd;
-  --primary-100: #d1e9fb;
-  --primary-200: #a3d3f7;
-  --primary-300: #64b5f6;
-  --primary-400: #42a5f5;
-  --primary-500: #0071e3;
-  --primary-600: #0064cc;
-  --primary-700: #0056b3;
-  --primary-800: #004999;
-  --primary-900: #003d80;
+  /* ── VitalWork medical teal accent ── */
+  --primary-50: #e6faf7;
+  --primary-100: #ccf5ef;
+  --primary-200: #99ebdf;
+  --primary-300: #4dddc9;
+  --primary-400: #1ad4b8;
+  --primary-500: #00C2A8;
+  --primary-600: #00a892;
+  --primary-700: #008f7c;
+  --primary-800: #007566;
+  --primary-900: #005c50;
 
   /* ── Neutral greys (Apple-style) ── */
   --grey-50: #fbfbfd;
@@ -85,8 +86,16 @@ html {
   --hero-gradient-to: #e8e8ed;
   --cta-gradient-from: var(--primary-500);
   --cta-gradient-to: var(--primary-700);
-  --card-gradient-from: var(--grey-50);
-  --card-gradient-to: var(--grey-100);
+  /* Current (grey) */
+  --card-gradient-from: var(--grey-50);      /* #fbfbfd */
+  --card-gradient-to: var(--grey-100);       /* #f5f5f7 */
+
+  /* Change to (light teal tint) */
+  --card-gradient-from: #e6faf7;             /* very pale teal-white */
+  --card-gradient-to: #ccf5ef;               /* matches your --primary-50 */
+
+  /* --card-gradient-from: var(--grey-50);
+  --card-gradient-to: var(--grey-100); */
 
   /* ── Glass effect tokens ── */
   --glass-bg: rgba(255, 255, 255, 0.72);
@@ -110,51 +119,54 @@ html {
   --info-dark: #dbeafe;
 }
 
-/* ── Dark Theme ── */
+/* ── Dark Theme — Deep Navy ── */
 .dark-theme {
-  --background-color: #000000;
-  --background-secondary-color: #1c1c1e;
-  --text-color: #f5f5f7;
-  --text-secondary-color: #86868b;
-  --text-href-color: #d2d2d7;
-  --section-bg-primary-color: #0a0a0a;
+  --background-color: #0D1B2A;
+  --background-secondary-color: #132336;
+  --text-color: #f0f4f8;
+  --text-secondary-color: #8ca0b3;
+  --text-href-color: #c0d0df;
+  --section-bg-primary-color: #0a1520;
 
-  --primary-500: #2997ff;
-  --primary-600: #0077ed;
-  --primary-700: #0066cc;
+  --primary-500: #00dfc0;
+  --primary-600: #00C2A8;
+  --primary-700: #00a892;
 
-  --hero-gradient-from: #1c1c1e;
-  --hero-gradient-to: #000000;
-  --cta-gradient-from: #2997ff;
-  --cta-gradient-to: #0077ed;
-  --card-gradient-from: #1c1c1e;
-  --card-gradient-to: #2c2c2e;
+  --hero-gradient-from: #132336;
+  --hero-gradient-to: #0D1B2A;
+  --cta-gradient-from: #00C2A8;
+  --cta-gradient-to: #00a892;
+  /* --card-gradient-from: #1A2D3D;
+  --card-gradient-to: #243b50; */
+  /* Change to (dark teal tint) */
+--card-gradient-from: #0d2925;             /* deep dark teal */
+--card-gradient-to: #143b35;               /* slightly lighter teal-navy */
 
-  --glass-bg: rgba(28, 28, 30, 0.72);
-  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-bg: rgba(19, 35, 54, 0.78);
+  --glass-border: rgba(0, 194, 168, 0.12);
 
-  --surface-primary: #1c1c1e;
-  --surface-secondary: #2c2c2e;
-  --surface-tertiary: #0a0a0a;
-  --border-color: #38383a;
+  --surface-primary: #1A2D3D;
+  --surface-secondary: #243b50;
+  --surface-tertiary: #0a1520;
+  --border-color: rgba(0, 194, 168, 0.15);
 
   --shadow-1: 0 1px 3px rgba(0, 0, 0, 0.3);
   --shadow-2: 0 4px 12px rgba(0, 0, 0, 0.4);
-  --shadow-3: 0 8px 30px rgba(0, 0, 0, 0.5);
+  --shadow-3: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(0, 194, 168, 0.08);
   --shadow-4: 0 20px 60px rgba(0, 0, 0, 0.6);
 
-  --grey-50: #1c1c1e;
-  --grey-100: #2c2c2e;
-  --grey-200: #38383a;
-  --grey-300: #48484a;
+  --grey-50: #1A2D3D;
+  --grey-100: #243b50;
+  --grey-200: #2e4a61;
+  --grey-300: #3a5a73;
 }
 
 /* ── Body ── */
 body {
   background: var(--background-color);
   color: var(--text-color);
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
-    'Inter', 'Helvetica Neue', 'Arial', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue',
+    'Arial', sans-serif;
   font-weight: 400;
   line-height: 1.47;
   transition: background-color 0.4s ease, color 0.4s ease;
@@ -225,13 +237,13 @@ ul {
   object-fit: cover;
 }
 
-/* ── Buttons (Apple-style) ── */
+/* ── Buttons (Modern rounded) ── */
 .btn {
   cursor: pointer;
   color: var(--white);
   background: var(--primary-500);
   border: transparent;
-  border-radius: 980px; /* Apple pill shape */
+  border-radius: 12px;
   letter-spacing: 0;
   padding: 0.6rem 1.5rem;
   font-size: 0.9375rem;
@@ -244,8 +256,8 @@ ul {
 
 .btn:hover {
   background: var(--primary-600);
-  box-shadow: none;
-  transform: scale(1.02);
+  box-shadow: 0 4px 16px rgba(0, 194, 168, 0.3);
+  transform: translateY(-1px);
 }
 
 .btn-hipster {
@@ -415,35 +427,35 @@ button:disabled {
   margin: 0 auto;
 }
 
-/* ── Status Badges ── */
+/* ── Status Badges (Semi-transparent) ── */
 .pending {
-  background-color: var(--warning-dark);
-  color: #92400e;
-  border: none;
-  border-radius: 980px;
+  background-color: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 10px;
   padding: 0.25rem 0.75rem;
   font-size: 0.8125rem;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .interview {
-  background-color: var(--info-dark);
-  color: #1e40af;
-  border: none;
-  border-radius: 980px;
+  background-color: rgba(0, 194, 168, 0.15);
+  color: #00C2A8;
+  border: 1px solid rgba(0, 194, 168, 0.3);
+  border-radius: 10px;
   padding: 0.25rem 0.75rem;
   font-size: 0.8125rem;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .declined {
-  background-color: var(--danger-dark);
-  color: #991b1b;
-  border: none;
-  border-radius: 980px;
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 10px;
   padding: 0.25rem 0.75rem;
   font-size: 0.8125rem;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 /* ── Forms (Apple-style) ── */
@@ -558,6 +570,31 @@ button:disabled {
   border: 1px solid var(--glass-border);
 }
 
+/* ── Glassmorphism Card ── */
+.glass-card {
+  background: var(--surface-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+}
+
+.glass-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-3);
+  border-color: rgba(0, 194, 168, 0.3);
+}
+
+.dark-theme .glass-card {
+  background: rgba(26, 45, 61, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 194, 168, 0.15);
+}
+
+.dark-theme .glass-card:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(0, 194, 168, 0.3);
+}
+
 /* ── Card Hover Lift ── */
 .hover-lift {
   transition: transform var(--transition), box-shadow var(--transition);
@@ -566,4 +603,43 @@ button:disabled {
 .hover-lift:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow-3);
+}
+
+
+/* ------- Job card added 15/05/2026 */
+/* ── Job Card (Landing) ── */
+.job-card {
+  background: linear-gradient(135deg, var(--card-gradient-from), var(--card-gradient-to));
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+}
+
+/* ── Job Type Badges ── */
+.job-type-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.875rem;
+  border-radius: 999px;
+  letter-spacing: 0.01em;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.job-type-full-time {
+  background: rgba(0, 194, 168, 0.12);
+  color: var(--primary-500);
+  border-color: rgba(0, 194, 168, 0.25);
+}
+
+.job-type-part-time {
+  background: rgba(59, 130, 246, 0.12);
+  color: #3b82f6;
+  border-color: rgba(59, 130, 246, 0.25);
+}
+
+.job-type-internship {
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+  border-color: rgba(245, 158, 11, 0.25);
 }

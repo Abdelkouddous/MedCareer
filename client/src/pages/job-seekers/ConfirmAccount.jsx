@@ -13,6 +13,18 @@ const ConfirmAccount = () => {
 
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const inputRefs = useRef([]);
+  const [timer, setTimer] = useState(45);
+  const [canResend, setCanResend] = useState(false);
+
+  useEffect(() => {
+    let interval;
+    if (timer > 0) {
+      interval = setInterval(() => setTimer((t) => t - 1), 1000);
+    } else {
+      setCanResend(true);
+    }
+    return () => clearInterval(interval);
+  }, [timer]);
 
   // 👇 Auto-fill OTP in development
   useEffect(() => {
@@ -23,6 +35,7 @@ const ConfirmAccount = () => {
     ) {
       const otpArray = devOtp.split("");
       setOtp(otpArray);
+      toast.info(`Your OTP is: ${devOtp}`, { autoClose: 5000 });
 
       // Optional: auto-submit after 1.5s in dev
       const timer = setTimeout(() => {
@@ -56,6 +69,7 @@ const ConfirmAccount = () => {
   };
 
   const handleResend = async () => {
+    if (!canResend) return;
     try {
       const { data } = await customFetch.post("/jobseekers/resend-otp", {
         userId: userId,
@@ -69,6 +83,8 @@ const ConfirmAccount = () => {
           handleVerify(new Event("auto"));
         }, 1000);
       }
+      setTimer(45);
+      setCanResend(false);
     } catch (error) {
       const message = error?.response?.data?.message || "Failed to resend OTP";
       toast.error(message);
@@ -118,13 +134,13 @@ const ConfirmAccount = () => {
           style={{
             fontSize: "2rem",
             fontWeight: "bold",
-            color: "#1A2B3C",
+            color: "var(--text-color)",
             marginBottom: "0.5rem",
           }}
         >
           Confirm Your Account
         </h1>
-        <p style={{ color: "#6C7A89", marginBottom: "2rem", fontSize: "1rem" }}>
+        <p style={{ color: "var(--text-secondary-color)", marginBottom: "2rem", fontSize: "1rem" }}>
           Enter the 6-digit code sent to your email
         </p>
 
@@ -151,13 +167,15 @@ const ConfirmAccount = () => {
                   height: "50px",
                   textAlign: "center",
                   fontSize: "1.5rem",
-                  border: "2px solid #D1E0E8",
+                  border: "2px solid var(--border-color)",
                   borderRadius: "8px",
+                  background: "transparent",
+                  color: "var(--text-color)",
                   outline: "none",
                   transition: "border-color 0.2s",
                 }}
-                onFocus={(e) => (e.target.style.borderColor = "#5AC8C8")}
-                onBlur={(e) => (e.target.style.borderColor = "#D1E0E8")}
+                onFocus={(e) => (e.target.style.borderColor = "var(--primary-500)")}
+                onBlur={(e) => (e.target.style.borderColor = "var(--border-color)")}
               />
             ))}
           </div>
@@ -168,20 +186,23 @@ const ConfirmAccount = () => {
         </form>
 
         <p
-          style={{ marginTop: "1.5rem", color: "#6C7A89", fontSize: "0.9rem" }}
+          style={{ marginTop: "1.5rem", color: "var(--text-secondary-color)", fontSize: "0.9rem" }}
         >
           Didn&apos;t receive the code?{" "}
           <button
+            type="button"
             onClick={handleResend}
+            disabled={!canResend}
             style={{
-              color: "#5AC8C8",
+              color: canResend ? "var(--primary-500)" : "var(--grey-400)",
               border: "none",
               backgroundColor: "transparent",
-              cursor: "pointer",
+              cursor: canResend ? "pointer" : "not-allowed",
               fontSize: "0.9rem",
+              fontWeight: "600"
             }}
           >
-            Resend OTP
+            {canResend ? "Resend OTP" : `Resend OTP in ${timer}s`}
           </button>
         </p>
       </div>

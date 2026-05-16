@@ -30,7 +30,7 @@ const Terms = () => {
           <section>
             <h2 className="text-xl font-bold text-[var(--text-color)] mb-3">3. Intellectual Property</h2>
             <p>
-              The Service and its original content, features, and functionality are and will remain the exclusive property of MedCareer Connect and its licensors.
+              The Service and its original content, features, and functionality are and will remain the exclusive property of VitalWork Connect and its licensors.
             </p>
           </section>
 

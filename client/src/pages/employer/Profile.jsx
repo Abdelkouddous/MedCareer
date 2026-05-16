@@ -349,10 +349,12 @@ const Profile = () => {
 
       <style jsx>{`
         .profile-container {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
+          display: flex;
+          flex-direction: column;
           gap: 2rem;
           padding: 1.5rem;
+          max-width: 800px;
+          margin: 0 auto;
           min-height: calc(100vh - 120px);
         }
 

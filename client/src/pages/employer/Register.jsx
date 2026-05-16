@@ -10,15 +10,17 @@ import Logo from "../components/Logo";
 import FormRow from "../components/FormRow";
 import customFetch from "../../utils/customFetch";
 import { toast } from "react-toastify";
+import { FaGoogle, FaApple } from "react-icons/fa";
 
 export const action = async ({ request }) => {
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
   try {
     const { data: res } = await customFetch.post("/auth/register", data);
-    toast.success("Registration successful! Please verify your email.");
+    // toast.success("Registration successful! Please verify your email.");
     const userId = res?.user?.userId;
     const devOtp = res?.devOtp;
+    toast.info(`Your otp is ${devOtp}`);
     const query = new URLSearchParams({ token: userId || "" });
     if (devOtp) query.set("otp", devOtp);
     return redirect(`/confirm-account?${query.toString()}`);
@@ -151,6 +153,27 @@ const Register = () => {
               "Create Account"
             )}
           </button>
+          
+          <div className="relative flex items-center justify-center mt-6">
+            <div className="border-t border-[var(--border-color)] w-full"></div>
+            <div className="bg-white px-3 text-sm text-[var(--text-secondary-color)] whitespace-nowrap">or sign up with</div>
+            <div className="border-t border-[var(--border-color)] w-full"></div>
+          </div>
+
+          <div className="flex gap-4 mt-6">
+            <button
+              type="button"
+              className="flex-1 flex justify-center items-center gap-2 py-2.5 px-4 border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors text-[var(--text-color)] shadow-sm"
+            >
+              <FaGoogle className="text-red-500" /> Google
+            </button>
+            <button
+              type="button"
+              className="flex-1 flex justify-center items-center gap-2 py-2.5 px-4 border border-[var(--border-color)] rounded-lg hover:bg-gray-50 transition-colors text-[var(--text-color)] shadow-sm"
+            >
+              <FaApple className="text-gray-900" /> Apple
+            </button>
+          </div>
 
           <div className="text-center mt-8 border-t pt-6">
             <p className="text-sm mb-3">Already have an account?</p>

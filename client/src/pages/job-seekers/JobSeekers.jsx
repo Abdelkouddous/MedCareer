@@ -1,16 +1,29 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { Work, Person, BarChart, Email, Logout, Assignment } from "@mui/icons-material";
+import { Work, Person, BarChart, Email, Logout, Assignment, Description } from "@mui/icons-material";
 import { toast } from "react-toastify";
 import customFetch from "../../utils/customFetch";
 import Wrapper from "../../assets/wrappers/Dashboard";
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon, Home } from "lucide-react";
 import { checkDefaultTheme } from "../../App";
 
 const JobSeekers = () => {
   const [showSidebar, setShowSidebar] = useState(false);
   const [isDarkTheme, setIsDarkTheme] = useState(checkDefaultTheme());
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const { data } = await customFetch.get("/jobseekers/me");
+        setUser(data.jobSeeker || data);
+      } catch (err) {
+        console.log("Could not fetch user for sidebar");
+      }
+    };
+    fetchUser();
+  }, []);
 
   const toggleTheme = () => {
     const newDarkTheme = !isDarkTheme;
@@ -19,11 +32,13 @@ const JobSeekers = () => {
     localStorage.setItem("darkTheme", newDarkTheme);
   };
 
-  const navItems = [
+  const navItems = [ 
+    {text: "Dashboard", path: "/job-seekers/dashboard", icon: <Home />},
     { text: "Jobs", path: "/job-seekers/jobs", icon: <Work /> },
     { text: "Applications", path: "/job-seekers/applications", icon: <Assignment /> },
     { text: "Stats", path: "/job-seekers/stats", icon: <BarChart /> },
     { text: "Inbox", path: "/job-seekers/inbox", icon: <Email /> },
+    { text: "My CV", path: "/job-seekers/cv-template", icon: <Description /> },
     { text: "Profile", path: "/job-seekers/profile", icon: <Person /> },
   ];
 
@@ -59,12 +74,30 @@ const JobSeekers = () => {
         } md:translate-x-0 fixed md:static top-0 left-0 z-50 w-60 h-full bg-[var(--background-secondary-color)] border-r border-[var(--grey-200)] transition-transform duration-300 ease-in-out`}
         style={{ boxShadow: "var(--shadow-1)" }}
       >
-        {/* Header */}
-        <div className="h-16 flex items-center justify-between px-4 border-b border-[var(--grey-200)]">
-          <h1 className="text-xl font-bold text-[var(--primary-500)] m-0">
-            Job Seekers
-          </h1>
-          <button onClick={toggleSidebar} className="btn-hipster md:hidden p-2">
+        {/* Header with Avatar */}
+        <div className="px-4 py-5 border-b border-[var(--grey-200)]">
+          <div className="flex items-center gap-3">
+            <div
+              className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold"
+              style={{ background: "var(--primary-500)", color: "#ffffff" }}
+            >
+              {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-sm font-semibold text-[var(--text-color)] truncate m-0">
+                {user?.name || "Job Seeker"}
+              </h3>
+              {user?.specialization && (
+                <span
+                  className="inline-block mt-1 px-2 py-0.5 rounded text-xs font-medium"
+                  style={{ background: "rgba(0,194,168,0.15)", color: "var(--primary-500)" }}
+                >
+                  {user.specialization}
+                </span>
+              )}
+            </div>
+          </div>
+          <button onClick={toggleSidebar} className="btn-hipster md:hidden p-2 mt-2">
             ✕
           </button>
         </div>
@@ -77,17 +110,16 @@ const JobSeekers = () => {
                 <NavLink
                   to={item.path}
                   className={({ isActive }) =>
-                    isActive ? "btn btn-block" : "btn-hipster btn-block"
+                    `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                      isActive
+                        ? "text-[var(--primary-500)] bg-[rgba(0,194,168,0.1)]"
+                        : "text-[var(--text-secondary-color)] hover:text-[var(--text-color)] hover:bg-[var(--surface-secondary)]"
+                    }`
                   }
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.75rem",
-                    padding: "0.75rem 1rem",
+                  style={({ isActive }) => ({
+                    borderLeft: isActive ? "3px solid var(--primary-500)" : "3px solid transparent",
                     textDecoration: "none",
-                    borderRadius: "var(--border-radius)",
-                    transition: "var(--transition)",
-                  }}
+                  })}
                   onClick={() => setShowSidebar(false)}
                 >
                   {item.icon}
@@ -129,7 +161,7 @@ const JobSeekers = () => {
               ☰
             </button>
             <h2 className="text-2xl font-semibold text-[var(--text-color)] m-0">
-              MedCareer Connect
+              VitalWork Connect
             </h2>
           </div>
 

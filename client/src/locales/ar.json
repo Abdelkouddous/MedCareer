@@ -1,0 +1,33 @@
+{
+  "nav": {
+    "home": "الرئيسية",
+    "findJobs": "البحث عن وظائف",
+    "forEmployers": "لأصحاب العمل",
+    "blog": "المدونة",
+    "contact": "اتصل بنا",
+    "login": "تسجيل الدخول",
+    "register": "إنشاء حساب",
+    "dashboard": "لوحة القيادة"
+  },
+  "landing": {
+    "heroTitle": "المنصة الأولى لتوظيف الكوادر الطبية في الجزائر",
+    "heroSubtitle": "تواصل مع أفضل المستشفيات والعيادات والمهنيين الطبيين عبر جميع الولايات الـ 58.",
+    "searchPlaceholder": "ابحث باسم الوظيفة أو الكلمة الرئيسية...",
+    "locationPlaceholder": "اختر الولاية...",
+    "specializationPlaceholder": "اختر التخصص...",
+    "searchBtn": "ابحث عن وظائف",
+    "stats": {
+      "activeJobs": "وظائف طبية نشطة",
+      "professionals": "مهنيين مسجلين",
+      "hospitals": "مستشفيات وعيادات",
+      "wilayas": "ولاية مغطاة"
+    }
+  },
+  "common": {
+    "loading": "جاري التحميل...",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "edit": "تعديل",
+    "delete": "حذف"
+  }
+}

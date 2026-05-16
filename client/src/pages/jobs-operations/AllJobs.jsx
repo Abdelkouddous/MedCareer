@@ -61,13 +61,21 @@ const AllJobs = () => {
         changePage,
       }}
     >
-      <h1 className="text-center text-4xl md:text-5xl lg:text-6xl font-bold text-[var(--text-color)] mb-6">
-        Medical Job
-        <span className="text-[var(--primary-500)]"> Applications</span>
-      </h1>
-      <SearchContainer />
-      <JobContainer />
-      {numOfPages > 1 && <PageBtnContainer />}
+      <div className="max-w-[1400px] mx-auto px-4 py-8">
+        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[var(--text-color)] mb-8 text-center">
+          Medical Job
+          <span className="text-[var(--primary-500)]"> Applications</span>
+        </h1>
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
+          <div className="w-full lg:w-[300px] flex-shrink-0">
+            <SearchContainer />
+          </div>
+          <div className="flex-1 w-full">
+            <JobContainer />
+            {numOfPages > 1 && <PageBtnContainer />}
+          </div>
+        </div>
+      </div>
     </AllJobsContext.Provider>
   );
 };

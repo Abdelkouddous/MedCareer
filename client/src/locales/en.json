@@ -1,0 +1,33 @@
+{
+  "nav": {
+    "home": "Home",
+    "findJobs": "Find Jobs",
+    "forEmployers": "For Employers",
+    "blog": "Blog",
+    "contact": "Contact",
+    "login": "Sign In",
+    "register": "Register",
+    "dashboard": "Dashboard"
+  },
+  "landing": {
+    "heroTitle": "The Premier Medical Recruitment Platform in Algeria",
+    "heroSubtitle": "Connect with top hospitals, clinics, and medical professionals across all 58 Wilayas.",
+    "searchPlaceholder": "Search by job title or keyword...",
+    "locationPlaceholder": "Select Wilaya...",
+    "specializationPlaceholder": "Select Specialization...",
+    "searchBtn": "Search Jobs",
+    "stats": {
+      "activeJobs": "Active Medical Jobs",
+      "professionals": "Registered Professionals",
+      "hospitals": "Hospitals & Clinics",
+      "wilayas": "Wilayas Covered"
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete"
+  }
+}

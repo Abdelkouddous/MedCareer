@@ -124,15 +124,27 @@ const Candidates = () => {
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  {app.jobSeeker?.curriculumVitae && (
-                    <a
-                      href={app.jobSeeker?.curriculumVitae}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                  {app.jobSeeker?.activeCV === "uploaded" ? (
+                    app.jobSeeker?.curriculumVitae ? (
+                      <a
+                        href={app.jobSeeker?.curriculumVitae}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200"
+                      >
+                        View PDF
+                      </a>
+                    ) : (
+                      <span className="text-gray-400">PDF Missing</span>
+                    )
+                  ) : (
+                    <Link
+                      to={`/employers/generated-cv/${app.jobSeeker?._id}`}
+                      state={{ profile: app.jobSeeker }}
                       className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200"
                     >
-                      View CV
-                    </a>
+                      View Generated CV
+                    </Link>
                   )}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">

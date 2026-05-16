@@ -10,7 +10,7 @@ try {
   await mongoose.connect(process.env.MONGO_URL);
   console.log("Connected to MongoDB");
   // get user
-  const user = await Employer.findOne({ email: "medcareer@gg.co" });
+  const user = await Employer.findOne({ email: "VitalWork@gg.co" });
   // Read JSON file
   const jsonData = await readFile(
     new URL("./utils/jobMocks2.json", import.meta.url)

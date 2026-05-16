@@ -218,7 +218,7 @@ const injectBlogs = async () => {
       adminUser = await Employer.create({
         name: "Admin",
         lastName: "User",
-        email: "admin@medcareer.com",
+        email: "admin@VitalWork.com",
         password: "admin123",
         role: "admin",
         specialty: "General Practitioner",

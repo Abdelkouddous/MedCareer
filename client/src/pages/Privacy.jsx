@@ -14,7 +14,7 @@ const Privacy = () => {
           <section>
             <h2 className="text-xl font-bold text-[var(--text-color)] mb-3">1. Introduction</h2>
             <p>
-              Welcome to MedCareer Connect. We respect your privacy and are committed to protecting your personal data. 
+              Welcome to VitalWork Connect. We respect your privacy and are committed to protecting your personal data. 
               This privacy policy will inform you as to how we look after your personal data when you visit our website 
               and tell you about your privacy rights and how the law protects you.
             </p>
@@ -55,8 +55,8 @@ const Privacy = () => {
             <h2 className="text-xl font-bold text-[var(--text-color)] mb-3">5. Contact Us</h2>
             <p>
               If you have any questions about this privacy policy or our privacy practices, please contact us at: {' '}
-              <a href="mailto:hml_soft@medcareer.com" className="text-[var(--primary-500)] hover:underline">
-                hml_soft@medcareer.com
+              <a href="mailto:hml_soft@VitalWork.com" className="text-[var(--primary-500)] hover:underline">
+                hml_soft@VitalWork.com
               </a>
             </p>
           </section>
