@@ -4,7 +4,7 @@ A comprehensive medical career platform built with the MERN stack, designed to c
 
 ## Try it out !
 
-[![VitalWork demo](https://VitalWork.onrender.com/)](https://VitalWork.onrender.com/)
+[![VitalWork demo](https://MedCareer.onrender.com/)](https://MedCareer.onrender.com/)
 
 ## 🌟 Features
 
