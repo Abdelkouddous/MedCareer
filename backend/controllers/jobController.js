@@ -86,16 +86,18 @@ export const getAllJobs = async (req, res) => {
 // It uses the Job model to find the job and returns it in the response.
 // If the job is not found, it throws a NotFoundError.
 // The ID is passed as a parameter in the request.
-export const getJobById = async (req, res) => {
+export const getJobById = async (req, res, next) => {
   try {
     const job = await Job.findById(req.params.id); // Use findById to fetch by MongoDB ID
-
+    if (!job) {
+      return res.status(404).json({ message: "Job not found" });
+    }
     res.status(StatusCodes.OK).json({ job });
   } catch (error) {
     if (error.name === "CastError") {
-      throw new NotFoundError(`Job with id ${req.params.id} not found`);
+      return res.status(400).json({ message: "Invalid job ID" });
     }
-    console.error(error);
+    next(error);
   }
 };
 
@@ -134,7 +136,7 @@ export const createJob = async (req, res) => {
       createdBy: req.user.userId, // Assuming `req.user` contains the authenticated user
     });
 
-    res.status(StatusCodes.CREATED).json({ job });
+    res.status(StatusCodes.CREATED).json({ job, msg: "Job created successfully" });
   } catch (error) {
     console.error(error);
     res
@@ -144,7 +146,7 @@ export const createJob = async (req, res) => {
 };
 
 // Update a job by ID
-export const updateJob = async (req, res) => {
+export const updateJob = async (req, res, next) => {
   try {
     const {
       position,
@@ -172,25 +174,31 @@ export const updateJob = async (req, res) => {
     ); // Updates job in database and returns the updated document
 
     if (!job) {
-      throw new NotFoundError(`Job with id ${req.params.id} not found`);
+      return res.status(404).json({ message: "Job not found" });
     }
 
-    res.status(StatusCodes.OK).json({ updatedJob: job });
+    res.status(StatusCodes.OK).json({ job, updatedJob: job, msg: "Job updated successfully" });
   } catch (error) {
-    console.error(error);
-    throw new NotFoundError(`Job with id ${req.params.id} not found`);
+    if (error.name === "CastError") {
+      return res.status(400).json({ message: "Invalid job ID" });
+    }
+    next(error);
   }
 };
 
 // Delete a job by ID -- creating database logics
-export const deleteJob = async (req, res) => {
+export const deleteJob = async (req, res, next) => {
   try {
     const job = await Job.findByIdAndDelete(req.params.id); // Deletes job by ID
-    res.status(StatusCodes.OK).json({ message: "Job deleted successfully" });
+    if (!job) {
+      return res.status(404).json({ message: "Job not found" });
+    }
+    res.status(StatusCodes.OK).json({ msg: "Job deleted successfully" });
   } catch (error) {
-    console.error(error);
-
-    // res.status(500).json({ message: "Server error" });
+    if (error.name === "CastError") {
+      return res.status(400).json({ message: "Invalid job ID" });
+    }
+    next(error);
   }
 };
 

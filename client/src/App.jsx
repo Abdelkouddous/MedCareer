@@ -28,6 +28,8 @@ import {
   Contact,
   Privacy,
   Terms,
+  ForgotPassword,
+  ForgotPasswordJobSeeker,
 } from "./pages";
 
 // for job seekers
@@ -115,6 +117,10 @@ const router = createBrowserRouter([
         path: "login",
         element: <Login />,
         action: loginAction,
+      },
+      {
+        path: "forgot-password",
+        element: <ForgotPassword />,
       },
       // Employer/admin OTP confirmation page
       {
@@ -243,6 +249,11 @@ const router = createBrowserRouter([
     path: "job-seekers/login",
     element: <LoginJobSeeker />,
   },
+  {
+    path: "job-seekers/forgot-password",
+    element: <ForgotPasswordJobSeeker />,
+  },
+
 
   {
     path: "job-seekers/confirm-account",

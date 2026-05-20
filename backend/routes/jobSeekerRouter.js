@@ -8,6 +8,8 @@ import {
   updateCurrentJobSeeker,
   confirmEmail,
   resendOtp,
+  forgotPasswordJobSeeker,
+  resetPasswordJobSeeker,
 } from "../controllers/jobSeekerController.js";
 import {
   applyToJob,
@@ -35,6 +37,8 @@ router.post("/login", loginJobSeeker);
 router.post("/logout", logoutJobSeeker);
 router.post("/confirm-email", confirmEmail);
 router.post("/resend-otp", resendOtp);
+router.post("/forgot-password", forgotPasswordJobSeeker);
+router.post("/reset-password", resetPasswordJobSeeker);
 
 // Self-only profile endpoints
 router.get("/me", authenticateJobSeeker, getCurrentJobSeeker);

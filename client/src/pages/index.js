@@ -55,3 +55,6 @@ export { default as StatsJobSeeker } from "./job-seekers/StatsJobSeeker";
 export { default as InboxJobSeeker } from "./job-seekers/InboxJobSeeker";
 export { default as JobSeekers } from "./job-seekers/JobSeekers";
 export { default as ApplicationsJobSeeker } from "./job-seekers/ApplicationsJobSeeker";
+export { default as ForgotPassword } from "./employer/ForgotPassword";
+export { default as ForgotPasswordJobSeeker } from "./job-seekers/ForgotPasswordJobSeeker";
+

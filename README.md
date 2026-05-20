@@ -1,6 +1,10 @@
 # VitalWork 🏥
 
-A comprehensive medical career platform built with the MERN stack, designed to connect healthcare professionals with medical job opportunities. This application serves as a specialized job board for the medical industry, featuring role-based authentication, job management, and application tracking.
+A recruitment platform built exclusively for healthcare professionals, using the MERN stack. VitalWork connects medical job seekers with healthcare employers using a secure, specialized hiring workflow designed only for hospitals, clinics, and medical facilities.
+
+## Project Documentation
+
+- [Client Requirements & Negotiation Notes](requirements.md) — detailed healthcare recruitment requirements for VitalWork.
 
 ## Try it out !
 
@@ -125,7 +129,6 @@ A comprehensive medical career platform built with the MERN stack, designed to c
    ```
 
    This will start:
-
    - Backend server on `http://localhost:5100`
    - Frontend development server on `http://localhost:5173`
 

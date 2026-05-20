@@ -11,6 +11,7 @@ import {
   Edit,
   Save,
   Cancel,
+  Lock,
 } from "@mui/icons-material";
 import customFetch from "../../utils/customFetch";
 
@@ -35,6 +36,38 @@ const ProfileJobSeeker = () => {
   const [editForm, setEditForm] = useState({});
   const [uploading, setUploading] = useState(false); // Kept for Profile Picture
   const [imageError, setImageError] = useState(false);
+
+  // Change Password state
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    if (!newPassword || !confirmPassword) {
+      toast.error("Please fill in both password fields");
+      return;
+    }
+    if (newPassword.length < 6) {
+      toast.error("Password must be at least 6 characters long");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+    setIsUpdatingPassword(true);
+    try {
+      await customFetch.patch("/jobseekers/me", { password: newPassword });
+      toast.success("Password updated successfully!");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (error) {
+      toast.error(error?.response?.data?.msg || "Failed to update password");
+    } finally {
+      setIsUpdatingPassword(false);
+    }
+  };
 
   const fetchProfile = async () => {
     try {
@@ -316,6 +349,46 @@ const ProfileJobSeeker = () => {
             </p>
           </div>
         </div>
+      </Section>
+
+      {/* ── Change Password ── */}
+      <Section title="Change Password" icon={<Lock />}>
+        <form onSubmit={handlePasswordChange}>
+          <div className="mb-4">
+            <label className="form-label flex items-center gap-2 mb-1.5">
+              New Password
+            </label>
+            <input
+              type="password"
+              className="form-input"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="Min 6 characters"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="form-label flex items-center gap-2 mb-1.5">
+              Confirm New Password
+            </label>
+            <input
+              type="password"
+              className="form-input"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Confirm new password"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            className="btn mt-3"
+            style={{ padding: "0.5rem 1.5rem" }}
+            disabled={isUpdatingPassword}
+          >
+            {isUpdatingPassword ? "Updating Password..." : "Update Password"}
+          </button>
+        </form>
       </Section>
     </div>
   );

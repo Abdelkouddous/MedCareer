@@ -1,4 +1,5 @@
 // jobSeekerController.js
+import crypto from "crypto";
 import { StatusCodes } from "http-status-codes";
 import JobSeeker from "../models/JobSeekerModel.js";
 
@@ -428,3 +429,92 @@ export const logoutJobSeeker = (req, res) => {
       .json({ message: error.message });
   }
 };
+
+// Request a password reset OTP for job seeker
+export const forgotPasswordJobSeeker = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: "Please provide an email address" });
+    }
+
+    const jobSeeker = await JobSeeker.findOne({ email });
+
+    if (jobSeeker) {
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      const hashedOTP = crypto
+        .createHash("sha256")
+        .update(otp)
+        .digest("hex");
+
+      jobSeeker.resetPasswordOTP = hashedOTP;
+      jobSeeker.resetPasswordExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+      await jobSeeker.save();
+
+      console.log(`[DEV] JobSeeker reset OTP for ${email}: ${otp}`);
+
+      if (process.env.NODE_ENV === "development") {
+        return res.status(StatusCodes.OK).json({
+          message: "If an account exists with that email, a reset OTP has been sent",
+          devOtp: otp,
+        });
+      }
+    }
+
+    res.status(StatusCodes.OK).json({
+      message: "If an account exists with that email, a reset OTP has been sent",
+    });
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
+  }
+};
+
+// Reset password using OTP for job seeker
+export const resetPasswordJobSeeker = async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+    if (!email || !otp || !newPassword) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: "Please provide email, OTP, and new password" });
+    }
+
+    const hashedOTP = crypto
+      .createHash("sha256")
+      .update(otp)
+      .digest("hex");
+
+    const jobSeeker = await JobSeeker.findOne({
+      email,
+      resetPasswordExpires: { $gt: Date.now() },
+    }).select("+resetPasswordOTP +resetPasswordExpires");
+
+    if (!jobSeeker) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: "Invalid or expired reset token" });
+    }
+
+    if (jobSeeker.resetPasswordOTP !== hashedOTP) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: "Invalid OTP" });
+    }
+
+    jobSeeker.password = await hashPassword(newPassword);
+    jobSeeker.resetPasswordOTP = undefined;
+    jobSeeker.resetPasswordExpires = undefined;
+    await jobSeeker.save();
+
+    res.status(StatusCodes.OK).json({ message: "Password reset successful" });
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
+  }
+};
+

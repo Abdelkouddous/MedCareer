@@ -88,6 +88,14 @@ const EmployerSchema = new mongoose.Schema({
     type: Date,
     select: false,
   },
+  resetPasswordOTP: {
+    type: String,
+    select: false,
+  },
+  resetPasswordExpires: {
+    type: Date,
+    select: false,
+  },
 });
 
 EmployerSchema.methods.toJSON = function () {

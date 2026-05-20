@@ -134,6 +134,7 @@
 // };
 
 // export default Profile;
+import React, { useState } from "react";
 import { Form } from "react-router-dom";
 import { toast } from "react-toastify";
 import { FormRow, FormRowSelect } from "../components";
@@ -175,7 +176,7 @@ export const action = async ({ request }) => {
 
   try {
     // Send the formData to the server with proper headers for file upload
-    await customFetch.patch("/users/update-user", formData);
+    await customFetch.patch("/employers/update-user", formData);
     toast.success("Profile updated successfully");
   } catch (error) {
     // Handle errors and display a user-friendly message
@@ -199,6 +200,38 @@ const Profile = () => {
   const { user } = useOutletContext();
   const { name, lastName, email, location, specialty, avatar, createdAt } =
     user;
+
+  // Change Password state
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    if (!newPassword || !confirmPassword) {
+      toast.error("Please fill in both password fields");
+      return;
+    }
+    if (newPassword.length < 8) {
+      toast.error("Password must be at least 8 characters long");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+    setIsUpdatingPassword(true);
+    try {
+      await customFetch.patch("/employers/update-user", { password: newPassword });
+      toast.success("Password updated successfully!");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (error) {
+      toast.error(error?.response?.data?.msg || "Failed to update password");
+    } finally {
+      setIsUpdatingPassword(false);
+    }
+  };
 
   // Format join date
   const joinDate = createdAt
@@ -344,6 +377,59 @@ const Profile = () => {
 
             <SubmitBtn formBtn />
           </Form>
+        </Wrapper>
+
+        {/* Change Password Card */}
+        <Wrapper style={{ marginTop: "2rem" }}>
+          <form onSubmit={handlePasswordChange} className="form">
+            <h4 className="flex justify-between space-x-2 text-center text-2xl md:text-3xl font-bold text-[var(--text-color)] mb-4">
+              Change Password
+            </h4>
+            <span className="text-[var(--text-secondary-color)] block mb-6">
+              Set a new secure password for your account
+            </span>
+            
+            <div className="form-center">
+              <div className="form-row">
+                <label className="form-label" htmlFor="newPassword">
+                  New Password
+                </label>
+                <input
+                  type="password"
+                  id="newPassword"
+                  className="form-input"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Min 8 characters"
+                  required
+                />
+              </div>
+
+              <div className="form-row">
+                <label className="form-label" htmlFor="confirmPassword">
+                  Confirm New Password
+                </label>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  className="form-input"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Repeat new password"
+                  required
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className="btn btn-block"
+              style={{ marginTop: "1.5rem" }}
+              disabled={isUpdatingPassword}
+            >
+              {isUpdatingPassword ? "Updating Password..." : "Update Password"}
+            </button>
+          </form>
         </Wrapper>
       </div>
 

@@ -2,8 +2,9 @@
 export const testUsers = {
   admin: {
     name: "Admin User",
-    email: "admin@VitalWork.com",
+    email: "admin@vitalwork.com",
     password: "password123",
+    confirmPassword: "password123",
     role: "admin",
     lastName: "Admin",
     location: "Algeria",
@@ -11,8 +12,9 @@ export const testUsers = {
   },
   employer: {
     name: "Dr. Smith",
-    email: "employer@VitalWork.com",
+    email: "employer@vitalwork.com",
     password: "password123",
+    confirmPassword: "password123",
     role: "employer",
     lastName: "Smith",
     location: "Algeria",
@@ -20,7 +22,7 @@ export const testUsers = {
   },
   jobSeeker: {
     name: "Dr. Johnson",
-    email: "jobseeker@VitalWork.com",
+    email: "jobseeker@vitalwork.com",
     password: "password123",
     lastName: "Johnson",
     location: "Algeria",

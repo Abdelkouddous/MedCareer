@@ -5,6 +5,8 @@ import Job from "../models/JobModel.js";
 import cloudinary from "cloudinary";
 import { promises as fs } from "fs";
 import JobSeekerModel from "../models/JobSeekerModel.js";
+import { hashPassword } from "../utils/passwordUtils.js";
+
 
 export const getCurrentUser = async (req, res) => {
   const userId = req.user.userId;
@@ -116,7 +118,11 @@ export const updateUser = async (req, res) => {
     console.log("Request file:", req.file);
 
     const newUser = { ...req.body };
-    delete newUser.password;
+    if (req.body.password && req.body.password.trim() !== "") {
+      newUser.password = await hashPassword(req.body.password);
+    } else {
+      delete newUser.password;
+    }
 
     // Handle avatar upload to Cloudinary
     if (req.file) {

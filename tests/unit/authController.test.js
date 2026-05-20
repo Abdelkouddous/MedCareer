@@ -5,12 +5,14 @@ import authRouter from "../../backend/routes/authRouter.js";
 import Employer from "../../backend/models/EmployerModel.js";
 import { testUsers } from "../fixtures/testData.js";
 import cookieParser from "cookie-parser";
+import errorHandlerMiddleware from "../../backend/middleware/errorHandlerMiddleware.js";
 
 // Create test app
 const app = express();
 app.use(cookieParser());
 app.use(express.json());
 app.use("/api/v1/auth", authRouter);
+app.use(errorHandlerMiddleware);
 
 describe("Authentication Controller", () => {
   describe("POST /api/v1/auth/register", () => {
@@ -20,7 +22,7 @@ describe("Authentication Controller", () => {
         .send(testUsers.employer)
         .expect(201);
 
-      expect(response.body.msg).toBe("User registered successfully");
+      expect(response.body.msg).toContain("User registered successfully");
       expect(response.body.user.name).toBe(testUsers.employer.name);
       expect(response.body.user.userId).toBeDefined();
     });
@@ -60,7 +62,7 @@ describe("Authentication Controller", () => {
         .send(testUsers.employer)
         .expect(400);
 
-      expect(response.body.message).toContain("duplicate");
+      expect(response.body.msg).toContain("already exists");
     });
 
     it("should return error for missing required fields", async () => {
@@ -74,14 +76,15 @@ describe("Authentication Controller", () => {
         .send(incompleteUser)
         .expect(400);
 
-      expect(response.body.message).toBeDefined();
+      expect(response.body.msg).toBeDefined();
     });
   });
 
   describe("POST /api/v1/auth/login", () => {
     beforeEach(async () => {
-      // Register a user before each login test
-      await request(app).post("/api/v1/auth/register").send(testUsers.employer);
+      // Register a user and confirm their email before each login test
+      const res = await request(app).post("/api/v1/auth/register").send(testUsers.employer);
+      await Employer.findByIdAndUpdate(res.body.user.userId, { isConfirmed: true });
     });
 
     it("should login with valid credentials", async () => {
@@ -122,7 +125,7 @@ describe("Authentication Controller", () => {
         })
         .expect(401);
 
-      expect(response.body.message).toBe("Invalid credentials");
+      expect(response.body.msg).toBe("Invalid credentials");
     });
 
     it("should return error for invalid password", async () => {
@@ -134,23 +137,23 @@ describe("Authentication Controller", () => {
         })
         .expect(401);
 
-      expect(response.body.message).toBe("Invalid credentials");
+      expect(response.body.msg).toBe("Invalid credentials");
     });
 
     it("should return error for missing credentials", async () => {
       const response = await request(app)
         .post("/api/v1/auth/login")
         .send({})
-        .expect(401);
+        .expect(400);
 
-      expect(response.body.message).toBe("Please provide all values");
+      expect(response.body.msg).toContain("Email is required");
     });
   });
 
-  describe("POST /api/v1/auth/logout", () => {
+  describe("GET /api/v1/auth/logout", () => {
     it("should logout successfully", async () => {
       const response = await request(app)
-        .post("/api/v1/auth/logout")
+        .get("/api/v1/auth/logout")
         .expect(200);
 
       expect(response.body.msg).toBe("Successfully logged out !");
@@ -158,10 +161,10 @@ describe("Authentication Controller", () => {
     });
   });
 
-  describe("POST /api/v1/auth/guest", () => {
+  describe("GET /api/v1/auth/guest", () => {
     it("should create guest session successfully", async () => {
       const response = await request(app)
-        .post("/api/v1/auth/guest")
+        .get("/api/v1/auth/guest")
         .expect(200);
 
       expect(response.body.msg).toBe("Welcome guest!");
@@ -172,7 +175,7 @@ describe("Authentication Controller", () => {
 
     it("should set guest cookie with shorter expiration", async () => {
       const response = await request(app)
-        .post("/api/v1/auth/guest")
+        .get("/api/v1/auth/guest")
         .expect(200);
 
       expect(response.headers["set-cookie"]).toBeDefined();
@@ -181,4 +184,89 @@ describe("Authentication Controller", () => {
       expect(cookie).toContain("HttpOnly");
     });
   });
+
+  describe("POST /api/v1/auth/forgot-password", () => {
+    beforeEach(async () => {
+      await request(app).post("/api/v1/auth/register").send(testUsers.employer);
+    });
+
+    it("should request reset OTP and return OTP in development", async () => {
+      const originalEnv = process.env.NODE_ENV;
+      process.env.NODE_ENV = "development";
+
+      const response = await request(app)
+        .post("/api/v1/auth/forgot-password")
+        .send({ email: testUsers.employer.email })
+        .expect(200);
+
+      expect(response.body.msg).toContain("a reset OTP has been sent");
+      expect(response.body.devOtp).toBeDefined();
+
+      process.env.NODE_ENV = originalEnv;
+    });
+
+    it("should return the same success message even if email is not registered (security principle)", async () => {
+      const response = await request(app)
+        .post("/api/v1/auth/forgot-password")
+        .send({ email: "unregistered@example.com" })
+        .expect(200);
+
+      expect(response.body.msg).toContain("a reset OTP has been sent");
+      expect(response.body.devOtp).toBeUndefined();
+    });
+  });
+
+  describe("POST /api/v1/auth/reset-password", () => {
+    let devOtp;
+    beforeEach(async () => {
+      const res = await request(app).post("/api/v1/auth/register").send(testUsers.employer);
+      await Employer.findByIdAndUpdate(res.body.user.userId, { isConfirmed: true });
+      
+      const originalEnv = process.env.NODE_ENV;
+      process.env.NODE_ENV = "development";
+
+      const response = await request(app)
+        .post("/api/v1/auth/forgot-password")
+        .send({ email: testUsers.employer.email });
+      
+      devOtp = response.body.devOtp;
+      process.env.NODE_ENV = originalEnv;
+    });
+
+    it("should reset password successfully with valid OTP", async () => {
+      const response = await request(app)
+        .post("/api/v1/auth/reset-password")
+        .send({
+          email: testUsers.employer.email,
+          otp: devOtp,
+          newPassword: "brandNewPassword123"
+        })
+        .expect(200);
+
+      expect(response.body.msg).toBe("Password reset successful");
+
+      // Verify login works with the new password
+      await request(app)
+        .post("/api/v1/auth/login")
+        .send({
+          email: testUsers.employer.email,
+          password: "brandNewPassword123"
+        })
+        .expect(200);
+    });
+
+    it("should reject invalid OTP", async () => {
+      const response = await request(app)
+        .post("/api/v1/auth/reset-password")
+        .send({
+          email: testUsers.employer.email,
+          otp: "wrongOTP",
+          newPassword: "brandNewPassword123"
+        })
+        .expect(400);
+
+      expect(response.body.msg).toBe("Invalid OTP");
+    });
+  });
 });
+

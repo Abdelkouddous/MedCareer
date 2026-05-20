@@ -126,8 +126,8 @@ export const validateRegisterInput = withValidationErrors([
 
   body("role")
     .optional()
-    .isIn(["user", "admin"])
-    .withMessage("Role must be either 'user' or 'admin'"),
+    .isIn(["employer", "admin"])
+    .withMessage("Role must be either 'employer' or 'admin'"),
 ]);
 
 /**

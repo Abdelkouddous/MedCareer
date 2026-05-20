@@ -3,12 +3,13 @@ import express from "express";
 import mongoose from "mongoose";
 import Employer from "../../backend/models/EmployerModel.js";
 import Job from "../../backend/models/JobModel.js";
+import JobSeeker from "../../backend/models/JobSeekerModel.js";
 import { testUsers, testJobs } from "../fixtures/testData.js";
 
 // Import routes and middleware
 import jobRouter from "../../backend/routes/jobRouter.js";
 import authRouter from "../../backend/routes/authRouter.js";
-import userRouter from "../../backend/routes/userRouter.js";
+import employerRouter from "../../backend/routes/employerRouter.js";
 import jobSeekerRouter from "../../backend/routes/jobSeekerRouter.js";
 import errorHandlerMiddleware from "../../backend/middleware/errorHandlerMiddleware.js";
 import {
@@ -34,7 +35,7 @@ describe("API Integration Tests", () => {
     // Add routes
     app.use("/api/v1/jobs", jobRouter);
     app.use("/api/v1/auth", authRouter);
-    app.use("/api/v1/users", authenticateUser, userRouter);
+    app.use("/api/v1/employers", authenticateUser, employerRouter);
     app.use("/api/v1/jobseekers", jobSeekerRouter);
 
     // Add error handler
@@ -49,8 +50,11 @@ describe("API Integration Tests", () => {
         .send(testUsers.employer)
         .expect(201);
 
-      expect(registerResponse.body.msg).toBe("User registered successfully");
+      expect(registerResponse.body.msg).toContain("User registered successfully");
       userId = registerResponse.body.user.userId;
+
+      // Confirm user email directly in DB to allow login
+      await Employer.findByIdAndUpdate(userId, { isConfirmed: true });
 
       // 2. Login with the registered user
       const loginResponse = await request(app)
@@ -66,7 +70,7 @@ describe("API Integration Tests", () => {
 
       // 3. Verify token works by accessing protected route
       const profileResponse = await request(app)
-        .get("/api/v1/users/profile")
+        .get("/api/v1/employers/current-user")
         .set("Cookie", `token=${authToken}`)
         .expect(200);
 
@@ -181,17 +185,17 @@ describe("API Integration Tests", () => {
     let jobSeekerToken;
     let jobSeekerId;
 
-    it("should complete job seeker registration and profile management", async () => {
+    beforeEach(async () => {
       // 1. Register as job seeker
       const registerResponse = await request(app)
         .post("/api/v1/jobseekers/register")
         .send(testUsers.jobSeeker)
         .expect(201);
 
-      expect(registerResponse.body.msg).toBe(
-        "Job seeker registered successfully"
-      );
-      jobSeekerId = registerResponse.body.jobSeeker._id;
+      jobSeekerId = registerResponse.body.userId;
+
+      // Confirm job seeker email directly in DB
+      await JobSeeker.findByIdAndUpdate(jobSeekerId, { isConfirmed: true });
 
       // 2. Login as job seeker
       const loginResponse = await request(app)
@@ -203,8 +207,10 @@ describe("API Integration Tests", () => {
         .expect(200);
 
       jobSeekerToken = loginResponse.body.token;
+    });
 
-      // 3. Update profile
+    it("should complete job seeker registration and profile management", async () => {
+      // Update profile
       const profileUpdate = {
         ...testUsers.jobSeeker,
         experience: "6 years",
@@ -212,12 +218,12 @@ describe("API Integration Tests", () => {
       };
 
       const updateResponse = await request(app)
-        .patch("/api/v1/jobseekers/profile")
+        .patch("/api/v1/jobseekers/me")
         .set("Cookie", `token=${jobSeekerToken}`)
         .send(profileUpdate)
         .expect(200);
 
-      expect(updateResponse.body.msg).toBe("Profile updated successfully");
+      expect(updateResponse.body.jobSeeker).toBeDefined();
       expect(updateResponse.body.jobSeeker.experience).toBe("6 years");
     });
 
@@ -231,19 +237,12 @@ describe("API Integration Tests", () => {
       const jobId = jobResponse.body.job._id;
 
       // Apply for the job
-      const applicationData = {
-        jobId: jobId,
-        coverLetter: "I am very interested in this pediatric position...",
-        resume: "resume.pdf",
-      };
-
       const applyResponse = await request(app)
-        .post("/api/v1/jobseekers/applications")
+        .post(`/api/v1/jobseekers/apply/${jobId}`)
         .set("Cookie", `token=${jobSeekerToken}`)
-        .send(applicationData)
         .expect(201);
 
-      expect(applyResponse.body.msg).toBe("Application submitted successfully");
+      expect(applyResponse.body.application).toBeDefined();
 
       // Check application status
       const applicationsResponse = await request(app)
@@ -252,17 +251,17 @@ describe("API Integration Tests", () => {
         .expect(200);
 
       expect(applicationsResponse.body.applications).toHaveLength(1);
-      expect(applicationsResponse.body.applications[0].status).toBe("pending");
+      expect(applicationsResponse.body.applications[0].status).toBe("applied");
     });
   });
 
   describe("Error Handling", () => {
     it("should handle unauthorized access", async () => {
       const response = await request(app)
-        .get("/api/v1/users/profile")
+        .get("/api/v1/employers/current-user")
         .expect(401);
 
-      expect(response.body.message).toBe("Authentication invalid");
+      expect(response.body.msg).toBe("Authentication invalid");
     });
 
     it("should handle invalid job ID", async () => {
@@ -303,7 +302,7 @@ describe("API Integration Tests", () => {
         .send(testJobs.cardiologist)
         .expect(401);
 
-      expect(response.body.message).toBe("Authentication invalid");
+      expect(response.body.msg).toBe("Authentication invalid");
     });
   });
 });

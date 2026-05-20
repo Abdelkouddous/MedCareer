@@ -1,9 +1,11 @@
 // Description: Handles user authentication
+import crypto from "crypto";
 import { StatusCodes } from "http-status-codes";
 import Employer from "../models/EmployerModel.js";
 import { hashPassword, comparePassword } from "../utils/passwordUtils.js";
 import { createJWT } from "../utils/tokenUtils.js";
 import { Unauthenticated } from "../errors/customErrors.js";
+
 
 export const register = async (req, res, next) => {
   const isFirstAccount = (await Employer.countDocuments({})) === 0;
@@ -220,3 +222,88 @@ export const guestLogin = async (req, res, next) => {
     next(error);
   }
 };
+
+// Request a password reset OTP for employer
+export const forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ msg: "Please provide an email address" });
+    }
+
+    const user = await Employer.findOne({ email });
+
+    if (user) {
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      const hashedOTP = crypto
+        .createHash("sha256")
+        .update(otp)
+        .digest("hex");
+
+      user.resetPasswordOTP = hashedOTP;
+      user.resetPasswordExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+      await user.save();
+
+      console.log(`[DEV] Password reset OTP for ${email}: ${otp}`);
+
+      if (process.env.NODE_ENV === "development") {
+        return res.status(StatusCodes.OK).json({
+          msg: "If an account exists with that email, a reset OTP has been sent",
+          devOtp: otp,
+        });
+      }
+    }
+
+    res.status(StatusCodes.OK).json({
+      msg: "If an account exists with that email, a reset OTP has been sent",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Reset password using OTP for employer
+export const resetPassword = async (req, res, next) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+    if (!email || !otp || !newPassword) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ msg: "Please provide email, OTP, and new password" });
+    }
+
+    const hashedOTP = crypto
+      .createHash("sha256")
+      .update(otp)
+      .digest("hex");
+
+    const user = await Employer.findOne({
+      email,
+      resetPasswordExpires: { $gt: Date.now() },
+    }).select("+resetPasswordOTP +resetPasswordExpires");
+
+    if (!user) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ msg: "Invalid or expired reset token" });
+    }
+
+    if (user.resetPasswordOTP !== hashedOTP) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ msg: "Invalid OTP" });
+    }
+
+    user.password = await hashPassword(newPassword);
+    user.resetPasswordOTP = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    res.status(StatusCodes.OK).json({ msg: "Password reset successful" });
+  } catch (error) {
+    next(error);
+  }
+};
+

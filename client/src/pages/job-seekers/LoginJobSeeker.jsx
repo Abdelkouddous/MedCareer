@@ -182,6 +182,18 @@ function LoginJobSeeker() {
             {errors.password && (
               <div className="form-alert mt-1">{errors.password}</div>
             )}
+            <div className="flex justify-end mt-2">
+              <Link
+                to="/job-seekers/forgot-password"
+                className="text-sm hover:underline"
+                style={{
+                  color: "var(--primary-500)",
+                  transition: "var(--transition)",
+                }}
+              >
+                Forgot password?
+              </Link>
+            </div>
           </div>
 
           {/* Submit Button */}
