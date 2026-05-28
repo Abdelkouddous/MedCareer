@@ -48,6 +48,7 @@ export const getCurrentUser = async (req, res) => {
   }
 };
 
+
 export const getUserJobs = async (req, res) => {
   const userId = req.user.userId;
   try {
@@ -228,25 +229,17 @@ export const deleteUser = async (req, res) => {
       .json({ message: "Server error" });
   }
 };
-
-
-// getting all job seekers
-export const getAllJobSeekers = async (req, res) => {
-  try {
-    // Find all users without any authentication requirement
-    const jobSeekers = await JobSeekerModel.find({});
-
-    if (!jobSeekers || jobSeekers.length === 0) {
+// Limit access to the app status only to admin
+export const authorizePermissions = (...rest) => {
+  console.log(rest);
+  return (req, res, next) => {
+    const { role } = req.user;
+    if (role !== "admin") {
       return res
-        .status(StatusCodes.OK)
-        .json({ jobSeekers: [], message: "No job seekers found" });
+        .status(StatusCodes.FORBIDDEN)
+        .json({ message: "Access denied" });
     }
-
-    res.status(StatusCodes.OK).json({ jobSeekers, count: jobSeekers.length });
-  } catch (error) {
-    console.error(error);
-    res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ message: "Server error" });
-  }
+    next();
+  };
 };
+

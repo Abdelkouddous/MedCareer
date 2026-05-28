@@ -1,35 +1,52 @@
+// This is admin router
 import { Router } from "express";
+const router = Router();
 import { getCEOAnalytics } from "../controllers/adminAnalyticsController.js";
 import { authenticatePlatformOwner } from "../middleware/authMiddleware.js";
+import upload from "../middleware/multerMiddleware.js";
 import {
-  getApplicationStats,
   updateEmployerStatus,
   updateEmployerQuota,
   getPendingEmployers,
-} from "../controllers/adminController.js";
-import { getAllEmployers } from "../controllers/employerController.js";
+    getAllEmployers,
+  validateUpdateUserInput,
+  updateUser,
+  authorizePermissions
+} from "../controllers/employerController.js";
 
-const router = Router();
+// Admin: CEO Analytics Dashboard — guarded by the TWO-FACTOR platform owner check.
+// authorizePermissions("admin") alone is NOT sufficient; the user's email must
+// also match the ADMIN_EMAIL env variable. No employer can access this.
 
-// General app statistics for admin
-router.get("/app-stats", getApplicationStats);
 
-// CEO Analytics (Guarded further by two-factor platform owner check)
-router.get("/ceo-analytics", [
+router.get("/admin/ceo-analytics", [
   authenticatePlatformOwner,
   getCEOAnalytics,
 ]);
-
-// Employers list for administration
-router.get("/employers", getAllEmployers);
-
-// Recruiter verification/review queue
-router.get("/employers/pending", getPendingEmployers);
-
-// Recruiter approval & blocking controls
-router.patch("/employers/:id/status", updateEmployerStatus);
-
-// Recruiter subscription & posting quota updates
-router.patch("/employers/:id/quota", updateEmployerQuota);
+// Admin: list pending employers
+router.get("/admin/employers/pending", [
+  authorizePermissions("admin"),
+  getPendingEmployers,
+]);
+// Admin: approve/block employer
+router.patch("/admin/employers/:id/status", [
+  authorizePermissions("admin"),
+  updateEmployerStatus,
+]);
+// Admin: update employer quota
+router.patch("/admin/employers/:id/quota", [
+  authorizePermissions("admin"),
+  updateEmployerQuota,
+]);
+router.patch(
+  "/update-user",
+  upload.single("avatar"),
+  validateUpdateUserInput,
+  updateUser
+);
+router.get("/admin/employers", [
+  authorizePermissions("admin"),
+  getAllEmployers,
+]);
 
 export default router;
