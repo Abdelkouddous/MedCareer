@@ -10,7 +10,10 @@ const NavLinks = ({ isBigSidebar }) => {
         const { text, path, icon } = link;
         const { role } = user;
 
-        if (path === "admin" && role !== "admin") {
+        if (role === "admin" && path !== "admin" && path !== "profile") {
+          return;
+        }
+        if (role !== "admin" && path === "admin") {
           return;
         }
         return (

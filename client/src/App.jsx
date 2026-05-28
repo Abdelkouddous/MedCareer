@@ -59,6 +59,7 @@ import { loader as allJobsLoader } from "./pages/jobs-operations/AllJobs";
 import { loader as editJobLoader } from "./pages/jobs-operations/EditJob";
 // imported loaders for admin page
 import { loader as adminLoader } from "./pages/Admin";
+import AdminLayout, { loader as adminLayoutLoader } from "./pages/AdminLayout";
 
 // Add employer auth actions
 import { action as loginAction } from "./pages/employer/Login";
@@ -218,11 +219,6 @@ const router = createBrowserRouter([
         action: updateProfileAction,
       },
       {
-        path: "admin",
-        element: <Admin></Admin>,
-        loader: adminLoader,
-      },
-      {
         path: "my-jobs",
         element: <MyJobs />,
         loader: myJobsLoader,
@@ -240,6 +236,18 @@ const router = createBrowserRouter([
         path: "blog-management",
         element: <AdminBlogs></AdminBlogs>,
         loader: blogLoader,
+      },
+    ],
+  },
+  {
+    path: "dashboard/admin",
+    element: <AdminLayout />,
+    loader: adminLayoutLoader,
+    children: [
+      {
+        index: true,
+        element: <Admin />,
+        loader: adminLoader,
       },
     ],
   },

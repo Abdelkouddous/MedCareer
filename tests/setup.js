@@ -1,12 +1,14 @@
 import mongoose from "mongoose";
-import { MongoMemoryServer } from "mongodb-memory-server";
+import { MongoMemoryReplSet } from "mongodb-memory-server";
 
 let mongoServer;
 
 // Setup before all tests
 beforeAll(async () => {
-  // Start in-memory MongoDB instance
-  mongoServer = await MongoMemoryServer.create();
+  // Start in-memory MongoDB Replica Set instance to support transactions
+  mongoServer = await MongoMemoryReplSet.create({
+    replSet: { count: 1 }
+  });
   const mongoUri = mongoServer.getUri();
 
   // Connect to the in-memory database

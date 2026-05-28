@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaBars, FaTimes, FaMoon, FaSun } from "react-icons/fa";
 import LanguageSwitcher from "./LanguageSwitcher";
+import Logo from "../components/Logo";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -74,16 +75,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-12">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
-            <svg width="28" height="28" viewBox="0 0 100 100" fill="none">
-  <rect x="5" y="5" width="90" height="90" rx="20" fill="var(--primary-500)" fillOpacity="0.15"/>
-  <path 
-    d="M 18 28 L 40 74 L 54 36 L 58 48 L 64 22 L 68 52 L 73 42 L 82 46"
-    stroke="var(--primary-500)" 
-    strokeWidth="7" 
-    strokeLinecap="round" 
-    strokeLinejoin="round"
-  />
-</svg>
+            <Logo width={28} height={28} />
 
             <span
               className="text-lg font-bold tracking-tight"

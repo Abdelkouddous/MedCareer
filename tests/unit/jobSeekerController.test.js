@@ -1,3 +1,4 @@
+import "express-async-errors";
 import request from "supertest";
 import express from "express";
 import mongoose from "mongoose";
@@ -218,6 +219,41 @@ describe("Job Seeker Controller", () => {
         .expect(400);
 
       expect(response.body.message).toBe("Invalid OTP");
+    });
+  });
+
+  describe("POST /api/v1/jobseekers/become-recruiter", () => {
+    let tokenCookie;
+    beforeEach(async () => {
+      const res = await request(app).post("/api/v1/jobseekers/register").send(testUsers.jobSeeker);
+      await JobSeeker.findByIdAndUpdate(res.body.userId, { isConfirmed: true });
+
+      const loginRes = await request(app)
+        .post("/api/v1/jobseekers/login")
+        .send({
+          email: testUsers.jobSeeker.email,
+          password: testUsers.jobSeeker.password,
+        });
+      tokenCookie = loginRes.headers["set-cookie"];
+    });
+
+    it("should successfully transition a job seeker to a recruiter with 1 trial quota", async () => {
+      const response = await request(app)
+        .post("/api/v1/jobseekers/become-recruiter")
+        .set("Cookie", tokenCookie)
+        .expect(200);
+
+      expect(response.body.message).toBe("Successfully transitioned to Recruiter mode");
+      expect(response.body.user.role).toBe("employer");
+      expect(response.body.user.jobOffersQuota).toBe(1);
+      expect(response.body.user.trialJobsLimit).toBe(1);
+      expect(response.headers["set-cookie"]).toBeDefined();
+    });
+
+    it("should fail if not authenticated", async () => {
+      await request(app)
+        .post("/api/v1/jobseekers/become-recruiter")
+        .expect(401);
     });
   });
 });

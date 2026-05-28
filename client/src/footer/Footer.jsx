@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import Logo from "../components/Logo";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -46,16 +47,7 @@ const Footer = () => {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1 mb-4 md:mb-0">
             <Link to="/" className="inline-flex items-center gap-2 mb-4">
-            <svg width="28" height="28" viewBox="0 0 100 100" fill="none">
-              <rect x="5" y="5" width="90" height="90" rx="20" fill="var(--primary-500)" fillOpacity="0.15"/>
-              <path 
-                d="M 18 28 L 40 74 L 54 36 L 58 48 L 64 22 L 68 52 L 73 42 L 82 46"
-                stroke="var(--primary-500)" 
-                strokeWidth="7" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-              />
-            </svg>
+            <Logo width={28} height={28} />
               <span
                 className="text-lg font-bold tracking-tight"
                 style={{ color: "var(--text-color)" }}

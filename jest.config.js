@@ -2,6 +2,7 @@ export default {
   testEnvironment: "node",
   roots: ["<rootDir>/tests"],
   testMatch: ["**/__tests__/**/*.js", "**/?(*.)+(spec|test).js"],
+  testPathIgnorePatterns: ["/node_modules/", "/tests/e2e/"],
   collectCoverageFrom: [
     "backend/controllers/**/*.js",
     "backend/middleware/**/*.js",

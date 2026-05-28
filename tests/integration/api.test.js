@@ -252,6 +252,17 @@ describe("API Integration Tests", () => {
 
       expect(applicationsResponse.body.applications).toHaveLength(1);
       expect(applicationsResponse.body.applications[0].status).toBe("applied");
+
+      // Verify that the employer can get stats of applications on their own jobs
+      const statsResponse = await request(app)
+        .get("/api/v1/employers/app-stats")
+        .set("Cookie", `token=${authToken}`)
+        .expect(200);
+
+      expect(statsResponse.body.defaultStats).toBeDefined();
+      expect(statsResponse.body.defaultStats.applied).toBe(1);
+      expect(statsResponse.body.defaultStats.viewed).toBe(0);
+      expect(statsResponse.body.totalApplications).toBe(1);
     });
   });
 

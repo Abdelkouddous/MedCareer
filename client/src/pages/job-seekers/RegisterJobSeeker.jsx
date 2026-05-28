@@ -11,10 +11,10 @@ import {
   FiUser,
   FiMapPin,
   FiPhone,
-  FiUserPlus,
 } from "react-icons/fi";
 import { FaGoogle, FaApple } from "react-icons/fa";
 import Wrapper from "../../assets/wrappers/RegisterAndLoginPage";
+import Logo from "../../components/Logo";
 
 function RegisterJobSeeker() {
   const navigate = useNavigate();
@@ -34,7 +34,16 @@ function RegisterJobSeeker() {
   const [errors, setErrors] = useState({});
 
   const onChange = (e) => {
-    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+    let val = e.target.value;
+    if (e.target.name === "phoneNumber") {
+      // Allow only digits
+      val = val.replace(/\D/g, "");
+      // Limit to 9 digits (Algerian mobile format after +213)
+      if (val.length > 9) {
+        val = val.slice(0, 9);
+      }
+    }
+    setForm((f) => ({ ...f, [e.target.name]: val }));
     // Clear error when user starts typing
     if (errors[e.target.name]) {
       setErrors((prev) => ({ ...prev, [e.target.name]: "" }));
@@ -64,8 +73,10 @@ function RegisterJobSeeker() {
       newErrors.password = "Password must be at least 6 characters";
     }
 
-    if (form.phoneNumber && !/^\+213[567]\d{8}$/.test(form.phoneNumber)) {
-      newErrors.phoneNumber = "Phone number must start with +213 followed by 5, 6, or 7, and 8 digits";
+    if (!form.phoneNumber) {
+      newErrors.phoneNumber = "Phone number is required";
+    } else if (!/^[567]\d{8}$/.test(form.phoneNumber)) {
+      newErrors.phoneNumber = "Phone number must start with 5, 6, or 7, followed by 8 digits";
     }
 
     setErrors(newErrors);
@@ -79,18 +90,24 @@ function RegisterJobSeeker() {
       return;
     }
 
+    // Prepend Algerian country code to the sanitised phone number string
+    const payload = {
+      ...form,
+      phoneNumber: `+213${form.phoneNumber}`,
+    };
+
     try {
       setLoading(true);
       let response;
       if (pendingCV) {
         const formData = new FormData();
-        Object.keys(form).forEach(key => formData.append(key, form[key]));
+        Object.keys(payload).forEach((key) => formData.append(key, payload[key]));
         formData.append("cv", pendingCV);
         response = await customFetch.post("/jobseekers/register", formData, {
-          headers: { "Content-Type": "multipart/form-data" }
+          headers: { "Content-Type": "multipart/form-data" },
         });
       } else {
-        response = await customFetch.post("/jobseekers/register", form);
+        response = await customFetch.post("/jobseekers/register", payload);
       }
 
       // Redirect to confirm page (public route)
@@ -121,14 +138,8 @@ function RegisterJobSeeker() {
       <div className="form" style={{ maxWidth: "600px", width: "100%" }}>
         {/* Header */}
         <div className="text-center mb-8">
-          <div
-            className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4"
-            style={{
-              background: "var(--primary-500)",
-              color: "var(--white)",
-            }}
-          >
-            <FiUserPlus size={24} />
+          <div className="flex justify-center mb-4">
+            <Logo width={64} height={64} />
           </div>
           <h1
             className="text-3xl font-bold mb-2"
@@ -339,28 +350,34 @@ function RegisterJobSeeker() {
                 <FiPhone className="inline mr-2" />
                 Phone Number
               </label>
-              <div className="relative">
+              <div className="relative flex items-center">
+                <span
+                  className="absolute left-3 font-semibold text-sm select-none"
+                  style={{
+                    color: "var(--text-color)",
+                    borderRight: "1px solid var(--grey-300)",
+                    paddingRight: "0.5rem",
+                  }}
+                >
+                  +213
+                </span>
                 <input
                   id="phoneNumber"
                   name="phoneNumber"
                   type="tel"
-                  placeholder="+213555555555"
+                  placeholder="555 55 55 55"
                   value={form.phoneNumber}
                   onChange={onChange}
                   className={`form-input ${
                     errors.phoneNumber ? "border-red-500" : ""
                   }`}
                   style={{
-                    paddingLeft: "2.5rem",
+                    paddingLeft: "4.5rem",
                     borderColor: errors.phoneNumber
                       ? "var(--red-dark)"
                       : "var(--grey-300)",
                   }}
-                />
-                <FiPhone
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2"
-                  style={{ color: "var(--grey-400)" }}
-                  size={18}
+                  required
                 />
               </div>
               {errors.phoneNumber && (

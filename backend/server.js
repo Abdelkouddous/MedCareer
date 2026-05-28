@@ -30,6 +30,7 @@ import blogRouter from "./routes/blogRouter.js";
 import statusRouter from "./routes/statusRouter.js";
 import messageRouter from "./routes/messageRouter.js";
 import cvRouter from "./routes/cvRouter.js";
+import adminRouter from "./routes/adminRouter.js";
 
 //middlewares imports
 
@@ -38,6 +39,7 @@ import {
   authenticateUser,
   allowGuestForViewing,
   authenticateJobSeeker,
+  authorizePermissions,
 } from "./middleware/authMiddleware.js";
 import cookieParser from "cookie-parser";
 import { logout } from "./controllers/authController.js";
@@ -106,6 +108,7 @@ app.use(
 app.use("/api/v1/jobs", jobRouter); // Remove authenticateUser to allow guest access
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/employers", authenticateUser, employerRouter);
+app.use("/api/v1/admin", authenticateUser, authorizePermissions("admin"), adminRouter);
 app.use("/api/v1/blogs", blogRouter);
 app.use("/api/v1/status", statusRouter);
 

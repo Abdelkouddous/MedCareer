@@ -1,6 +1,32 @@
 import "@testing-library/jest-dom";
 import { vi } from "vitest";
 
+// Workaround for Node.js v18+ global fetch/Request AbortSignal type verification error in JSDOM environment
+const OriginalRequest = globalThis.Request;
+if (OriginalRequest) {
+  globalThis.Request = class Request extends OriginalRequest {
+    constructor(input, init) {
+      if (init && init.signal) {
+        const { signal, ...rest } = init;
+        super(input, rest);
+      } else {
+        super(input, init);
+      }
+    }
+  };
+}
+
+const OriginalFetch = globalThis.fetch;
+if (OriginalFetch) {
+  globalThis.fetch = function (input, init) {
+    if (init && init.signal) {
+      const { signal, ...rest } = init;
+      return OriginalFetch(input, rest);
+    }
+    return OriginalFetch(input, init);
+  };
+}
+
 // Mock window.matchMedia
 Object.defineProperty(window, "matchMedia", {
   writable: true,

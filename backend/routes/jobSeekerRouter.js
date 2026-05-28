@@ -10,6 +10,7 @@ import {
   resendOtp,
   forgotPasswordJobSeeker,
   resetPasswordJobSeeker,
+  becomeRecruiter,
 } from "../controllers/jobSeekerController.js";
 import {
   applyToJob,
@@ -42,6 +43,7 @@ router.post("/reset-password", resetPasswordJobSeeker);
 
 // Self-only profile endpoints
 router.get("/me", authenticateJobSeeker, getCurrentJobSeeker);
+router.post("/become-recruiter", authenticateJobSeeker, becomeRecruiter);
 router.patch("/me", authenticateJobSeeker, updateCurrentJobSeeker);
 
 // Applications & stats (self)

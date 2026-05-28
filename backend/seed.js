@@ -146,12 +146,13 @@ async function seedEmployers() {
 
   for (let i = 0; i < 10; i++) {
     const h = HOSPITALS[i];
-    const fn = pick([...FIRST_NAMES_M, ...FIRST_NAMES_F]);
-    const ln = pick(LAST_NAMES);
+    const isOwner = i === 0;
+    const fn = isOwner ? "VitalWork" : pick([...FIRST_NAMES_M, ...FIRST_NAMES_F]);
+    const ln = isOwner ? "Admin" : pick(LAST_NAMES);
     employers.push({
       name: fn,
       lastName: ln,
-      email: `employer${i + 1}@VitalWork.dz`,
+      email: isOwner && process.env.ADMIN_EMAIL ? process.env.ADMIN_EMAIL.toLowerCase() : `employer${i + 1}@vitalwork.dz`,
       password: hash,
       location: h.city,
       specialty: pick(SPECIALIZATIONS.filter(s =>
@@ -190,7 +191,7 @@ async function seedJobSeekers() {
     seekers.push({
       name: fn,
       lastName: ln,
-      email: `seeker${i + 1}@VitalWork.dz`,
+      email: `seeker${i + 1}@vitalwork.dz`,
       password: hash,
       specialization: spec,
       location: pick(WILAYAS),
@@ -408,11 +409,11 @@ async function main() {
     console.log("✅ All Algerian mock data seeded successfully!");
     console.log("─────────────────────────────────────────────");
     console.log("\n📋 Login Credentials:");
-    console.log("   Employers:  employer1@VitalWork.dz  → password123  (admin)");
-    console.log("               employer2@VitalWork.dz  → password123");
-    console.log("   Seekers:    seeker1@VitalWork.dz    → password123");
-    console.log("               seeker2@VitalWork.dz    → password123");
-    console.log("               ... up to seeker15@VitalWork.dz\n");
+    console.log(`   Employers:  ${process.env.ADMIN_EMAIL || "employer1@vitalwork.dz"}  → password123  (admin)`);
+    console.log("               employer2@vitalwork.dz  → password123");
+    console.log("   Seekers:    seeker1@vitalwork.dz    → password123");
+    console.log("               seeker2@vitalwork.dz    → password123");
+    console.log("               ... up to seeker15@vitalwork.dz\n");
   } catch (err) {
     console.error("❌ Seeding failed:", err.message);
   } finally {

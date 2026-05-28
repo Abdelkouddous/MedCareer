@@ -307,3 +307,11 @@ export const resetPassword = async (req, res, next) => {
   }
 };
 
+export const authorizePermissions = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      throw new Unauthenticated("Unauthorized to access this resource");
+    }
+    next();
+  };
+};

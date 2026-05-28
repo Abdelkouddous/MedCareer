@@ -2,6 +2,7 @@
 import crypto from "crypto";
 import { StatusCodes } from "http-status-codes";
 import JobSeeker from "../models/JobSeekerModel.js";
+import Employer from "../models/EmployerModel.js";
 
 import { hashPassword, comparePassword } from "../utils/passwordUtils.js";
 import { createJWT } from "../utils/tokenUtils.js";
@@ -512,6 +513,92 @@ export const resetPasswordJobSeeker = async (req, res) => {
 
     res.status(StatusCodes.OK).json({ message: "Password reset successful" });
   } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
+  }
+};
+
+export const becomeRecruiter = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    const jobSeekerId = req.jobSeeker?.jobSeekerId;
+    if (!mongoose.isValidObjectId(jobSeekerId)) {
+      await session.abortTransaction();
+      session.endSession();
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .json({ message: "Authentication invalid" });
+    }
+
+    const jobSeeker = await JobSeeker.findById(jobSeekerId).session(session);
+    if (!jobSeeker) {
+      await session.abortTransaction();
+      session.endSession();
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "Job seeker not found" });
+    }
+
+    // Check if an Employer account with the same email already exists
+    let employer = await Employer.findOne({ email: jobSeeker.email }).session(session);
+    if (!employer) {
+      // Create Employer account using JobSeeker info
+      employer = new Employer({
+        name: jobSeeker.name,
+        lastName: jobSeeker.lastName,
+        email: jobSeeker.email,
+        password: jobSeeker.password,
+        location: jobSeeker.location || "Algeria",
+        role: "employer",
+        status: "approved",
+        isConfirmed: true, // Already confirmed since they're logged in
+        jobOffersQuota: 1, // Only 1 trial quota instead of 3
+        trialJobsLimit: 1,
+        lifetimeJobOffersCreated: 0,
+        plan: "trial",
+      });
+      await employer.save({ session });
+    } else {
+      if (employer.role !== "employer" && employer.role !== "admin") {
+        employer.role = "employer";
+        await employer.save({ session });
+      }
+    }
+
+    // Create the JWT token for the Recruiter mode
+    const token = createJWT({ userId: employer._id, role: employer.role });
+
+    // Set token in the cookie
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
+      sameSite: "strict",
+    });
+
+    await session.commitTransaction();
+    session.endSession();
+
+    res.status(StatusCodes.OK).json({
+      message: "Successfully transitioned to Recruiter mode",
+      user: {
+        _id: employer._id,
+        name: employer.name,
+        lastName: employer.lastName,
+        email: employer.email,
+        role: employer.role,
+        status: employer.status,
+        jobOffersQuota: employer.jobOffersQuota,
+        trialJobsLimit: employer.trialJobsLimit,
+        location: employer.location,
+      },
+      token,
+    });
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ message: error.message });

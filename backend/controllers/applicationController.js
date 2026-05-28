@@ -249,3 +249,45 @@ export const updateApplicationStatus = async (req, res) => {
       .json({ message: error.message });
   }
 };
+
+export const getEmployerAppStats = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    // Find all jobs created by this employer
+    const jobs = await Job.find({ createdBy: userId });
+    const jobIds = jobs.map((job) => job._id);
+
+    const stats = await Application.aggregate([
+      { $match: { job: { $in: jobIds } } },
+      {
+        $group: {
+          _id: "$status",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const defaultStats = {
+      applied: stats.find((item) => item._id === "applied")?.count || 0,
+      viewed: stats.find((item) => item._id === "viewed")?.count || 0,
+      accepted: stats.find((item) => item._id === "accepted")?.count || 0,
+      rejected: stats.find((item) => item._id === "rejected")?.count || 0,
+    };
+
+    const totalApplications =
+      defaultStats.applied +
+      defaultStats.viewed +
+      defaultStats.accepted +
+      defaultStats.rejected;
+
+    res.status(StatusCodes.OK).json({
+      defaultStats,
+      totalApplications,
+    });
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
+  }
+};
+

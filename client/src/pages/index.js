@@ -11,6 +11,7 @@
  */
 
 export { default as DashboardLayout } from "./DashboardLayout";
+export { default as AdminLayout } from "./AdminLayout";
 export { default as Landing } from "./Landing";
 export { default as HomeLayout } from "./HomeLayout";
 export { default as Error } from "./Error";

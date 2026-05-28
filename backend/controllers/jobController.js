@@ -355,9 +355,9 @@ export const showStats = async (req, res) => {
     } else {
       // If user is not authenticated, return demo data
       const defaultStats = {
-        pending: stats.pending || 0,
-        interview: stats.interview || 0, // stats.interview || 0,
-        declined: stats.declined || 0,
+        pending: 12,
+        interview: 17,
+        declined: 3,
       };
 
       monthlyApplications = [

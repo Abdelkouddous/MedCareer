@@ -17,10 +17,8 @@ const TestWrapper = ({ children }) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        {children}
-        <ToastContainer />
-      </BrowserRouter>
+      {children}
+      <ToastContainer />
     </QueryClientProvider>
   );
 };
@@ -29,6 +27,9 @@ describe("VitalWork App", () => {
   beforeEach(() => {
     // Clear any previous mocks
     vi.clearAllMocks();
+    // Reset window history to the root path to prevent routing state leakage between tests
+    window.history.pushState({}, "", "/");
+    window.dispatchEvent(new PopStateEvent("popstate"));
   });
 
   test("renders landing page", () => {
@@ -38,7 +39,7 @@ describe("VitalWork App", () => {
       </TestWrapper>
     );
 
-    expect(screen.getByText(/VitalWork/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/VitalWork/i)[0]).toBeInTheDocument();
   });
 
   test("navigates to jobs page", async () => {
@@ -48,11 +49,11 @@ describe("VitalWork App", () => {
       </TestWrapper>
     );
 
-    const jobsLink = screen.getByRole("link", { name: /jobs/i });
+    const jobsLink = screen.getAllByRole("link", { name: /find jobs/i })[0];
     fireEvent.click(jobsLink);
 
     await waitFor(() => {
-      expect(screen.getByText(/Available Jobs/i)).toBeInTheDocument();
+      expect(screen.getByText(/Find Your Dream Job/i)).toBeInTheDocument();
     });
   });
 
@@ -63,11 +64,11 @@ describe("VitalWork App", () => {
       </TestWrapper>
     );
 
-    const loginLink = screen.getByRole("link", { name: /login/i });
+    const loginLink = screen.getAllByRole("link", { name: /sign in/i })[0];
     fireEvent.click(loginLink);
 
     await waitFor(() => {
-      expect(screen.getByText(/Login/i)).toBeInTheDocument();
+      expect(screen.getByText(/Welcome Back/i)).toBeInTheDocument();
     });
   });
 
@@ -78,11 +79,11 @@ describe("VitalWork App", () => {
       </TestWrapper>
     );
 
-    const registerLink = screen.getByRole("link", { name: /register/i });
+    const registerLink = screen.getAllByRole("link", { name: /register/i })[0];
     fireEvent.click(registerLink);
 
     await waitFor(() => {
-      expect(screen.getByText(/Register/i)).toBeInTheDocument();
+      expect(screen.getByText(/Create Your Account/i)).toBeInTheDocument();
     });
   });
 });

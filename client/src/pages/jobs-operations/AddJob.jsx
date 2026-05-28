@@ -8,6 +8,7 @@ import {
 import { FormRow, FormRowSelect } from "../components";
 import customFetch from "../../utils/customFetch";
 import { SubmitBtn } from "../components/SubmitBtn";
+import { ALGERIAN_WILAYAS } from "../../utils/algeriaWilayas";
 
 // position: {
 //       type: String,
@@ -89,9 +90,6 @@ export const AddJob = () => {
             defaultValue={user.company}
             placeholder={"Your clinic"}
           />
-import { ALGERIAN_WILAYAS } from "../../utils/algeriaWilayas";
-
-// ... further down ...
           <FormRowSelect
             name="jobLocation"
             labelText="Job Location"
